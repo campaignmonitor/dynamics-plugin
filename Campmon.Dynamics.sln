@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Campmon.Dynamics", "Campmon.Dynamics\Campmon.Dynamics.csproj", "{5AD4B4F2-5B15-419E-82BE-1297D23480F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Campmon.Dynamics.Plugins", "Campmon.Dynamics.Plugins\Campmon.Dynamics.Plugins.csproj", "{1958766A-A5DE-4D2E-BB59-45E02289839E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Campmon.Dynamics.Test", "Campmon.Dynamics.Test\Campmon.Dynamics.Test.csproj", "{5EFEA90A-8D52-4493-99C9-75EB23118925}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Campmon.Dynamics.WorkflowActivities", "Campmon.Dynamics.WorkflowActivities\Campmon.Dynamics.WorkflowActivities.csproj", "{A70B0721-2E29-4E83-91B4-CD790C6B80C3}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Campmon.Dynamics.WebResources", "http://localhost:65270", "{6498DB55-E782-47C1-AE4D-A135062686FC}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "true"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_65270"
+		Debug.AspNetCompiler.PhysicalPath = "Campmon.Dynamics.WebResources\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_65270\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_65270"
+		Release.AspNetCompiler.PhysicalPath = "Campmon.Dynamics.WebResources\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_65270\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "Campmon.Dynamics.WebResources\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5AD4B4F2-5B15-419E-82BE-1297D23480F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AD4B4F2-5B15-419E-82BE-1297D23480F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AD4B4F2-5B15-419E-82BE-1297D23480F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AD4B4F2-5B15-419E-82BE-1297D23480F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1958766A-A5DE-4D2E-BB59-45E02289839E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1958766A-A5DE-4D2E-BB59-45E02289839E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1958766A-A5DE-4D2E-BB59-45E02289839E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1958766A-A5DE-4D2E-BB59-45E02289839E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EFEA90A-8D52-4493-99C9-75EB23118925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EFEA90A-8D52-4493-99C9-75EB23118925}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EFEA90A-8D52-4493-99C9-75EB23118925}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EFEA90A-8D52-4493-99C9-75EB23118925}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A70B0721-2E29-4E83-91B4-CD790C6B80C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A70B0721-2E29-4E83-91B4-CD790C6B80C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A70B0721-2E29-4E83-91B4-CD790C6B80C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A70B0721-2E29-4E83-91B4-CD790C6B80C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6498DB55-E782-47C1-AE4D-A135062686FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6498DB55-E782-47C1-AE4D-A135062686FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6498DB55-E782-47C1-AE4D-A135062686FC}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{6498DB55-E782-47C1-AE4D-A135062686FC}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
