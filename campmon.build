@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="CampaignMonitor" default="build" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://sonomapartners.com/nant.xsd ../nant.xsd" xmlns="http://sonomapartners.com/nant.xsd">
+
+  <include buildfile="${libs}\project.build" />
+  <include buildfile="${libs}\compile.build" /> 
+  
+  <property name="nant.onsuccess" value="onSuccess.create" if="${project.buildType == 'Create'}" /> 
+
+  <target name="onSuccess.create">
+    <prepend
+      file="C:\BuildVersions\${project.ccnetProjectName}.txt"
+      text="${project.version}" />
+	  <createBuildRecord
+      failonerror="false"
+      projectName="${project.grapevineProjectName}"
+      description="Requested by ${CCNetRequestSource}${environment::newline()}${project.buildDescription}" />
+  </target>
+
+  <target name="campmon.continuous">
+    <exec program="powershell.exe" workingdir="${project.workingdirectory}">
+      <arg line="-noninteractive" />
+      <arg line="-command .\build.ps1" />
+    </exec>
+  </target>
+
+  <target name="campmon.create">
+    <exec program="powershell.exe" workingdir="${project.workingdirectory}">
+      <arg line="-noninteractive" />
+      <arg line="-command .\build.ps1" />
+    </exec>
+  </target>
+
+  <target name="continuous" depends="campmon.continuous" /> 
+  <target name="create" depends="campmon.create" />
+</project>
