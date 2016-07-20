@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Campmon.Dynamics", "Campmon.Dynamics\Campmon.Dynamics.csproj", "{5AD4B4F2-5B15-419E-82BE-1297D23480F6}"
 EndProject
@@ -29,6 +29,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Campmon.Dynamics.WebResourc
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "58770"
 		SlnRelativePath = "Campmon.Dynamics.WebResources\"
 		DefaultWebSiteLanguage = "Visual C#"
 	EndProjectSection

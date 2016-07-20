@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Root>
+  <Setting Name="TrialOrg" Id="beb5ba6a-f77d-48ba-a5d4-19c1b5c40ddc">
+    <Server />
+    <ConnectionString>ServiceUri=https://msp674563.api.crm.dynamics.com/XRMServices/2011/Organization.svc; UserName=admin@MSP674563.onmicrosoft.com; Password=pass@word1;</ConnectionString>
+    <Organization />
+  </Setting>
+  <DefaultConnection Id="beb5ba6a-f77d-48ba-a5d4-19c1b5c40ddc" />
+  <DefaultSolution Name="CampaignMonitor" />
+</Root>
