@@ -34,6 +34,7 @@ task UpdateVersion -precondition { $solutionVersionNumber } {
     $updatedSolution = $results.CrmRecords[0]
     $updatedSolution.version = $solutionVersionNumber
     Set-CrmRecord -conn $org -CrmRecord $updatedSolution
+    "Updated solution to version $solutionVersionNumber"
 }
 
 task ExportSolutions -depends Compile,UpdateVersion {
