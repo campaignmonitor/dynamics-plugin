@@ -4,9 +4,10 @@
   <include buildfile="${libs}\project.build" />
   <include buildfile="${libs}\compile.build" /> 
   
-  <property name="nant.onsuccess" value="onSuccess.create" if="${project.buildType == 'Create'}" /> 
+  <property name="nant.onsuccess" value="project.onSuccess.create" if="${project.buildType == 'Create'}" /> 
+  <!--<property name="project.buildDescription" value="" />-->
 
-  <target name="onSuccess.create">
+  <!--<target name="onSuccess.create">
     <prepend
       file="C:\BuildVersions\${project.ccnetProjectName}.txt"
       text="${project.version}" />
@@ -14,7 +15,7 @@
       failonerror="false"
       projectName="${project.grapevineProjectName}"
       description="Requested by ${CCNetRequestSource}${environment::newline()}${project.buildDescription}" />
-  </target>
+  </target>-->
 
   <target name="campmon.continuous">
     <exec program="powershell.exe" workingdir="${project.workingdirectory}">
