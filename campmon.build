@@ -27,6 +27,9 @@
     <exec program="powershell.exe" workingdir="${project.workingdirectory}">
       <arg line="-noninteractive" />
       <arg line="-command .\build.ps1" />
+      <arg line="-task create" />
+      <arg line="-versionNumber ${project.version}" />
+      <arg line="-outputDir ${project.destination}" />
     </exec>
   </target>
 
