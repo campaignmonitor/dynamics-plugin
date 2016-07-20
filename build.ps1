@@ -1,4 +1,8 @@
-param($task = 'default')
+param(
+    [string]$task = 'default',
+    [string]$versionNumber,
+    [string]$outputDir
+)
 
 Get-Module psake | Remove-Module
 Get-Module Invoke-MsBuild | Remove-Module
@@ -11,4 +15,7 @@ Import-Module @(
 )
 
 $psake.use_exit_on_error = $true
-Invoke-Psake .\default.ps1 $task
+Invoke-Psake .\default.ps1 $task -parameters @{
+    'versionNumber' = $versionNumber
+    'outputPath' = $outputDir
+}
