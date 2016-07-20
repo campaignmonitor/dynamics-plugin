@@ -26,7 +26,7 @@ namespace Campmon.Dynamics.WorkflowActivities
             trace.Trace("BulkSyncContacts activity finished.");
         }
 
-        [Output("CustomerSalesInformation")]
-        public OutArgument<bool> CustomerSalesInformation { get; set; }
+        [Output("Is Sync Completed")]
+        public OutArgument<bool> SyncCompleted { get; set; }
     }
 }
