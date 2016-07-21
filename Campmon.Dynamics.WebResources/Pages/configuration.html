@@ -12,6 +12,7 @@
 <body>
     <script src="../Scripts/Libraries/knockout340.js"></script>
     <script src="../Scripts/Libraries/webApiRest.js"></script>
+    <script src="../Scripts/configurationPage.js"></script>
     <header></header>
     <section>
         <div>
@@ -20,7 +21,7 @@
 
             <!-- This radio button input is outside of its respective container to allow for easy CSS-selection of hiding/showing advanced fields -->
             <input type="checkbox" id="advancedSettings" checked>
-
+            <h2 data-bind="text: firstName"></h2>
             <div class="settings">
                 <ul class="settingClient">
                     <li>
@@ -28,10 +29,10 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select>
+                            <select data-bind="options: clientList">
                                 <!-- Note: The first <option> is placeholder text -->
-                                <option disabled selected>Select Client</option>
-                                <option>Client Name Here</option>
+                                <!--<option disabled selected>Select Client</option>
+                                <option>Client Name Here</option>-->
                             </select>
                         </div>
                     </li>
@@ -435,6 +436,5 @@
             </div>
         </div>
     </div>
-    <script src="../Scripts/configurationPage.js"></script>
 </body>
 </html>

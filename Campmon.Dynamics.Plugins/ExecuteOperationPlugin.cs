@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 using SonomaPartners.Crm.Toolkit;
 using SonomaPartners.Crm.Toolkit.Plugins;
 using Campmon.Dynamics.Plugins.Operations;
-
+using Newtonsoft.Json;
 namespace Campmon.Dynamics.Plugins
 {
     public class ExecuteOperationPlugin : PluginBase
     {
         public override void OnExecute(IServiceProvider serviceProvider)
         {
+            /*
+              campmon_ExecuteOperationAction
+              Input:
+                OperationName
+                InputData
+              Output:
+                OutputData             
+            */
             var operationFactory = new Dictionary<string, Func<IOperation>>
             {
+                { "getclientlist", ()=> new GetClientList() },
                 { "loadmetadata", () => new LoadMetadataOperation() }
             };
 
@@ -34,7 +43,7 @@ namespace Campmon.Dynamics.Plugins
             catch (Exception ex)
             {
                 //todo: serialize exception for output
-                outputData = "An error occured";
+                outputData = JsonConvert.SerializeObject($"An error occured. Message: {ex.Message}");
             }
 
             pluginContext.OutputParameters["OutputData"] = outputData;

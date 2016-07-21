@@ -128,9 +128,8 @@ webAPI.REST.executeUnboundAction = function (actionName, actionParameters, extra
 };
 
 //Aliased with default extraHeaders optional
-webAPI.executeAction = function (actionName, actionParameters, extraHeaders) {
-    extraHeaders = extraHeaders || null;
-    return webAPI.REST.executeUnboundAction(actionName, actionParameters, extraHeaders)
+webAPI.executeAction = function (actionName, actionParameters) {
+    return webAPI.REST.executeUnboundAction(actionName, actionParameters, null)
 }
 
 webAPI.REST.executeBoundFunction = function (type, id, functionString, extraHeaders) {
