@@ -1,0 +1,12 @@
+@charset "UTF-8";
+/* CSS Document */
+
+.iconLoading {
+	width: 48px;
+	height: 48px;
+	background: url(../Images/Loading-Icon.gif) no-repeat;
+}
+
+.iconLoading i {
+	display: none;
+}

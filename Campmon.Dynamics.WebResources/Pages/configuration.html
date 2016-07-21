@@ -1,22 +1,440 @@
 ﻿<!doctype html>
-
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>Campaign Monitor Configuration</title>
+    <meta charset="UTF-8">
+    <title>Campaign Monitor Sync Settings</title>
+    <link href="styles/styles.css" rel="stylesheet" type="text/css">
+    <!--[if IE]>
+        <link href="Styles/styles_ie.css" rel="stylesheet" type="text/css">
+    <![endif]-->
 </head>
-
+<!-- Add class "noScroll" to <body> tag when a modal window displays. -->
 <body>
-    <div style="display:block; width:50%; margin:auto; text-align:center">
-        <h2>Campaign Monitor Sync Settings</h2>
-        <div>
-            <p>First name: <strong data-bind="text: firstName"></strong></p>
-            <p>Last name: <strong data-bind="text: lastName"></strong></p>
-        </div>
-    </div>
-    
     <script src="../Scripts/Libraries/knockout340.js"></script>
     <script src="../Scripts/Libraries/webApiRest.js"></script>
+    <header></header>
+    <section>
+        <div>
+
+            <h1>Campaign Monitor Sync Settings</h1>
+
+            <!-- This radio button input is outside of its respective container to allow for easy CSS-selection of hiding/showing advanced fields -->
+            <input type="checkbox" id="advancedSettings" checked>
+
+            <div class="settings">
+                <ul class="settingClient">
+                    <li>
+                        <h2>Client</h2>
+                    </li>
+                    <li>
+                        <div class="dropDown">
+                            <select>
+                                <!-- Note: The first <option> is placeholder text -->
+                                <option disabled selected>Select Client</option>
+                                <option>Client Name Here</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="settingContactList">
+                    <li>
+                        <h2>Campaign Monitor List</h2>
+                    </li>
+                    <li>
+                        <input type="radio" id="syncToExistingList" name="contactList" checked>
+                        <input type="radio" id="syncToNewList" name="contactList">
+                        <div class="radioButtons">
+                            <ul>
+                                <li class="labelWidthMedium">
+                                    <label for="syncToExistingList">
+                                        <p>Sync to Existing List</p>
+                                    </label>
+                                </li>
+                                <li class="labelWidthMedium">
+                                    <label for="syncToNewList">
+                                        <p>Sync to New List</p>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dropDown">
+                            <select>
+                                <!-- Note: The first <option> is placeholder text -->
+                                <option disabled selected>Select List</option>
+                                <option>Existing List Name</option>
+                            </select>
+                        </div>
+                        <div class="textField">
+                            <input type="text" placeholder="Enter list name">
+                        </div>
+                        <div class="radioButtons">
+                            <ul>
+                                <li class="labelWidthLarge">
+                                    <input type="radio" id="optInSingle" name="newListOptIn" checked>
+                                    <label for="optInSingle">
+                                        <p>Single Opt-In</p>
+                                        <p>CRM Contacts will be automatically subscribed to the list.</p>
+                                    </label>
+                                </li>
+                                <li class="labelWidthVeryLarge">
+                                    <input type="radio" id="optInConfirmed" name="newListOptIn">
+                                    <label for="optInConfirmed">
+                                        <p>Confirmed Opt-In</p>
+                                        <p>CRM Contacts must confirm their email address before being subscribed to the list.</p>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="settingAdvancedToggle">
+                    <li></li>
+                    <li>
+                        <label for="advancedSettings">Advanced Settings</label>
+                    </li>
+                </ul>
+                <ul class="settingContacts">
+                    <li>
+                        <h2>CRM Contacts</h2>
+                    </li>
+                    <li>
+                        <div class="dropDown">
+                            <select>
+                                <option>All Contacts</option>
+                                <option>Another View of Contacts</option>
+                            </select>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="settingFields">
+                    <li>
+                        <h2>Fields</h2>
+                    </li>
+                    <li>
+                        <h3>Recommended</h3>
+                        <ul class="columns columnsShort">
+                            <li>
+                                <input type="checkbox" id="fieldAnniversary" checked>
+                                <label for="fieldAnniversary">Anniversary</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldAnnualIncome" checked>
+                                <label for="fieldAnnualIncome">Annual Income</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldBirthday" checked>
+                                <label for="fieldBirthday">Birthday</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldCity" checked>
+                                <label for="fieldCity">City</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldCompanyName" checked>
+                                <label for="fieldCompanyName">Company Name</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldCountryRegion" checked>
+                                <label for="fieldCountryRegion">Country/Region</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldDepartment" checked>
+                                <label for="fieldDepartment">Department</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldDoNotAllowEmails" checked>
+                                <label for="fieldDoNotAllowEmails">Do not allow Emails</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldEmail" checked>
+                                <label for="fieldEmail">Email</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldEmailAddress2" checked>
+                                <label for="fieldEmailAddress2">Email Address 2</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldEmailAddress3" checked>
+                                <label for="fieldEmailAddress3">Email Address 3</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFirstName" checked>
+                                <label for="fieldFirstName">First Name</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFullName" checked>
+                                <label for="fieldFullName">Full Name</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldGender" checked>
+                                <label for="fieldGender">Gender</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldJobTitle" checked>
+                                <label for="fieldJobTitle">Job Title</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldLastDateIncludedInCampaign" checked>
+                                <label for="fieldLastDateIncludedInCampaign">Last Date Included in Campaign</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldLastName" checked>
+                                <label for="fieldLastName">Last Name</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldMaritalStatus" checked>
+                                <label for="fieldMaritalStatus">Marital Status</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldNoOfChildren" checked>
+                                <label for="fieldNoOfChildren">No. of Children</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldPreferredMethodOfContact" checked>
+                                <label for="fieldPreferredMethodOfContact">Preferred Method of Contact</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldPrimaryContactName" checked>
+                                <label for="fieldPrimaryContactName">Primary Contact Name</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldStatus" checked>
+                                <label for="fieldStatus">Status</label>
+                            </li>
+                        </ul>
+                        <h3>Other Fields</h3>
+                        <ul class="columns columnsTall">
+                            <li>
+                                <input type="checkbox" id="fieldFieldName1">
+                                <label for="fieldFieldName1">Field Name 1</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName2">
+                                <label for="fieldFieldName2">Field Name 2</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName3">
+                                <label for="fieldFieldName3">Field Name 3</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName4">
+                                <label for="fieldFieldName4">Field Name 4</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName5">
+                                <label for="fieldFieldName5">Field Name 5</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName6">
+                                <label for="fieldFieldName6">Field Name 6</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName7">
+                                <label for="fieldFieldName7">Field Name 7</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName8">
+                                <label for="fieldFieldName8">Field Name 8</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName9">
+                                <label for="fieldFieldName9">Field Name 9</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName10">
+                                <label for="fieldFieldName10">Field Name 10</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName11">
+                                <label for="fieldFieldName11">Field Name 11</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName12">
+                                <label for="fieldFieldName12">Field Name 12</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName13">
+                                <label for="fieldFieldName13">Field Name 13</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName14">
+                                <label for="fieldFieldName14">Field Name 14</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName15">
+                                <label for="fieldFieldName15">Field Name 15</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName16">
+                                <label for="fieldFieldName16">Field Name 16</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName17">
+                                <label for="fieldFieldName17">Field Name 17</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName18">
+                                <label for="fieldFieldName18">Field Name 18</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName19">
+                                <label for="fieldFieldName19">Field Name 19</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName20">
+                                <label for="fieldFieldName20">Field Name 20</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName21">
+                                <label for="fieldFieldName21">Field Name 21</label>
+                            </li>
+                            <li>
+                                <input type="checkbox" id="fieldFieldName22">
+                                <label for="fieldFieldName22">Field Name 22</label>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="settingSubscriberEmail">
+                    <li>
+                        <h2>Subscriber Email</h2>
+                    </li>
+                    <li>
+                        <p>Which field should be used as the subscriber's email address in Campaign Monitor?</p>
+                        <div class="radioButtons">
+                            <ul>
+                                <li class="labelWidthVerySmall">
+                                    <input type="radio" id="subscriberEmail1" name="subscriberEmail" checked>
+                                    <label for="subscriberEmail1">
+                                        <p>Email</p>
+                                    </label>
+                                </li>
+                                <li class="labelWidthSmall">
+                                    <input type="radio" id="subscriberEmail2" name="subscriberEmail">
+                                    <label for="subscriberEmail2">
+                                        <p>Email Address 2</p>
+                                    </label>
+                                </li>
+                                <li class="labelWidthSmall">
+                                    <input type="radio" id="subscriberEmail3" name="subscriberEmail">
+                                    <label for="subscriberEmail3">
+                                        <p>Email Address 3</p>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <p>If two or more contacts share the same email address, how should they be synced in Campaign Monitor?</p>
+                        <div class="radioButtons">
+                            <ul>
+                                <li class="labelWidthVeryLarge">
+                                    <input type="radio" id="sameEmailSyncOneContact" name="sameEmailAddress" checked>
+                                    <label for="sameEmailSyncOneContact">
+                                        <p>Sync one contact per email address</p>
+                                        <p>The most recently modified contact will be synced to Campaign Monitor.</p>
+                                    </label>
+                                </li>
+                                <li class="labelWidthVeryLarge">
+                                    <input type="radio" id="sameEmailDoNotSync" name="sameEmailAddress">
+                                    <label for="sameEmailDoNotSync">
+                                        <p>Do not sync these contacts</p>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="settingSubmitButtons">
+                    <li></li>
+                    <li>
+                        <!-- Add "disabled" attribute to <button> when button is disabled -->
+                        <div class="buttons">
+                            <button type="submit" class="buttonPrimary">Save &amp; Sync</button>
+                        </div>
+                        <div class="buttons">
+                            <button type="submit" class="buttonLink">Disconnect from Campaign Monitor</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </section>
+    <!-- LOADING modal window below. Remove "display: none;" to reveal. -->
+    <div class="modal" style="display: none;">
+        <div>
+            <div class="icon iconLoading">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            </div>
+            </span>
+            <h1>Syncing...</h1>
+            <p>Your settings have been saved. Syncing may take several minutes. You will receive an email notification upon completion.</p>
+        </div>
+    </div>
+    <!-- SYNC COMPLETE modal window below. Remove "display: none;" to reveal. -->
+    <div class="modal" style="display: none;">
+        <div>
+            <svg class="icon iconCheck">
+                <polyline points="1,17 13,29 41,1" />
+            </svg>
+            <h1>Sync Complete</h1>
+            <div class="buttons">
+                <button type="submit" class="buttonPrimary">OK</button>
+            </div>
+        </div>
+    </div>
+    <!-- TOO MANY FIELDS modal window below. Remove "display: none;" to reveal. -->
+    <div class="modal" style="display: none;">
+        <div>
+            <svg class="icon iconAlert">
+                <path d="M41.027,30.089L41.027,30.089l-15-26.052
+				C25.164,2.538,23.971,2,22.5,2s-2.664,0.538-3.528,2.037l-15,26.052v0C3.181,31.465,3,32.639,3,34c0,2.209,1.791,4,4,4h31
+				c2.209,0,4-1.791,4-4C42,32.639,41.819,31.465,41.027,30.089z" />
+                <line x1="22.5" y1="11" x2="22.5" y2="24" />
+                <circle cx="22.5" cy="30.5" r="2.5" />
+            </svg>
+            <h1>Too Many Fields</h1>
+            <p>There is a limit to the number of fields that can be synced to Campaign Monitor. Please deselect <strong>3 fields</strong> and try again.</p>
+            <div class="buttons">
+                <button type="submit" class="buttonPrimary">OK</button>
+            </div>
+        </div>
+    </div>
+    <!-- DISCONNECT CONFIRMATION modal window below. Remove "display: none;" to reveal. -->
+    <div class="modal" style="display: none;">
+        <div>
+            <svg class="icon iconAlert">
+                <path d="M41.027,30.089L41.027,30.089l-15-26.052
+				C25.164,2.538,23.971,2,22.5,2s-2.664,0.538-3.528,2.037l-15,26.052v0C3.181,31.465,3,32.639,3,34c0,2.209,1.791,4,4,4h31
+				c2.209,0,4-1.791,4-4C42,32.639,41.819,31.465,41.027,30.089z" />
+                <line x1="22.5" y1="11" x2="22.5" y2="24" />
+                <circle cx="22.5" cy="30.5" r="2.5" />
+            </svg>
+            <h1>Confirm Disconnect</h1>
+            <p>Disconnecting from Campaign Monitor will reset all sync settings.</p>
+            <div class="buttons">
+                <button type="submit" class="buttonPrimary">Disconnect</button>
+                <button type="submit" class="buttonSecondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- CONNECTION ERROR modal window below. Remove "display: none;" to reveal. -->
+    <div class="modal" style="display: none;">
+        <div>
+            <svg class="icon iconAlert">
+                <path d="M41.027,30.089L41.027,30.089l-15-26.052
+				C25.164,2.538,23.971,2,22.5,2s-2.664,0.538-3.528,2.037l-15,26.052v0C3.181,31.465,3,32.639,3,34c0,2.209,1.791,4,4,4h31
+				c2.209,0,4-1.791,4-4C42,32.639,41.819,31.465,41.027,30.089z" />
+                <line x1="22.5" y1="11" x2="22.5" y2="24" />
+                <circle cx="22.5" cy="30.5" r="2.5" />
+            </svg>
+            <h1>Connection Error</h1>
+            <p>Unable to connect to Campaign Monitor. Please try again. If the problem persists, please contact <a href="mailto:support@campaignmonitor.com">support@campaignmonitor.com</a> for support.</p>
+            <div class="buttons">
+                <button type="submit" class="buttonPrimary">OK</button>
+            </div>
+        </div>
+    </div>
     <script src="../Scripts/configurationPage.js"></script>
 </body>
 </html>

@@ -1,18 +1,56 @@
 ﻿<!doctype html>
-
-<html lang="en">
+<html>
 <head>
-    <meta charset="utf-8">
-    <title>Campaign Monitor</title>
+    <meta charset="UTF-8">
+    <title>Campaign Monitor Sync Settings - Solution View</title>
+    <link href="styles/styles.css" rel="stylesheet" type="text/css">
 </head>
+<body class="solution">
+    <div>
 
-<body>
-    <div style="display:block; width:50%; margin:auto; text-align:center">
-        <h2>Campaign Monitor Sync Settings</h2>
-        <p>Lorem Ipsum</p>
-        <br />
-        <br />
-        <a href="#" onClick="window.open('configuration.html', 'Campaign Monitor Configuration', 'resizable,height=1100,width=1200,menubar=0,toolbar=0'); return false;">Manage Settings</a>
+        <h1>Campaign Monitor Sync Settings</h1>
+
+        <div class="iconIllustration">
+            <ul>
+                <li>
+                    <svg class="icon iconDynamics">
+                        <circle cx="51" cy="57" r="46" />
+                        <ellipse cx="51" cy="42.5" rx="10" ry="11.5" />
+                        <path d="M61.105,54c-4.913,0-6.166,3.546-9.883,3.546
+						c-0.065,0-0.141,0.036-0.222,0.091c-0.082-0.056-0.157-0.091-0.222-0.091c-3.717,0-4.97-3.546-9.883-3.546S32,59.217,32,65.653
+						v10.333c0,0,7.641,5.014,18.778,5.014c0.078,0,0.146-0.013,0.222-0.015C51.076,80.987,51.144,81,51.222,81
+						C62.359,81,70,75.986,70,75.986V65.653C70,59.217,66.018,54,61.105,54z" />
+                        <circle cx="51" cy="11" r="8" />
+                        <circle cx="91" cy="81" r="8" />
+                        <circle cx="11" cy="81" r="8" />
+                    </svg>
+                </li>
+                <li>
+                    <svg class="icon iconArrow">
+                        <polygon points="11,1.5 11,19.5 23,10.5 " />
+                        <rect x="1" y="7" width="11" height="7" />
+                    </svg>
+                </li>
+                <li>
+                    <svg class="icon iconCM">
+                        <path d="M110.242,2.68c-1.325-1.779-3.931-2.216-5.823-0.968L1.748,69.331
+						C2.501,70.333,3.756,71.005,5.172,71h101.642c2.31,0,4.187-1.755,4.187-3.936V4.875c-0.016-0.762-0.262-1.523-0.753-2.195" />
+                        <path d="M7.586,1.707C5.688,0.469,3.083,0.905,1.753,2.68
+						C1.251,3.347,1.01,4.113,1,4.865v62.31l48.879-37.646L7.586,1.707" />
+                    </svg>
+                </li>
+            </ul>
+        </div>
+
+        <p>Sync your contacts from Dynamics CRM to Campaign Monitor.</p>
+
+        <div class="buttons">
+            <!-- If there is an existing connection with CM, this button says "Manage Settings" instead. -->
+            <button type="submit" class="buttonPrimary" onClick="window.open('configuration.html', 'Campaign Monitor Configuration', 'resizable,height=1100,width=1200,menubar=0,toolbar=0'); return false;">Connect</button>
+        </div>
+
     </div>
 </body>
 </html>
+
+     

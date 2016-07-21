@@ -1,0 +1,854 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/* normalize.css v4.1.1 */
+progress,sub,sup{vertical-align:baseline}button,hr,input{overflow:visible}[type=checkbox],[type=radio],legend{box-sizing:border-box;padding:0}html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent;-webkit-text-decoration-skip:objects}a:active,a:hover{outline-width:0}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}b,strong{font-weight:bolder}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background-color:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}svg:not(:root){overflow:hidden}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}figure{margin:1em 40px}hr{box-sizing:content-box;height:0}button,input,select,textarea{font:inherit;margin:0}optgroup{font-weight:700}button,select{text-transform:none}[type=reset],[type=submit],button,html [type=button]{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:ButtonText dotted 1px}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{color:inherit;display:table;max-width:100%;white-space:normal}textarea{overflow:auto}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-cancel-button,[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-input-placeholder{color:inherit;opacity:.54}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}
+
+/* ========================= GENERAL STYLES ========================= */
+
+* {
+	box-sizing: border-box;
+	font-family: "Helvetica Neue",arial,Helvetica,sans-serif;
+	font-weight: 400;
+	font-size: 12px;
+	color: #444;
+}
+
+body {
+	margin: 0;
+	padding: 0 0 50px;
+	background: #f9f9f9;
+}
+
+.noScroll {
+	overflow: hidden;
+}
+
+ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+header {
+	height: 54px;
+	background: #323C4F;
+}
+
+h1 {
+	margin: 0;
+	font-size: 28px;
+	font-weight: 200;
+}
+
+h2 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+h3 {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 700;
+	color: #000;
+}
+
+p {
+	margin: 0;
+}
+
+label {
+	display: block;
+}
+
+label,
+input[type=radio],
+input[type=checkbox],
+select,
+button {
+	outline: 0;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* ========================= TEXT FIELDS ========================= */
+
+input[type=text] {
+	padding: 0 0 0 8px;
+	height: 26px;
+	width: 300px;
+	border: 1px solid #d3d3d3;
+	border-radius: 3px;
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.06);
+}
+
+input[type=text]:hover {
+	border-color: #bbb;
+}
+
+input[type=text]::-webkit-input-placeholder {
+	font-style: italic;
+	color: #888;
+}
+
+input[type=text]:-moz-placeholder {
+	font-style: italic;
+	color: #888;
+}
+
+input[type=text]::-moz-placeholder {
+	font-style: italic;
+	color: #888;
+}
+
+input[type=text]:-ms-input-placeholder {  
+	font-style: italic;
+	color: #888;
+}
+
+/* ========================= RADIO BUTTONS ========================= */
+
+input[type=radio] { /* Makes the radio button larger */
+	height: 16px;
+	width: 16px;
+	font-size: 16px;
+}
+
+/* ========================= SELECT DROP DOWNS ========================= */
+
+.dropDown {
+	display: inline-block;
+	position: relative;
+}
+
+.dropDown:after {
+	content: '';
+	position: absolute;
+	top: 11px;
+	right: 7px;
+	width: 0;
+	height: 0;
+	border-color: #9b9b9b transparent transparent;
+	border-style: solid;
+	border-width: 5px;
+}
+
+select {
+	position: relative;
+	width: 300px;
+   height: 26px;
+   padding: 0 30px 2px 8px;
+   overflow: hidden;
+	background: -moz-linear-gradient(top, transparent 0%, rgba(0,0,0,.06) 100%);
+	background: -webkit-linear-gradient(top, transparent 0%, rgba(0,0,0,.06) 100%);
+	background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.06) 100%);
+	border: 1px solid #c6c6c6;
+   border-radius: 3px;
+	outline: 0;
+   font-size: 12px;
+   line-height: 24px;
+	color: #444;
+   -webkit-appearance: none;
+   appearance: none;
+	z-index: 2;
+}
+
+select:hover {
+	background: -moz-linear-gradient(top, transparent 0%, rgba(0,0,0,.04) 100%);
+	background: -webkit-linear-gradient(top, transparent 0%, rgba(0,0,0,.04) 100%);
+	background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.04) 100%);
+	border-color: #bbb;
+}
+
+.Grid_Rows select:disabled:hover {
+	border-color: transparent;
+	background: #e0f0ff;
+	cursor: default;
+}
+
+/* Drop down arrow in IE */
+select::-ms-expand {
+    display: none;
+}
+
+/* Selected option background/text color in IE */
+select::-ms-value {
+	background: transparent;
+	color: #444;
+}
+
+/* Focused dotted border removal in Firefox */
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+
+/* Removes default browser styling in Firefox */
+select {
+    -moz-appearance: none;
+}
+
+/* ========================= BODY CONTAINER ========================= */
+
+section {
+	padding: 25px 0 20px;
+	background: #fff;
+	box-shadow: 0 3px 5px rgba(0,0,0,.05);
+}
+
+section > div {
+	margin: 0 auto;
+	max-width: 1084px;
+	padding: 0 30px;
+}
+
+/* ========================= SETTINGS SHELL ========================= */
+
+.settings {
+	display: table;
+	margin-top: 40px;
+	width: 100%;
+}
+
+.settings > ul,
+#advancedSettings + .settings .settingClient,
+#advancedSettings + .settings .settingContactList,
+#advancedSettings + .settings .settingAdvancedToggle,
+#advancedSettings + .settings .settingSubmitButtons,
+#advancedSettings:checked + .settings > ul {
+	display: table-row;
+}
+
+#advancedSettings,
+#advancedSettings + .settings > ul {
+	display: none;
+}
+
+.settings > ul > li {
+	position: relative;
+	display: table-cell;
+	padding-bottom: 37px;
+	vertical-align: top;
+}
+
+.settings > ul > li:first-child {
+	width: 175px;
+	min-width: 175px;
+}
+
+.settings > ul > li + li {
+	padding-top: 2px;
+}
+
+/* ========================= RADIO BUTTON OPTIONS ========================= */
+
+.radioButtons {
+	display: table;
+}
+
+p + .radioButtons {
+	margin-top: 12px;
+}
+
+div + .radioButtons {
+	margin-top: 20px;
+}
+
+.radioButtons + p {
+	margin-top: 36px;
+}
+
+.radioButtons ul {
+	display: table-row;
+}
+
+.radioButtons li {
+	display: table-cell;
+	position: relative;
+	vertical-align: top;
+}
+
+.radioButtons .labelWidthVerySmall {
+	width: 85px;
+}
+
+.radioButtons .labelWidthSmall {
+	width: 135px;
+}
+
+.radioButtons .labelWidthMedium {
+	width: 165px;
+}
+
+.radioButtons .labelWidthLarge {
+	width: 235px;
+}
+
+.radioButtons .labelWidthVeryLarge {
+	width: 265px;
+}
+
+.radioButtons input[type=radio] {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.radioButtons label {
+	padding-left: 22px;
+}
+
+.radioButtons p {
+	font-size: 12px;
+	line-height: 17px;
+}
+
+.radioButtons p + p {
+	margin-top: 4px;
+	font-style: italic;
+	line-height: 14px;
+}
+
+.radioButtons input:checked + label p {
+	font-weight: 700;
+	color: #000;
+	line-height: 16px; /* Fix for SOME browser's line-height issues with font weights for custom fonts. */
+}
+
+.radioButtons input:checked + label p + p {
+	padding-top: 1px;
+	font-weight: 400;
+	color: #444;
+	line-height: 14px;
+}
+
+.radioButtons div {
+	display: none;
+	position: absolute;
+	top: 30px;
+	left: 0;
+}
+
+.radioButtons input:checked ~ div {
+	display: block;
+}
+
+.radioButtons li + li input:checked ~ div {
+	left: -165px;
+}
+
+/* ----------- Contact List Radio Buttons ----------- */
+
+.settingContactList > li > input {
+	position: absolute;
+	top: 2px;
+	left: 0;
+}
+
+.settingContactList > li > input + input {
+	left: 165px;
+}
+
+.settingContactList .dropDown,
+.settingContactList .textField,
+.settingContactList div + .radioButtons {
+	display: none;
+}
+
+#syncToExistingList:checked ~ .dropDown,
+#syncToNewList:checked ~ .textField {
+	display: inline-block;
+}
+
+#syncToExistingList:checked ~ .dropDown,
+#syncToNewList:checked ~ .textField {
+	margin-top: 12px;
+}
+
+#syncToNewList:checked ~ .radioButtons {
+	display: table;
+}
+
+
+/* ========================= ADVANCED SETTINGS TOGGLE ========================= */
+
+.settingAdvancedToggle label {
+	display: inline-block;
+	position: relative;
+	padding-right: 20px;
+	color: #19A9E5;
+	text-decoration: underline;
+	line-height: 30px;
+}
+
+.settingAdvancedToggle label:hover {
+	text-decoration: none;
+}
+
+.settingAdvancedToggle label:after {
+	content: '';
+	position: absolute;
+	top: 13px;
+	right: 4px;
+	width: 0;
+	height: 0;
+	border-color: #19A9E5 transparent transparent;
+	border-style: solid;
+	border-width: 5px;
+}
+
+#advancedSettings:checked + .settings .settingAdvancedToggle label:before {
+	content: 'Hide ';
+}
+
+#advancedSettings:checked + .settings .settingAdvancedToggle label:after {
+	transform: scaleY(-1) translateY(5px);
+}
+
+/* ========================= CHECKBOX COLUMNS ========================= */
+
+.columns {
+	margin-top: 8px;
+	-ms-column-count: 5;
+	-moz-column-count: 5;
+	-webkit-column-count: 5;
+	column-count: 5;
+	-ms-column-gap: 20px;
+	-moz-column-gap: 20px;
+	-webkit-column-gap: 20px;
+	column-gap: 20px;
+}
+
+.columns + h3 {
+	margin-top: 30px;
+}
+
+.columns li {
+	position: relative;
+	-ms-column-break-inside: avoid;
+	-moz-column-break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+	column-break-inside: avoid;
+	-ms-page-break-inside: avoid;
+	-moz-page-break-inside: avoid;
+	-webkit-page-break-inside: avoid;
+	page-break-inside: avoid;
+	-ms-break-inside: avoid;
+	-moz-break-inside: avoid;
+	-webkit-break-inside: avoid;
+	break-inside: avoid;
+}
+
+.columns input {
+	position: absolute;
+	top: 1px;
+	left: 0;
+	width: 16px;
+	height: 16px;
+	font-size: 16px;
+}
+
+.columns label {
+	padding: 2px 0 2px 22px;
+	line-height: 14px;
+}
+
+/* ========================= SUBMIT BUTTON ========================= */
+
+button + button {
+	margin-left: 16px;
+}
+
+.buttons + .buttons {
+	margin-top: 25px;
+}
+
+button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	height: 38px;
+	min-width: 140px;
+	padding: 0 20px 3px;
+	border-radius: 3px;
+	font-size: 16px;
+}
+
+.buttonPrimary {
+	background-image: -moz-linear-gradient(top, rgba(66,143,51,0) 0%, rgba(66,143,51,1) 100%);
+	background-image: -webkit-linear-gradient(top, rgba(66,143,51,0) 0%, rgba(66,143,51,1) 100%);
+	background-image: linear-gradient(to bottom, rgba(66,143,51,0) 0%, rgba(66,143,51,1) 100%);
+	background-color: #6aae53;
+	border: 1px solid rgba(0,0,0,.2);
+	font-weight: 700;
+	color: #fff;
+	box-shadow: inset 0 1px 1px rgba(255,255,255,.4);
+	text-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+
+.buttonSecondary {
+	background-image: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, transparent 100%);
+	background-image: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, transparent 100%);
+	background-image: linear-gradient(to bottom, rgba(255,255,255,1) 0%, transparent 100%);
+	background-color: #f1f1f1;
+	border: 1px solid rgba(0,0,0,.2);
+	font-weight: 500;
+	color: #666;
+	box-shadow: inset 0 1px 2px rgba(255,255,255,.4);
+}
+
+.buttonLink {
+	padding: 0;
+	background: none;
+	border: 0;
+	font-size: 12px;
+	color: #19A9E5;
+	text-decoration: underline;
+}
+
+.buttonPrimary:hover {
+	background-color: #63b945;
+}
+
+.buttonSecondary:hover {
+	background-color: #e8e8e8;
+}
+
+.buttonLink:hover {
+	text-decoration: none;
+}
+
+button:active {
+	position: relative;
+	top: 1px;
+}
+
+.buttonLink:active {
+	position: static;
+	top: 0;
+}
+
+.buttonPrimary:active {
+	background-image: -moz-linear-gradient(top, rgba(66,143,51,1) 0%, rgba(66,143,51,0) 100%);
+	background-image: -webkit-linear-gradient(top, rgba(66,143,51,1) 0%, rgba(66,143,51,0) 100%);
+	background-image: linear-gradient(to bottom, rgba(66,143,51,1) 0%, rgba(66,143,51,0) 100%);
+	background-color: #6aae53;
+	box-shadow: none;
+	text-shadow: none;
+}
+
+.buttonSecondary:active {
+	background-image: -moz-linear-gradient(top, transparent 0%, rgba(255,255,255,.5) 100%);
+	background-image: -webkit-linear-gradient(top, transparent 0%, rgba(255,255,255,.5) 100%);
+	background-image: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,.5) 100%);
+	background-color: #f1f1f1;
+	box-shadow: none;
+}
+
+button:disabled,
+button:disabled:hover,
+button:disabled:active {
+	top: 0;
+	background: #fff;
+	border: 1px solid #d8d8d8;
+	color: #ccc;
+	box-shadow: none;
+	text-shadow: none;
+	cursor: default;
+}
+
+/* ========================= SOLUTION ========================= */
+
+.solution {
+	background: #fff;
+}
+
+.solution > div {
+	margin: 0 auto;
+	max-width: 500px;
+	min-width: 500px;
+	padding: 0 30px;
+	text-align: center;
+}
+
+.iconIllustration {
+	display: table;
+	width: 100%;
+	margin-top: 40px;
+}
+
+.iconIllustration ul {
+	display: table-row;
+}
+
+.iconIllustration li {
+	display: table-cell;
+	width: 50%;
+	vertical-align: middle;
+}
+
+.iconIllustration li:first-child {
+	text-align: right;
+	padding-right: 40px;
+}
+
+.iconIllustration li:nth-child(2) {
+	width: 30px;
+	padding-top: 10px;
+}
+
+.iconIllustration li:nth-child(3) {
+	text-align: left;
+	padding: 5px 0 0 45px;
+}
+
+.iconDynamics {
+	width: 102px;
+	height: 106px;
+	fill: #d4d4d4;
+}
+
+.iconDynamics circle {
+	fill: none;
+	stroke: #d4d4d4;
+	stroke-width: 4px;
+}
+
+.iconDynamics path ~ circle {
+	fill: #fff;
+}
+
+.iconArrow {
+	width: 24px;
+	height: 21px;
+	fill: #19A9E5;
+}
+
+.iconCM {
+	width: 112px;
+	height: 72px;
+	fill: #d4d4d4;
+}
+
+.solution p {
+	max-width: 260px;
+	margin: 40px auto 0;
+	font-size: 14px;
+	color: #888;
+	line-height: 18px;
+}
+
+.solution .buttons {
+	margin-top: 50px;
+}
+
+.solution button {
+	padding-left: 30px;
+	padding-right: 30px;
+}
+
+/* ========================= MODAL ========================= */
+
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(221,221,221,.8);
+	text-align: center;
+	z-index: 100;
+}
+
+.modal > div {
+	display: inline-block;
+	width: 380px;
+	min-height: 208px;
+	margin: 120px auto 0;
+	padding: 22px 30px 30px;
+	background: #fff;
+	border-radius: 10px;
+}
+
+.modal h1 {
+	margin-top: 2px;
+}
+
+.modal p {
+	margin-top: 14px;
+	font-size: 14px;
+	line-height: 18px;
+	color: #888;
+}
+
+.modal p strong {
+	font-size: 14px;
+	color: #444;
+	white-space: nowrap;
+}
+
+.modal .buttons {
+	margin-top: 22px;
+}
+
+.modal a {
+	font-size: 14px;
+	color: #19A9E5;
+}
+
+.modal a:hover {
+	text-decoration: none;
+}
+
+.iconCheck {
+	height: 32px;
+	width: 42px;
+	margin: 6px 0 10px;
+	fill: none;
+	stroke: #47B347;
+	stroke-width: 3px;
+}
+
+.iconAlert {
+	height: 40px;
+	width: 45px;
+	margin: 0 0 10px;
+}
+
+.iconAlert path,
+.iconAlert line {
+	fill: none;
+	stroke: #f00;
+}
+
+.iconAlert path {
+	stroke-width: 2px;
+}
+
+.iconAlert line {
+	stroke-width: 3px;
+	stroke-linecap: round;
+}
+
+.iconAlert circle {
+	fill: #f00;
+}
+
+@-webkit-keyframes animationLoading {
+	0% {opacity: 1}
+	100% {opacity: 0}
+}
+
+@keyframes animationLoading {
+	0% {opacity: 1}
+	100% {opacity: 0}
+}
+
+.iconLoading {
+	display: inline-block;
+	position: relative;
+	background: none;
+	width: 48px;
+	height: 48px;
+}
+
+.iconLoading i {
+	display: block;
+	position: absolute;
+	top: 19.68px;
+	left: 22.32px;
+	width: 3.36px;
+	height: 8.64px;
+	background: #19A9E5;
+	border-radius: 0;
+	-webkit-animation: animationLoading 1s linear infinite;
+	animation: animationLoading 1s linear infinite;
+}
+
+.iconLoading i:nth-child(1) {
+	-webkit-transform: rotate(0deg) translate(0,-14.4px);
+	transform: rotate(0deg) translate(0,-14.4px);
+	-webkit-animation-delay: -0.5s;
+	animation-delay: -0.5s;
+}
+
+.iconLoading i:nth-child(2) {
+	-webkit-transform: rotate(30deg) translate(0,-14.4px);
+	transform: rotate(30deg) translate(0,-14.4px);
+	-webkit-animation-delay: -0.4166666666666667s;
+	animation-delay: -0.4166666666666667s;
+}
+
+.iconLoading i:nth-child(3) {
+	-webkit-transform: rotate(60deg) translate(0,-14.4px);
+	transform: rotate(60deg) translate(0,-14.4px);
+	-webkit-animation-delay: -0.33333333333333337s;
+	animation-delay: -0.33333333333333337s;
+}
+
+.iconLoading i:nth-child(4) {
+	-webkit-transform: rotate(90deg) translate(0,-14.4px);
+	transform: rotate(90deg) translate(0,-14.4px);
+	-webkit-animation-delay: -0.25s;
+	animation-delay: -0.25s;
+}
+
+.iconLoading i:nth-child(5) {
+	-webkit-transform: rotate(120deg) translate(0,-14.4px);
+	transform: rotate(120deg) translate(0,-14.4px);
+	-webkit-animation-delay: -0.16666666666666669s;
+	animation-delay: -0.16666666666666669s;
+}
+
+.iconLoading i:nth-child(6) {
+	-webkit-transform: rotate(150deg) translate(0,-14.4px);
+	transform: rotate(150deg) translate(0,-14.4px);
+	-webkit-animation-delay: -0.08333333333333331s;
+	animation-delay: -0.08333333333333331s;
+}
+
+.iconLoading i:nth-child(7) {
+	-webkit-transform: rotate(180deg) translate(0,-14.4px);
+	transform: rotate(180deg) translate(0,-14.4px);
+	-webkit-animation-delay: 0s;
+	animation-delay: 0s;
+}
+
+.iconLoading i:nth-child(8) {
+	-webkit-transform: rotate(210deg) translate(0,-14.4px);
+	transform: rotate(210deg) translate(0,-14.4px);
+	-webkit-animation-delay: 0.08333333333333337s;
+	animation-delay: 0.08333333333333337s;
+}
+
+.iconLoading i:nth-child(9) {
+	-webkit-transform: rotate(240deg) translate(0,-14.4px);
+	transform: rotate(240deg) translate(0,-14.4px);
+	-webkit-animation-delay: 0.16666666666666663s;
+	animation-delay: 0.16666666666666663s;
+}
+
+.iconLoading i:nth-child(10) {
+	-webkit-transform: rotate(270deg) translate(0,-14.4px);
+	transform: rotate(270deg) translate(0,-14.4px);
+	-webkit-animation-delay: 0.25s;
+	animation-delay: 0.25s;
+}
+
+.iconLoading i:nth-child(11) {
+	-webkit-transform: rotate(300deg) translate(0,-14.4px);
+	transform: rotate(300deg) translate(0,-14.4px);
+	-webkit-animation-delay: 0.33333333333333337s;
+	animation-delay: 0.33333333333333337s;
+}
+
+.iconLoading i:nth-child(12) {
+	-webkit-transform: rotate(330deg) translate(0,-14.4px);
+	transform: rotate(330deg) translate(0,-14.4px);
+	-webkit-animation-delay: 0.41666666666666663s;
+	animation-delay: 0.41666666666666663s;
+}
