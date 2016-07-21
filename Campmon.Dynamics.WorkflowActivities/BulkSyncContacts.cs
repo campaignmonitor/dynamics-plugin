@@ -14,14 +14,15 @@ namespace Campmon.Dynamics.WorkflowActivities
     {
         protected override void Execute(CodeActivityContext activityContext)
         {
+            var trace = activityContext.GetExtension<ITracingService>();
+            trace.Trace("Starting BulkSyncContacts activity.");
+
             var workflowContext = activityContext.GetExtension<IWorkflowContext>();
             var serviceFactory = activityContext.GetExtension<IOrganizationServiceFactory>();
             var orgService = serviceFactory.CreateOrganizationService(null);
-            var trace = activityContext.GetExtension<ITracingService>();
-
-            trace.Trace("Starting BulkSyncContacts activity.");
 
 
+            SyncCompleted.Set(activityContext, true);
 
             trace.Trace("BulkSyncContacts activity finished.");
         }
