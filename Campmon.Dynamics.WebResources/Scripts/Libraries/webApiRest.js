@@ -31,6 +31,10 @@ webAPI.REST = {
         if (typeof Xrm != "undefined") { // Form
             return Xrm.Page.context;
         }
+        else if(typeof window.opener != "undefined") //Opened for in new window
+        {
+            return window.opener.Xrm.Page.context;
+        }
         else if (typeof GetGlobalContext != 'undefined') { // Web resource
             return GetGlobalContext();
         }
@@ -92,6 +96,7 @@ webAPI.REST.executeBoundAction = function (type, id, actionName, actionParameter
     return deferred.promise;
 };
 
+
 webAPI.REST.executeUnboundAction = function (actionName, actionParameters, extraHeaders) {
 
     var deferred = Q.defer();
@@ -121,6 +126,11 @@ webAPI.REST.executeUnboundAction = function (actionName, actionParameters, extra
 
     return deferred.promise;
 };
+
+//Aliased with default extraHeaders optional
+webAPI.executeAction = function (actionName, actionParameters) {
+    return webAPI.REST.executeUnboundAction(actionName, actionParameters, null)
+}
 
 webAPI.REST.executeBoundFunction = function (type, id, functionString, extraHeaders) {
 

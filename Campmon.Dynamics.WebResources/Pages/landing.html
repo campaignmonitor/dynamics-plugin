@@ -46,7 +46,7 @@
 
         <div class="buttons">
             <!-- If there is an existing connection with CM, this button says "Manage Settings" instead. -->
-            <button type="submit" class="buttonPrimary" onClick="window.open('configuration.html', 'Campaign Monitor Configuration', 'resizable,height=1100,width=1200,menubar=0,toolbar=0'); return false;">Connect</button>
+            <button type="submit" class="buttonPrimary" onClick="window.parent.Xrm.Utility.openWebResource('campmon_/Pages/configuration.html', null, 1200, 1100)">Connect</button>
         </div>
 
     </div>
