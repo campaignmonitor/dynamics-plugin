@@ -80,7 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContactSyncPlugin.cs" />
     <Compile Include="ExecuteOperationPlugin.cs" />
+    <Compile Include="Logic\ContactSyncLogic.cs" />
     <Compile Include="Operations\GetClientList.cs" />
     <Compile Include="Operations\IOperation.cs" />
     <Compile Include="Operations\LoadMetadataOperation.cs" />
