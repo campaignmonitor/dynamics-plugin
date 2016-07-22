@@ -66,12 +66,27 @@ namespace Campmon.Dynamics.Plugins.Logic
 
         internal Entity RetrieveSyncFilter(Guid viewID)
         {
-            return null;
+            QueryExpression syncFilterQuery = new QueryExpression("view");
+            ConditionExpression queryIdCondition = new ConditionExpression("savedqueryid", ConditionOperator.Equal, viewID);
+            syncFilterQuery.Criteria.AddCondition(queryIdCondition);
+
+            syncFilterQuery.ColumnSet.AddColumn("fetchxml");
+
+            var syncFilter = _orgService.RetrieveMultiple(syncFilterQuery).Entities.FirstOrDefault();
+            return syncFilter;
         }
 
         internal bool TestContactFitsFilter(string fetchXml, Guid contactID)
         {
-            return false;        
+            var conversionRequest = new FetchXmlToQueryExpressionRequest { FetchXml = fetchXml };
+            var conversionResponse = (FetchXmlToQueryExpressionResponse)_orgService.Execute(conversionRequest);
+
+            QueryExpression filterQuery = conversionResponse.Query;
+            ConditionExpression contactCondition = new ConditionExpression("contactid", ConditionOperator.Equal, contactID);
+            filterQuery.Criteria.AddCondition(contactCondition);
+
+            var contacts = _orgService.RetrieveMultiple(filterQuery).Entities;
+            return contacts.Count >= 1;
         }
 
         internal string SerializeDataToSync(Entity target, CampaignMonitorConfiguration config)
