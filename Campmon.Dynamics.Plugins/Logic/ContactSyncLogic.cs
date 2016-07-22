@@ -46,9 +46,25 @@ namespace Campmon.Dynamics.Plugins.Logic
             {
                 _tracer.Trace("Contact does not fit the filter.");
                 return;
-            }            
+            }
 
             // 5. If this is an update operation, check that the plugin target has modified attributes that are included in the campmon_syncfields data. If there are not any sync fields in the target, exit the plugin.
+
+            // this is ugly; it should work to just test the return string of serialize method and if == {} then no fields are updated and don't sync?
+/*          if (isUpdate)
+            {
+                var st = new List<String>();
+                // add fields to a collection
+                foreach (var field in campaignMonitorConfig.SyncFields)
+                {
+                    if (target.Attributes.Contains(field))
+                    {
+                        st.Add(field);
+                    }
+                }
+
+                if (st.Count <= 0) return;
+            }*/
 
             /*
                 6. Create a campmon_message record with the following data:
@@ -58,6 +74,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             var syncMessage = new Entity("campmon_message");
             var syncData = SerializeDataToSync(target, campaignMonitorConfig);
 
+            if (syncData == "{}") { return; }
 
             syncMessage["campmon_sdkmessage"] = isUpdate ? "update" : "create";
             syncMessage["campmon_data"] = syncData;
@@ -91,7 +108,58 @@ namespace Campmon.Dynamics.Plugins.Logic
 
         internal string SerializeDataToSync(Entity target, CampaignMonitorConfiguration config)
         {
-            return string.Empty;
+            /*
+                   7. To serialize the sync data, create a single object with each field schema name as the property with its associated value. Use the following rules to convert data:
+                       • To transform Lookup and Option Set fields, use the text label and send as text
+                       • To transform date fields, send as date
+                       • To transform numeric fields, send as a number
+                       • For any other fields, send as text
+               */
+            var syncData = "{";
+            foreach (var field in config.SyncFields)
+            {
+                if (!target.Attributes.Contains(field))
+                {
+                    continue;
+                }
+
+                if (target.Attributes[field].GetType() == typeof(EntityReference))
+                {
+                    var refr = (EntityReference)target.Attributes[field];
+                    syncData += string.Format("{0}:\"{1}\",", field, refr.Name);
+                }
+                else if (target.Attributes[field].GetType() == typeof(OptionSetValue))
+                {
+                    var opst = (OptionSetValue)target.Attributes[field];
+                    syncData += string.Format("{0}:\"{1}\",", field, opst.ToString());
+                }
+                else if (target.Attributes[field].GetType() == typeof(DateTime))
+                {
+                    var date = (DateTime)target.Attributes[field];
+                    syncData += string.Format("{0}:{1},", field, date.ToLongDateString()); //?
+                }
+                else if (IsNumeric(target.Attributes[field]))
+                {
+                    syncData += string.Format("{0}:{1},", field, target.Attributes[field].ToString());
+                }
+                else
+                {
+                    // quotes around {1} to signify string val
+                    syncData += string.Format("{0}:\"{1}\",", field, target.Attributes[field].ToString());
+                }
+            }
+
+            syncData += "}";
+
+            return syncData;
         }
-    }
+
+        public static bool IsNumeric(object Expression)
+        {
+            double retNum;
+
+            bool isNum = Double.TryParse(Convert.ToString(Expression), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out retNum);
+            return isNum;
+        }
+    }    
 }
