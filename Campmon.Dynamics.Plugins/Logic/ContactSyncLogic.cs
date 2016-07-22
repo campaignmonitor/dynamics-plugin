@@ -29,7 +29,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             // 1. Retrieve the Campaign Monitor Configuration record. If it does not exist or is missing access token or client id, exit the plugin.
             ConfigurationService configService = new ConfigurationService(_orgService);
-            CampaignMonitorConfiguration campaignMonitorConfig = configService.LoadConfig();
+            CampaignMonitorConfiguration campaignMonitorConfig = configService.LoadConfig();            
             if (campaignMonitorConfig == null ||
                     campaignMonitorConfig.AccessToken == null || campaignMonitorConfig.ClientId == null)
             {
