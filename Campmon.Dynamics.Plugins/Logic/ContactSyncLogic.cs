@@ -5,6 +5,7 @@ using Microsoft.Xrm.Sdk.Query;
 using System.Linq;
 using Microsoft.Crm.Sdk.Messages;
 using Newtonsoft.Json;
+using createsend_dotnet;
 
 namespace Campmon.Dynamics.Plugins.Logic
 {
@@ -107,10 +108,10 @@ namespace Campmon.Dynamics.Plugins.Logic
             //  field schema name as the property with its associated value.
 
             // Edit 7/25: Upon inspection of the createsend API:
-            //      It would be best to serialize into an array of objects where each object has a Key and Value property
+            //      It would be best to serialize into JSON array of objects from the CM API
             //      - This will also be a lot easier when deserializing/editing in SendMessagePlugin
 
-            var keyValueList = new List<KeyValuePair<string, object>>();
+            var fieldList = new List<SubscriberCustomField>();         
 
             foreach (var field in config.SyncFields)
             {
@@ -123,33 +124,33 @@ namespace Campmon.Dynamics.Plugins.Logic
                 {
                     // To transform Lookup and Option Set fields, use the text label and send as text
                     var refr = (EntityReference)target[field];
-                    keyValueList.Add(new KeyValuePair<string, object>(field, refr.Name));
+                    fieldList.Add(new SubscriberCustomField { Key = field, Value = refr.Name });
                 }
                 else if (target[field].GetType() == typeof(OptionSetValue))
                 {
                     var opst = (OptionSetValue)target[field];
-                    keyValueList.Add(new KeyValuePair<string, object>(field, opst.ToString()));                    
+                    fieldList.Add(new SubscriberCustomField { Key = field, Value = opst.ToString() });
                 }
                 else if (target[field].GetType() == typeof(DateTime))
                 {
                     // To transform date fields, send as date
                     var date = (DateTime)target[field];
-                    keyValueList.Add(new KeyValuePair<string, object>(field, date));                    
+                    fieldList.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/mm/dd") });
                 }
                 else if (IsNumeric(target[field]))
                 {
                     // To transform numeric fields, send as number
-                    keyValueList.Add(new KeyValuePair<string, object>(field, target[field])); 
+                    fieldList.Add(new SubscriberCustomField { Key = field, Value = target[field].ToString() });                    
                 }
                 else
                 {
                     // For any other fields, send as text
-                    keyValueList.Add(new KeyValuePair<string, object>(field, target[field].ToString()));                    
+                    fieldList.Add(new SubscriberCustomField { Key = field, Value = target[field].ToString() });
                 }
             }
 
-            return keyValueList.Count > 0 
-                ? JsonConvert.SerializeObject(keyValueList) 
+            return fieldList.Count > 0 
+                ? JsonConvert.SerializeObject(fieldList) 
                 : string.Empty;            
         }
 
