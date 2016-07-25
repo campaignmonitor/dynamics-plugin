@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using System.Linq;
-using Campmon.Dynamics;
 using Microsoft.Crm.Sdk.Messages;
+using Newtonsoft.Json;
 
 namespace Campmon.Dynamics.Plugins.Logic
 {
@@ -55,7 +55,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             {
                 _tracer.Trace("Contact does not fit the filter.");
                 return;
-            }           
+            }
 
             /*
                 Create a campmon_message record with the following data:
@@ -66,7 +66,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             var syncData = SerializeDataToSync(target, campaignMonitorConfig);
 
             // If this is an update operation, check that the plugin target has modified attributes that are included in the campmon_syncfields data. If there are not any sync fields in the target, exit the plugin.
-            if (syncData == "{}")
+            if (string.IsNullOrWhiteSpace(syncData))
             {
                 return;
             }
@@ -106,52 +106,56 @@ namespace Campmon.Dynamics.Plugins.Logic
             //  To serialize the sync data, create a single object with each 
             //  field schema name as the property with its associated value.
 
-            var syncData = "{";
+            // Edit 7/25: Upon inspection of the createsend API:
+            //      It would be best to serialize into an array of objects where each object has a Key and Value property
+            //      - This will also be a lot easier when deserializing/editing in SendMessagePlugin
+
+            var keyValueList = new List<KeyValuePair<string, object>>();
+
             foreach (var field in config.SyncFields)
             {
                 if (!target.Attributes.Contains(field))
                 {
                     continue;
                 }
-                
-                if (target.Attributes[field].GetType() == typeof(EntityReference))
+
+                if (target[field].GetType() == typeof(EntityReference))
                 {
                     // To transform Lookup and Option Set fields, use the text label and send as text
-                    var refr = (EntityReference)target.Attributes[field];
-                    syncData += string.Format("{0}:\"{1}\",", field, refr.Name);
+                    var refr = (EntityReference)target[field];
+                    keyValueList.Add(new KeyValuePair<string, object>(field, refr.Name));
                 }
-                else if (target.Attributes[field].GetType() == typeof(OptionSetValue))
+                else if (target[field].GetType() == typeof(OptionSetValue))
                 {
-                    var opst = (OptionSetValue)target.Attributes[field];
-                    syncData += string.Format("{0}:\"{1}\",", field, opst.ToString());
+                    var opst = (OptionSetValue)target[field];
+                    keyValueList.Add(new KeyValuePair<string, object>(field, opst.ToString()));                    
                 }
-                else if (target.Attributes[field].GetType() == typeof(DateTime))
+                else if (target[field].GetType() == typeof(DateTime))
                 {
                     // To transform date fields, send as date
-                    var date = (DateTime)target.Attributes[field];
-                    syncData += string.Format("{0}:{1},", field, date.ToLongDateString()); //? or \Date(#)\?
+                    var date = (DateTime)target[field];
+                    keyValueList.Add(new KeyValuePair<string, object>(field, date));                    
                 }
-                else if (IsNumeric(target.Attributes[field]))
+                else if (IsNumeric(target[field]))
                 {
-                    // To transform numeric fields, send as a number
-                    syncData += string.Format("{0}:{1},", field, target.Attributes[field].ToString());
+                    // To transform numeric fields, send as number
+                    keyValueList.Add(new KeyValuePair<string, object>(field, target[field])); 
                 }
                 else
                 {
                     // For any other fields, send as text
-                    syncData += string.Format("{0}:\"{1}\",", field, target.Attributes[field].ToString());
+                    keyValueList.Add(new KeyValuePair<string, object>(field, target[field].ToString()));                    
                 }
             }
 
-            syncData += "}";
-
-            return syncData;
+            return keyValueList.Count > 0 
+                ? JsonConvert.SerializeObject(keyValueList) 
+                : string.Empty;            
         }
 
         public static bool IsNumeric(object Expression)
         {
             double retNum;
-
             bool isNum = Double.TryParse(Convert.ToString(Expression), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out retNum);
             return isNum;
         }
