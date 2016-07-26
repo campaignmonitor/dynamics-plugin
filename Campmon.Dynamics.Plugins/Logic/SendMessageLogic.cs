@@ -5,7 +5,7 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using createsend_dotnet;
 using Newtonsoft.Json;
-using Microsoft.Xrm.Sdk.Query;
+using Campmon.Dynamics.Logic;
 
 namespace Campmon.Dynamics.Plugins.Logic
 {
@@ -24,7 +24,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             ConfigurationService configService = new ConfigurationService(orgService);
             _campaignMonitorConfig = configService.LoadConfig();
-            _authDetails = new ApiKeyAuthenticationDetails(_campaignMonitorConfig.AccessToken);
+            _authDetails = SharedLogic.GetAuthentication(_campaignMonitorConfig);
         }
 
         public void SendMessage(Entity target)
@@ -37,27 +37,26 @@ namespace Campmon.Dynamics.Plugins.Logic
             // if yes : set campmon_error on message to "Duplicate email"
             if (!_campaignMonitorConfig.SyncDuplicateEmails)
             {
-                try
+                var contactEmail = contactData.Where(x => x.Key == emailField).FirstOrDefault();
+                if (contactEmail == null)
                 {
-                    if (ContainsDuplicateEmail(emailField, contactData))
-                    {
-                        target["campmon_error"] = "Duplicate email";
-                        _orgService.Update(target);
-                        return;
-                    }
+                    target["campmon_error"] = "The email field to sync was not found within the data for this message.";
+                    _orgService.Update(target);
+                    return;                        
                 }
-                catch (KeyNotFoundException ex)
+
+                bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(_orgService, emailField, contactEmail.Value.ToString());
+                if (emailIsDuplicate)
                 {
-                    target["campmon_error"] = ex.Message;
+                    target["campmon_error"] = "Duplicate email";
                     _orgService.Update(target);
                     return;
-                }
+                }                
             }
 
-            var fields = PrettifySchemaNames(contactData);
             try
             {
-                SendSubscriberToList(_campaignMonitorConfig.ListId, emailField, fields);
+                SendSubscriberToList(_campaignMonitorConfig.ListId, emailField, contactData);
             }
             catch (Exception ex)
             {
@@ -69,51 +68,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             // deactivate msg if successful create/update
             target["statecode"] = 1;
             _orgService.Update(target);
-        }
-
-        private bool ContainsDuplicateEmail(string emailField, List<SubscriberCustomField> contactData)
-        {
-            var contactEmail = contactData.Where(x => x.Key == emailField).FirstOrDefault();
-
-            if (contactEmail == null)
-            {
-                throw new KeyNotFoundException("The email field to sync was not found within the data for this message.");
-            }
-
-            QueryExpression query = new QueryExpression("contact");
-            query.Criteria.AddCondition(new ConditionExpression(emailField, ConditionOperator.Equal, contactEmail.Value));
-            query.ColumnSet.AddColumn("contactid");
-            query.TopCount = 2;
-
-            var set = _orgService.RetrieveMultiple(query);
-            return set.TotalRecordCount > 1;
-        }
-
-        private List<SubscriberCustomField> PrettifySchemaNames(List<SubscriberCustomField> fields)
-        {
-            // convert each field to Campaign Monitor custom 
-            // field names by using the display name for the field
-            RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
-            {
-                LogicalName = "contact",
-                RetrieveAsIfPublished = true
-            };
-            RetrieveEntityResponse entityMetaData = (RetrieveEntityResponse)_orgService.Execute(getEntityMetadataRequest);
-
-            foreach (var field in fields)
-            {
-                var displayName = from x in entityMetaData.EntityMetadata.Attributes
-                                  where x.LogicalName == field.Key
-                                  select x.DisplayName.ToString();
-
-                if (displayName.Any())
-                {
-                    field.Key = displayName.First().ToString();
-                }
-            }
-
-            return fields;
-        }
+        }    
 
         private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields)
         {
