@@ -26,7 +26,8 @@ namespace Campmon.Dynamics
             query.TopCount = 1;
             query.ColumnSet = new ColumnSet("campmon_accesstoken", "campmon_bulksyncdata", "campmon_bulksyncinprogress",
                 "campmon_clientid", "campmon_clientname", "campmon_listid", "campmon_listname", "campmon_setuperror",
-                "campmon_syncduplicateemails", "campmon_syncfields", "campmon_syncviewid", "campmon_syncviewname");
+                "campmon_syncduplicateemails", "campmon_syncfields", "campmon_syncviewid", "campmon_syncviewname", 
+                "campmon_subscriberemail");
             
             var result = orgService.RetrieveMultiple(query);
 
@@ -36,7 +37,7 @@ namespace Campmon.Dynamics
             }
 
             var configEntity = result.Entities.First();
-
+                                   
             var config = new CampaignMonitorConfiguration
             {
                 AccessToken = configEntity.GetAttributeValue<string>("campmon_accesstoken"),
@@ -52,8 +53,11 @@ namespace Campmon.Dynamics
                 SyncViewId = configEntity.Contains("campmon_syncviewid")
                     ? Guid.Parse(configEntity.GetAttributeValue<string>("campmon_syncviewid"))
                     : Guid.Empty,
-                SyncViewName = configEntity.GetAttributeValue<string>("campmon_syncviewname")
-            };
+                SyncViewName = configEntity.GetAttributeValue<string>("campmon_syncviewname"),
+                SubscriberEmail = configEntity.Contains("campmon_subscriberemail")
+                    ? configEntity.GetAttributeValue<OptionSetValue>("campmon_subscriberemail")
+                    : new OptionSetValue(-1) 
+            };            
 
             if (configEntity.Contains("campmon_bulksyncinprogress"))
             {

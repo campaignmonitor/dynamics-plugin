@@ -3,9 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xrm.Sdk;
 
 namespace Campmon.Dynamics
-{
+{    
+    public enum SubscriberEmailValues
+    {    
+        EmailAddress1 = 778230000,
+        EmailAddress2 = 778230001,
+        EmailAddress3 = 778230002
+    }
+
     public class CampaignMonitorConfiguration
     {
         public string AccessToken { get; set; }
@@ -20,5 +28,6 @@ namespace Campmon.Dynamics
         public IEnumerable<string> SyncFields { get; set; }
         public Guid SyncViewId { get; set; }
         public string SyncViewName { get; set; }
+        public OptionSetValue SubscriberEmail { get; set; }
     }
 }

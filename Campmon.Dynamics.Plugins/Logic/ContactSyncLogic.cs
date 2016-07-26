@@ -27,16 +27,6 @@ namespace Campmon.Dynamics.Plugins.Logic
                 return;
             }
 
-            // Check that the email field in campmon_emailaddress has data in the contact post image. If it is empty, exit the plugin.
-            //?
-
-            /*
-            if (!postImage.Contains("campmon_emailaddress") || postImage["campmon_emailaddress"] == null)
-            {
-                return; 
-            } 
-            */
-
             // Retrieve the Campaign Monitor Configuration record. If it does not exist or is missing access token or client id, exit the plugin.
             ConfigurationService configService = new ConfigurationService(_orgService);
             CampaignMonitorConfiguration campaignMonitorConfig = configService.LoadConfig();
@@ -44,6 +34,20 @@ namespace Campmon.Dynamics.Plugins.Logic
                     campaignMonitorConfig.AccessToken == null || campaignMonitorConfig.ClientId == null)
             {
                 _tracer.Trace("Missing or invalid campaign monitor configuration.");
+                return;
+            }
+
+            // Check that the email field in campmon_emailaddress has data in the contact post image. If it is empty, exit the plugin.
+            if (campaignMonitorConfig.SubscriberEmail.Value < 0)
+            {
+                return;
+            }
+
+            string emailField = GetEmailFieldFromOptionSet(campaignMonitorConfig.SubscriberEmail.Value);                                  
+            if (string.IsNullOrWhiteSpace(emailField) || 
+                    !postImage.Contains(emailField) || string.IsNullOrWhiteSpace(postImage[emailField].ToString()))
+            {
+                _tracer.Trace("The email field to sync is missing or contains invalid data.");
                 return;
             }
 
@@ -71,10 +75,23 @@ namespace Campmon.Dynamics.Plugins.Logic
             {
                 return;
             }
-
-            syncMessage["campmon_sdkmessage"] = isUpdate ? "update" : "create";
+            
+            syncMessage["campmon_name"] = isUpdate ? "update" : "create";
             syncMessage["campmon_data"] = syncData;
+            syncMessage["campmon_contactid"] = new EntityReference("contact", target.Id);
             _orgService.Create(syncMessage);
+        }
+
+        private string GetEmailFieldFromOptionSet(int value)
+        {
+            // get corresponding email field from contact entity based on value of optionset from config
+            if (Enum.IsDefined(typeof(SubscriberEmailValues), value))
+            {
+                SubscriberEmailValues emailField = (SubscriberEmailValues)value;
+                return emailField.ToString().ToLower();
+            }
+            
+            return string.Empty;            
         }
 
         internal Entity RetrieveSyncFilter(Guid viewID)
@@ -159,6 +176,6 @@ namespace Campmon.Dynamics.Plugins.Logic
             double retNum;
             bool isNum = Double.TryParse(Convert.ToString(Expression), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out retNum);
             return isNum;
-        }
+        }      
     }
 }
