@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using System.Linq;
-using Microsoft.Crm.Sdk.Messages;
 using Newtonsoft.Json;
-using createsend_dotnet;
+using Campmon.Dynamics.Logic;
 
 namespace Campmon.Dynamics.Plugins.Logic
 {
@@ -43,7 +41,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                 return;
             }
 
-            string emailField = GetEmailFieldFromOptionSet(campaignMonitorConfig.SubscriberEmail.Value);                                  
+            string emailField = SharedLogic.GetPrimaryEmailField(campaignMonitorConfig.SubscriberEmail);                                              
             if (string.IsNullOrWhiteSpace(emailField) || 
                     !postImage.Contains(emailField) || string.IsNullOrWhiteSpace(postImage[emailField].ToString()))
             {
@@ -52,11 +50,10 @@ namespace Campmon.Dynamics.Plugins.Logic
             }
 
             // Retrieve the view specified in the campmon_syncviewid field of the configuration record.
-            var filterView = RetrieveSyncFilter(campaignMonitorConfig.SyncViewId);
-            var filterFetchXml = filterView["fetchxml"].ToString();
+            var filterQuery = SharedLogic.GetConfigFilterQuery(_orgService, campaignMonitorConfig.SyncViewId);            
 
             // Modify the sync view fetch query to include a filter condition for the current contact id.Execute the modified query and check if the contact is returned.If it is, exit the plugin.
-            if (!TestContactFitsFilter(filterFetchXml, (Guid)target["contactid"]))
+            if (!TestContactFitsFilter(filterQuery, (Guid)target["contactid"]))
             {
                 _tracer.Trace("Contact does not fit the filter.");
                 return;
@@ -68,7 +65,11 @@ namespace Campmon.Dynamics.Plugins.Logic
                     • campmon_data = JSON serialized sync data
             */
             var syncMessage = new Entity("campmon_message");
-            var syncData = SerializeDataToSync(target, campaignMonitorConfig);
+            var fields = SharedLogic.ContactAttributesToSubscriberFields(_orgService, target, campaignMonitorConfig.SyncFields.ToList());
+
+            var syncData = fields.Count > 0
+                ? JsonConvert.SerializeObject(fields)
+                : string.Empty;
 
             // If this is an update operation, check that the plugin target has modified attributes that are included in the campmon_syncfields data. If there are not any sync fields in the target, exit the plugin.
             if (string.IsNullOrWhiteSpace(syncData))
@@ -82,100 +83,13 @@ namespace Campmon.Dynamics.Plugins.Logic
             _orgService.Create(syncMessage);
         }
 
-        private string GetEmailFieldFromOptionSet(int value)
-        {
-            // get corresponding email field from contact entity based on value of optionset from config
-            if (Enum.IsDefined(typeof(SubscriberEmailValues), value))
-            {
-                SubscriberEmailValues emailField = (SubscriberEmailValues)value;
-                return emailField.ToString().ToLower();
-            }
-            
-            return string.Empty;            
-        }
-
-        internal Entity RetrieveSyncFilter(Guid viewID)
-        {
-            QueryExpression syncFilterQuery = new QueryExpression("view");
-            ConditionExpression queryIdCondition = new ConditionExpression("savedqueryid", ConditionOperator.Equal, viewID);
-            syncFilterQuery.Criteria.AddCondition(queryIdCondition);
-
-            syncFilterQuery.ColumnSet.AddColumn("fetchxml");
-
-            var syncFilter = _orgService.RetrieveMultiple(syncFilterQuery).Entities.FirstOrDefault();
-            return syncFilter;
-        }
-
-        internal bool TestContactFitsFilter(string fetchXml, Guid contactID)
-        {
-            var conversionRequest = new FetchXmlToQueryExpressionRequest { FetchXml = fetchXml };
-            var conversionResponse = (FetchXmlToQueryExpressionResponse)_orgService.Execute(conversionRequest);
-
-            QueryExpression filterQuery = conversionResponse.Query;
+        internal bool TestContactFitsFilter(QueryExpression filter, Guid contactID)
+        {            
             ConditionExpression contactCondition = new ConditionExpression("contactid", ConditionOperator.Equal, contactID);
-            filterQuery.Criteria.AddCondition(contactCondition);
+            filter.Criteria.AddCondition(contactCondition);
 
-            var contacts = _orgService.RetrieveMultiple(filterQuery).Entities;
+            var contacts = _orgService.RetrieveMultiple(filter).Entities;
             return contacts.Count >= 1;
         }
-
-        internal string SerializeDataToSync(Entity target, CampaignMonitorConfiguration config)
-        {
-            //  To serialize the sync data, create a single object with each 
-            //  field schema name as the property with its associated value.
-
-            // Edit 7/25: Upon inspection of the createsend API:
-            //      It would be best to serialize into JSON array of objects from the CM API
-            //      - This will also be a lot easier when deserializing/editing in SendMessagePlugin
-
-            var fieldList = new List<SubscriberCustomField>();         
-
-            foreach (var field in config.SyncFields)
-            {
-                if (!target.Attributes.Contains(field))
-                {
-                    continue;
-                }
-
-                if (target[field].GetType() == typeof(EntityReference))
-                {
-                    // To transform Lookup and Option Set fields, use the text label and send as text
-                    var refr = (EntityReference)target[field];
-                    fieldList.Add(new SubscriberCustomField { Key = field, Value = refr.Name });
-                }
-                else if (target[field].GetType() == typeof(OptionSetValue))
-                {
-                    var opst = (OptionSetValue)target[field];
-                    fieldList.Add(new SubscriberCustomField { Key = field, Value = opst.ToString() });
-                }
-                else if (target[field].GetType() == typeof(DateTime))
-                {
-                    // To transform date fields, send as date
-                    var date = (DateTime)target[field];
-                    fieldList.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/mm/dd") });
-                }
-                else if (IsNumeric(target[field]))
-                {
-                    // To transform numeric fields, send as number
-                    fieldList.Add(new SubscriberCustomField { Key = field, Value = target[field].ToString() });                    
-                }
-                else
-                {
-                    // For any other fields, send as text
-                    fieldList.Add(new SubscriberCustomField { Key = field, Value = target[field].ToString() });
-                }
-            }
-
-            return fieldList.Count > 0 
-                ? JsonConvert.SerializeObject(fieldList) 
-                : string.Empty;            
-        }
-
-        public static bool IsNumeric(object Expression)
-        {
-            double retNum;
-            bool isNum = Double.TryParse(Convert.ToString(Expression), System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out retNum);
-            return isNum;
-        }      
     }
 }

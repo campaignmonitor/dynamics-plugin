@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xrm.Sdk;
 using Campmon.Dynamics.Plugins.Logic;
 using SonomaPartners.Crm.Toolkit.Plugins;
-using SonomaPartners.Crm.Toolkit;
 
 namespace Campmon.Dynamics.Plugins
 {
