@@ -22,10 +22,10 @@ namespace Campmon.Dynamics.Plugins
             }
             
             Entity target = (Entity)context.InputParameters["Target"];
-            Entity postEntityImage = (Entity)context.GetPostEntityImage("emailaddresses");
+            Entity postEntityImage = context.GetPostEntityImage("emailaddresses");
             
             ContactSyncLogic syncLogic = new ContactSyncLogic(orgService, tracer);
-            syncLogic.SyncContact(target, null, isUpdate);
+            syncLogic.SyncContact(target, postEntityImage, isUpdate);
         }
     }
 }
