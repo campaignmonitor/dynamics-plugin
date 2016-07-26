@@ -78,7 +78,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             
             syncMessage["campmon_name"] = isUpdate ? "update" : "create";
             syncMessage["campmon_data"] = syncData;
-            syncMessage["campmon_contactid"] = new EntityReference("contact", target.Id);
+            syncMessage["campmon_email"] = emailField;
             _orgService.Create(syncMessage);
         }
 
