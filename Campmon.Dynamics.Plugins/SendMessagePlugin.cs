@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SonomaPartners.Crm.Toolkit.Plugins;
-using SonomaPartners.Crm.Toolkit;
 using Campmon.Dynamics.Plugins.Logic;
 using Microsoft.Xrm.Sdk;
 
