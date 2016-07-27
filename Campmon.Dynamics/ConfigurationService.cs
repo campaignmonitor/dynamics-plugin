@@ -1,23 +1,22 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Campmon.Dynamics
 {
     public class ConfigurationService
     {
         private IOrganizationService orgService;
+        private ITracingService tracer;
 
-        public ConfigurationService(IOrganizationService organizationService)
+        public ConfigurationService(IOrganizationService organizationService, ITracingService trace)
         {
             if (organizationService == null)
                 throw new ArgumentNullException("organizationService");
 
             orgService = organizationService;
+            tracer = trace;
         }
 
         public CampaignMonitorConfiguration VerifyAndLoadConfig()
@@ -64,12 +63,8 @@ namespace Campmon.Dynamics
             if (string.IsNullOrWhiteSpace(config.AccessToken) || string.IsNullOrWhiteSpace(config.ClientId) 
                 || config.SubscriberEmail.Value < 0)
             {
+                tracer.Trace("Configuration record does not contain ClientID, AccessToken, or SubscriberEmail");
                 return null;
-            }
-
-            if (configEntity.Contains("campmon_bulksyncinprogress"))
-            {
-                var value = configEntity.GetAttributeValue<OptionSetValue>("campmon_bulksyncinprogress").Value;
             }
 
             return config;

@@ -4,7 +4,6 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Crm.Sdk.Messages;
 using createsend_dotnet;
 using Microsoft.Xrm.Sdk.Query;
-using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using System.Linq;
 
@@ -26,9 +25,9 @@ namespace Campmon.Dynamics.Logic
             return string.Empty;
         }
 
-        public static List<SubscriberCustomField> ContactAttributesToSubscriberFields(IOrganizationService orgService, Entity contact, ICollection<String> attributes)
-        {            
-            
+        public static List<SubscriberCustomField> ContactAttributesToSubscriberFields(IOrganizationService orgService, ITracingService tracer, Entity contact, ICollection<String> attributes)
+        {
+            MetadataHelper metadataHelper = new MetadataHelper(orgService, tracer);
 
             var fields = new List<SubscriberCustomField>();
             foreach (var field in attributes)
@@ -54,9 +53,9 @@ namespace Campmon.Dynamics.Logic
                     fields.Add(new SubscriberCustomField { Key = field, Value = displayName });
                 }
                 else if (contact[field] is OptionSetValue)
-                {                    
-                    var optionValue = (OptionSetValue) contact[field];
-                    var optionLabel = GetOptionSetValueLabel(orgService, "contact", field, optionValue.Value);
+                {
+                    var optionValue = (OptionSetValue)contact[field];
+                    var optionLabel = metadataHelper.GetOptionSetValueLabel("contact", field, optionValue.Value);
                     fields.Add(new SubscriberCustomField { Key = field, Value = optionLabel });
                 }
                 else if (contact[field] is DateTime)
@@ -81,9 +80,9 @@ namespace Campmon.Dynamics.Logic
                     fields.Add(new SubscriberCustomField { Key = field, Value = contact[field].ToString() });
                 }
             }
-            
+
             // convert schema names to display names to be cleaner for campaign monitor
-            //fields = PrettifySchemaNames(orgService, fields);
+            //fields = PrettifySchemaNames(metadataHelper, fields);
 
             return fields;
         }
@@ -95,7 +94,7 @@ namespace Campmon.Dynamics.Logic
             query.ColumnSet.AddColumn("contactid");
             query.TopCount = 2;
 
-            return orgService.RetrieveMultiple(query).TotalRecordCount > 1;            
+            return orgService.RetrieveMultiple(query).TotalRecordCount > 1;
         }
 
         public static QueryExpression GetConfigFilterQuery(IOrganizationService orgService, Guid viewId)
@@ -120,7 +119,7 @@ namespace Campmon.Dynamics.Logic
         }
 
         public static AuthenticationDetails GetAuthentication(CampaignMonitorConfiguration config)
-        {            
+        {
             return new ApiKeyAuthenticationDetails(config.AccessToken);
         }
 
@@ -131,57 +130,22 @@ namespace Campmon.Dynamics.Logic
             return isNum;
         }
 
-        private static List<SubscriberCustomField> PrettifySchemaNames(IOrganizationService orgService, List<SubscriberCustomField> fields)
+        private static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
         {
             // convert each field to Campaign Monitor custom 
-            // field names by using the display name for the field
-            RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
-            {
-                LogicalName = "contact",
-                RetrieveAsIfPublished = true,
-                EntityFilters = EntityFilters.Attributes
-            };
-            RetrieveEntityResponse entityMetaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);
-            
+            // field names by using the display name for the field            
+            AttributeMetadata[] attributes = metadataHelper.GetEntityAttributes("contact");
+
             foreach (var field in fields)
             {
-                var displayName = from x in entityMetaData.EntityMetadata.Attributes
-                                  where x.LogicalName == field.Key
-                                  select x.DisplayName;
-
-                if (displayName.Any())
+                var displayName = (from x in attributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
+                if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
                 {
-                    var disp = displayName.First();
-                    if (disp.UserLocalizedLabel != null && disp.UserLocalizedLabel.Label != null)
-                    {
-                        field.Key = disp.UserLocalizedLabel.Label.ToString();
-                    }
+                    field.Key = displayName.UserLocalizedLabel.Label.ToString();
                 }
             }
 
             return fields;
-        }
-
-        private static string GetOptionSetValueLabel(IOrganizationService orgService, string entityName, string fieldName, int optionSetValue)
-        {
-            var request = new RetrieveAttributeRequest
-            {
-                EntityLogicalName = entityName,
-                LogicalName = fieldName,
-                RetrieveAsIfPublished = true
-            };
-
-            var attResponse = (RetrieveAttributeResponse)orgService.Execute(request);
-            var attMetadata = (EnumAttributeMetadata)attResponse.AttributeMetadata;
-
-            var optionMetadata = attMetadata.OptionSet.Options.Where(x => x.Value == optionSetValue).FirstOrDefault();
-            
-            if (optionMetadata != null && optionMetadata.Label != null && optionMetadata.Label.UserLocalizedLabel != null)
-            {
-                return optionMetadata.Label.UserLocalizedLabel.Label;
-            }
-
-            return string.Empty;
         }
     }
 }

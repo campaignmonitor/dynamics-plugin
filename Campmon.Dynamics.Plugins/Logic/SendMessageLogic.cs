@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xrm.Sdk;
-using Microsoft.Xrm.Sdk.Messages;
 using createsend_dotnet;
 using Newtonsoft.Json;
 using Campmon.Dynamics.Logic;
@@ -11,20 +10,19 @@ namespace Campmon.Dynamics.Plugins.Logic
 {
     class SendMessageLogic
     {
-        IOrganizationService _orgService;
-        ITracingService _tracer;
+        private IOrganizationService orgService;
+        private ITracingService tracer;
+        private CampaignMonitorConfiguration campaignMonitorConfig;
+        private AuthenticationDetails authDetails;
 
-        CampaignMonitorConfiguration _campaignMonitorConfig;
-        AuthenticationDetails _authDetails;
-
-        public SendMessageLogic(IOrganizationService orgService, ITracingService tracer)
+        public SendMessageLogic(IOrganizationService organizationService, ITracingService trace)
         {
-            _orgService = orgService;
-            _tracer = tracer;
+            orgService = organizationService;
+            tracer = trace;
 
-            ConfigurationService configService = new ConfigurationService(orgService);
-            _campaignMonitorConfig = configService.VerifyAndLoadConfig();
-            _authDetails = SharedLogic.GetAuthentication(_campaignMonitorConfig);
+            ConfigurationService configService = new ConfigurationService(orgService, tracer);
+            campaignMonitorConfig = configService.VerifyAndLoadConfig();
+            authDetails = SharedLogic.GetAuthentication(campaignMonitorConfig);
         }
 
         public void SendMessage(Entity target)
@@ -35,39 +33,39 @@ namespace Campmon.Dynamics.Plugins.Logic
             // If campmon_syncduplicates = 'false', do a retrieve multiple for any contact
             //      that matches the email address found in the sync email of the contact.
             // if yes : set campmon_error on message to "Duplicate email"
-            if (!_campaignMonitorConfig.SyncDuplicateEmails)
+            if (!campaignMonitorConfig.SyncDuplicateEmails)
             {
                 var contactEmail = contactData.Where(x => x.Key == emailField).FirstOrDefault();
                 if (contactEmail == null)
                 {
                     target["campmon_error"] = "The email field to sync was not found within the data for this message.";
-                    _orgService.Update(target);
+                    orgService.Update(target);
                     return;                        
                 }
 
-                bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(_orgService, emailField, contactEmail.Value.ToString());
+                bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(orgService, emailField, contactEmail.Value.ToString());
                 if (emailIsDuplicate)
                 {
                     target["campmon_error"] = "Duplicate email";
-                    _orgService.Update(target);
+                    orgService.Update(target);
                     return;
                 }                
             }
 
             try
             {
-                SendSubscriberToList(_campaignMonitorConfig.ListId, emailField, contactData);
+                SendSubscriberToList(campaignMonitorConfig.ListId, emailField, contactData);
             }
             catch (Exception ex)
             {
                 target["campmon_error"] = ex.Message;
-                _orgService.Update(target);
+                orgService.Update(target);
                 return;
             }
 
             // deactivate msg if successful create/update
             target["statecode"] = 1;
-            _orgService.Update(target);
+            orgService.Update(target);
         }    
 
         private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields)
@@ -78,7 +76,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             fields.Remove(name);            
             fields.Remove(email);            
             
-            Subscriber subscriber = new Subscriber(_authDetails, listId);
+            Subscriber subscriber = new Subscriber(authDetails, listId);
             subscriber.Add(
                     email != null ? email.Value : string.Empty,
                     name != null ? name.Value : string.Empty,
