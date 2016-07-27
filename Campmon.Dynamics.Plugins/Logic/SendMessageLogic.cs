@@ -23,7 +23,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             _tracer = tracer;
 
             ConfigurationService configService = new ConfigurationService(orgService);
-            _campaignMonitorConfig = configService.LoadConfig();
+            _campaignMonitorConfig = configService.VerifyAndLoadConfig();
             _authDetails = SharedLogic.GetAuthentication(_campaignMonitorConfig);
         }
 
@@ -83,7 +83,8 @@ namespace Campmon.Dynamics.Plugins.Logic
                     email != null ? email.Value : string.Empty,
                     name != null ? name.Value : string.Empty,
                     fields,
-                    false); // resubscribe
+                    false, // resubscribe
+                    false); // restartSubscriptionBasedAutoResponders
         }
     }
 }

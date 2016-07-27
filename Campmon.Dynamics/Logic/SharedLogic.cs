@@ -5,6 +5,7 @@ using Microsoft.Crm.Sdk.Messages;
 using createsend_dotnet;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Metadata;
 using System.Linq;
 
 namespace Campmon.Dynamics.Logic
@@ -27,7 +28,7 @@ namespace Campmon.Dynamics.Logic
 
         public static List<SubscriberCustomField> ContactAttributesToSubscriberFields(IOrganizationService orgService, Entity contact, ICollection<String> attributes)
         {            
-            attributes = PrettifySchemaNames(orgService, attributes);
+            
 
             var fields = new List<SubscriberCustomField>();
             foreach (var field in attributes)
@@ -37,22 +38,37 @@ namespace Campmon.Dynamics.Logic
                     continue;
                 }
 
-                if (contact[field].GetType() == typeof(EntityReference))
+                if (contact[field] is EntityReference)
                 {
                     // To transform Lookup and Option Set fields, use the text label and send as text
                     var refr = (EntityReference)contact[field];
-                    fields.Add(new SubscriberCustomField { Key = field, Value = refr.Name });
+                    var displayName = refr.Name;
+
+                    // if name is empty, retrieve the entity and get it's primary attribute
+                    if (string.IsNullOrWhiteSpace(displayName))
+                    {
+                        var entity = orgService.Retrieve(refr.LogicalName, refr.Id, new ColumnSet(false));
+                        displayName = entity.ToEntityReference().Name;
+                    }
+
+                    fields.Add(new SubscriberCustomField { Key = field, Value = displayName });
                 }
-                else if (contact[field].GetType() == typeof(OptionSetValue))
-                {
-                    var opst = (OptionSetValue) contact[field];
-                    fields.Add(new SubscriberCustomField { Key = field, Value = opst.ToString() });
+                else if (contact[field] is OptionSetValue)
+                {                    
+                    var optionValue = (OptionSetValue) contact[field];
+                    var optionLabel = GetOptionSetValueLabel(orgService, "contact", field, optionValue.Value);
+                    fields.Add(new SubscriberCustomField { Key = field, Value = optionLabel });
                 }
-                else if (contact[field].GetType() == typeof(DateTime))
+                else if (contact[field] is DateTime)
                 {
                     // To transform date fields, send as date
                     var date = (DateTime)contact[field];
                     fields.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/mm/dd") });
+                }
+                else if (contact[field] is Money)
+                {
+                    var mon = (Money)contact[field];
+                    fields.Add(new SubscriberCustomField { Key = field, Value = mon.Value.ToString() });
                 }
                 else if (IsNumeric(contact[field]))
                 {
@@ -65,6 +81,9 @@ namespace Campmon.Dynamics.Logic
                     fields.Add(new SubscriberCustomField { Key = field, Value = contact[field].ToString() });
                 }
             }
+            
+            // convert schema names to display names to be cleaner for campaign monitor
+            //fields = PrettifySchemaNames(orgService, fields);
 
             return fields;
         }
@@ -112,31 +131,57 @@ namespace Campmon.Dynamics.Logic
             return isNum;
         }
 
-        private static List<string> PrettifySchemaNames(IOrganizationService orgService, ICollection<String> fields)
+        private static List<SubscriberCustomField> PrettifySchemaNames(IOrganizationService orgService, List<SubscriberCustomField> fields)
         {
             // convert each field to Campaign Monitor custom 
             // field names by using the display name for the field
             RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
             {
                 LogicalName = "contact",
-                RetrieveAsIfPublished = true
+                RetrieveAsIfPublished = true,
+                EntityFilters = EntityFilters.Attributes
             };
             RetrieveEntityResponse entityMetaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);
-
-            List<string> prettyFields = new List<string>();
+            
             foreach (var field in fields)
             {
                 var displayName = from x in entityMetaData.EntityMetadata.Attributes
-                                  where x.LogicalName == field
-                                  select x.DisplayName.ToString();
+                                  where x.LogicalName == field.Key
+                                  select x.DisplayName;
 
                 if (displayName.Any())
                 {
-                    prettyFields.Add(displayName.First().ToString());
+                    var disp = displayName.First();
+                    if (disp.UserLocalizedLabel != null && disp.UserLocalizedLabel.Label != null)
+                    {
+                        field.Key = disp.UserLocalizedLabel.Label.ToString();
+                    }
                 }
             }
 
-            return prettyFields;
+            return fields;
+        }
+
+        private static string GetOptionSetValueLabel(IOrganizationService orgService, string entityName, string fieldName, int optionSetValue)
+        {
+            var request = new RetrieveAttributeRequest
+            {
+                EntityLogicalName = entityName,
+                LogicalName = fieldName,
+                RetrieveAsIfPublished = true
+            };
+
+            var attResponse = (RetrieveAttributeResponse)orgService.Execute(request);
+            var attMetadata = (EnumAttributeMetadata)attResponse.AttributeMetadata;
+
+            var optionMetadata = attMetadata.OptionSet.Options.Where(x => x.Value == optionSetValue).FirstOrDefault();
+            
+            if (optionMetadata != null && optionMetadata.Label != null && optionMetadata.Label.UserLocalizedLabel != null)
+            {
+                return optionMetadata.Label.UserLocalizedLabel.Label;
+            }
+
+            return string.Empty;
         }
     }
 }

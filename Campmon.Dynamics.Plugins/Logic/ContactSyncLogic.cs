@@ -27,17 +27,11 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             // Retrieve the Campaign Monitor Configuration record. If it does not exist or is missing access token or client id, exit the plugin.
             ConfigurationService configService = new ConfigurationService(_orgService);
-            CampaignMonitorConfiguration campaignMonitorConfig = configService.LoadConfig();
+            CampaignMonitorConfiguration campaignMonitorConfig = configService.VerifyAndLoadConfig();
             if (campaignMonitorConfig == null ||
                     campaignMonitorConfig.AccessToken == null || campaignMonitorConfig.ClientId == null)
             {
                 _tracer.Trace("Missing or invalid campaign monitor configuration.");
-                return;
-            }
-
-            // Check that the email field in campmon_emailaddress has data in the contact post image. If it is empty, exit the plugin.
-            if (campaignMonitorConfig.SubscriberEmail.Value < 0)
-            {
                 return;
             }
 
@@ -53,7 +47,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             var filterQuery = SharedLogic.GetConfigFilterQuery(_orgService, campaignMonitorConfig.SyncViewId);            
 
             // Modify the sync view fetch query to include a filter condition for the current contact id.Execute the modified query and check if the contact is returned.If it is, exit the plugin.
-            if (!TestContactFitsFilter(filterQuery, (Guid)target["contactid"]))
+            if (!TestContactFitsFilter(filterQuery, target.Id))
             {
                 _tracer.Trace("Contact does not fit the filter.");
                 return;
@@ -74,6 +68,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             // If this is an update operation, check that the plugin target has modified attributes that are included in the campmon_syncfields data. If there are not any sync fields in the target, exit the plugin.
             if (string.IsNullOrWhiteSpace(syncData))
             {
+                _tracer.Trace("There are no fields in the target that match the current fields being synced with Campaign Monitor.");
                 return;
             }
             
