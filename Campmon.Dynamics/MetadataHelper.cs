@@ -58,7 +58,7 @@ namespace Campmon.Dynamics
             {
                 LogicalName = entityLogicalName,
                 RetrieveAsIfPublished = true,
-                EntityFilters = EntityFilters.Attributes
+                EntityFilters = EntityFilters.Entity
             };
 
             RetrieveEntityResponse metaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);

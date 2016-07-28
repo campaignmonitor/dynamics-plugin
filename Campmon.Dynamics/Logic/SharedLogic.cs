@@ -48,7 +48,7 @@ namespace Campmon.Dynamics.Logic
                     {
                         var primaryAttrib = metadataHelper.GetEntityPrimaryAttribute(refr.LogicalName);
                         var entity = orgService.Retrieve(refr.LogicalName, refr.Id, new ColumnSet(primaryAttrib));
-                        displayName = entity[primaryAttrib].ToString();
+                        displayName = entity.GetAttributeValue<String>(primaryAttrib);
                     }
 
                     fields.Add(new SubscriberCustomField { Key = field, Value = displayName });
