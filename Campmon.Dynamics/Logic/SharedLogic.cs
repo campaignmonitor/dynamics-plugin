@@ -46,8 +46,9 @@ namespace Campmon.Dynamics.Logic
                     // if name is empty, retrieve the entity and get it's primary attribute
                     if (string.IsNullOrWhiteSpace(displayName))
                     {
-                        var entity = orgService.Retrieve(refr.LogicalName, refr.Id, new ColumnSet(false));
-                        displayName = entity.ToEntityReference().Name;
+                        var primaryAttrib = metadataHelper.GetEntityPrimaryAttribute(refr.LogicalName);
+                        var entity = orgService.Retrieve(refr.LogicalName, refr.Id, new ColumnSet(primaryAttrib));
+                        displayName = entity[primaryAttrib].ToString();
                     }
 
                     fields.Add(new SubscriberCustomField { Key = field, Value = displayName });

@@ -51,5 +51,18 @@ namespace Campmon.Dynamics
             RetrieveEntityResponse entityMetaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);           
             return entityMetaData.EntityMetadata.Attributes;
         }
+
+        public string GetEntityPrimaryAttribute(string entityLogicalName)
+        {
+            RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
+            {
+                LogicalName = entityLogicalName,
+                RetrieveAsIfPublished = true,
+                EntityFilters = EntityFilters.Attributes
+            };
+
+            RetrieveEntityResponse metaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);
+            return metaData.EntityMetadata.PrimaryNameAttribute;            
+        }
     }
 }
