@@ -1,33 +1,33 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Campmon.Dynamics
 {
     public class ConfigurationService
     {
         private IOrganizationService orgService;
+        private ITracingService tracer;
 
-        public ConfigurationService(IOrganizationService organizationService)
+        public ConfigurationService(IOrganizationService organizationService, ITracingService trace)
         {
             if (organizationService == null)
                 throw new ArgumentNullException("organizationService");
 
             orgService = organizationService;
+            tracer = trace;
         }
 
-        public CampaignMonitorConfiguration LoadConfig()
+        public CampaignMonitorConfiguration VerifyAndLoadConfig()
         {
             var query = new QueryExpression("campmon_configuration");
             query.TopCount = 1;
             query.ColumnSet = new ColumnSet("campmon_accesstoken", "campmon_bulksyncdata", "campmon_bulksyncinprogress",
                 "campmon_clientid", "campmon_clientname", "campmon_listid", "campmon_listname", "campmon_setuperror",
-                "campmon_syncduplicateemails", "campmon_syncfields", "campmon_syncviewid", "campmon_syncviewname");
-            
+                "campmon_syncduplicateemails", "campmon_syncfields", "campmon_syncviewid", "campmon_syncviewname",
+                "campmon_subscriberemail");
+
             var result = orgService.RetrieveMultiple(query);
 
             if (!result.Entities.Any())
@@ -46,26 +46,26 @@ namespace Campmon.Dynamics
                 ListId = configEntity.GetAttributeValue<string>("campmon_listid"),
                 ListName = configEntity.GetAttributeValue<string>("campmon_listname"),
                 SetUpError = configEntity.GetAttributeValue<string>("campmon_setuperror"),
+                SyncDuplicateEmails = configEntity.GetAttributeValue<bool>("campmon_syncduplicateemails"),
                 SyncFields = configEntity.Contains("campmon_syncfields")
                     ? configEntity.GetAttributeValue<string>("campmon_syncfields").Split(',')
                     : Enumerable.Empty<string>(),
                 SyncViewId = configEntity.Contains("campmon_syncviewid")
                     ? Guid.Parse(configEntity.GetAttributeValue<string>("campmon_syncviewid"))
                     : Guid.Empty,
-                SyncViewName = configEntity.GetAttributeValue<string>("campmon_syncviewname")
+                SyncViewName = configEntity.GetAttributeValue<string>("campmon_syncviewname"),
+                SubscriberEmail = configEntity.Contains("campmon_subscriberemail")
+                    ? configEntity.GetAttributeValue<OptionSetValue>("campmon_subscriberemail")
+                    : new OptionSetValue(-1)
             };
 
-            if (configEntity.Contains("campmon_bulksyncinprogress"))
+            // check if ClientID, AccessToken, SusbcriberEmail fields are correct, and if not then return null
+            if (string.IsNullOrWhiteSpace(config.AccessToken) || string.IsNullOrWhiteSpace(config.ClientId) 
+                || config.SubscriberEmail.Value < 0)
             {
-                var value = configEntity.GetAttributeValue<OptionSetValue>("campmon_bulksyncinprogress").Value;
+                tracer.Trace("Configuration record does not contain ClientID, AccessToken, or SubscriberEmail");
+                return null;
             }
-
-            if (configEntity.Contains("campmon_syncviewid"))
-            {
-
-            }
-
-            config.SyncDuplicateEmails = false;
 
             return config;
         }

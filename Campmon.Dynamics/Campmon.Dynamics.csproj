@@ -67,6 +67,8 @@
   <ItemGroup>
     <Compile Include="CampaignMonitorConfiguration.cs" />
     <Compile Include="ConfigurationService.cs" />
+    <Compile Include="Logic\SharedLogic.cs" />
+    <Compile Include="MetadataHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

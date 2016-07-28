@@ -23,9 +23,9 @@ namespace Campmon.Dynamics.WorkflowActivities
             trace = tracingService;
             timer = executionTimer;
 
-            var configService = new ConfigurationService(orgService);
+            var configService = new ConfigurationService(orgService, trace);
             trace.Trace("Loading configuration.");
-            config = configService.LoadConfig();
+            config = configService.VerifyAndLoadConfig();
         }
 
         public bool Run()
