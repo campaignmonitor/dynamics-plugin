@@ -19,3 +19,5 @@ Invoke-Psake .\default.ps1 $task -parameters @{
     'versionNumber' = $versionNumber
     'outputPath' = $outputDir
 }
+
+return $psake.build_success

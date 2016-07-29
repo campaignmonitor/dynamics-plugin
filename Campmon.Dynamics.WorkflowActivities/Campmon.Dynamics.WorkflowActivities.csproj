@@ -55,6 +55,10 @@
       <HintPath>..\packages\Microsoft.CrmSdk.Workflow.8.1.0.2\lib\net452\Microsoft.Xrm.Sdk.Workflow.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationFramework" />
     <Reference Include="SonomaPartners.Crm.Toolkit, Version=8.0.2.0, Culture=neutral, PublicKeyToken=f30227255a839074, processorArchitecture=MSIL">
       <HintPath>..\packages\SonomaPartners.Crm.Toolkit.8.0.2\lib\SonomaPartners.Crm.Toolkit.dll</HintPath>
@@ -83,10 +87,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BulkSyncContacts.cs" />
-    <Compile Include="ContactSubscriberSync.cs" />
+    <Compile Include="BulkSyncData.cs" />
+    <Compile Include="SyncHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="CampaignMonitorKey.snk" />
     <None Include="ILMerge.props" />
     <None Include="packages.config" />

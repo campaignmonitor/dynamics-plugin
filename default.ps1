@@ -18,7 +18,13 @@ task RestoreNuGet {
 
 task Compile -depends RestoreNuGet {
     $params = '/target:Rebuild /property:Configuration=Release /verbosity:minimal'
-    Invoke-MsBuild $slnFile -MsBuildParameters $params -ShowBuildOutputInCurrentWindow > $null
+    $buildResult = Invoke-MsBuild $slnFile -MsBuildParameters $params -ShowBuildOutputInCurrentWindow > $null
+    
+    if (-not $buildResult.BuildSucceeded)
+    {
+        throw "Solution did not compile."
+    }
+
 }
 
 task UpdateVersion -precondition { $solutionVersionNumber } {
