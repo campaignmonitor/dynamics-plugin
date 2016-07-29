@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SonomaPartners.Crm.Toolkit;
 using SonomaPartners.Crm.Toolkit.Plugins;
 using Campmon.Dynamics.Plugins.Operations;
 using Newtonsoft.Json;
+
 namespace Campmon.Dynamics.Plugins
 {
     public class ExecuteOperationPlugin : PluginBase
@@ -21,9 +21,14 @@ namespace Campmon.Dynamics.Plugins
               Output:
                 OutputData             
             */
+            var configService = new ConfigurationService(serviceProvider.CreateSystemOrganizationService(), serviceProvider.GetTracingService());
+            //TODO: Cache this service?
+            var trace = serviceProvider.GetTracingService();
+
             var operationFactory = new Dictionary<string, Func<IOperation>>
             {
-                { "getclientlist", ()=> new GetClientList() },
+                { "getclients", () => new GetClients(configService) },
+                { "getclientlist", ()=> new GetClientList(configService) },
                 { "loadmetadata", () => new LoadMetadataOperation() }
             };
 
@@ -32,8 +37,12 @@ namespace Campmon.Dynamics.Plugins
             var operationName = pluginContext.InputParameters["OperationName"] as string;
             var inputData = pluginContext.InputParameters["InputData"] as string;
 
-            var operation = operationFactory[operationName].Invoke();
+            trace.Trace($"Operation: {operationName} Input: {inputData}");
 
+            if (!operationFactory.ContainsKey(operationName))
+                return;
+
+            var operation = operationFactory[operationName].Invoke();
             string outputData = null;
 
             try

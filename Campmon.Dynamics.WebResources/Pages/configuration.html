@@ -9,11 +9,7 @@
     <![endif]-->
 </head>
 <!-- Add class "noScroll" to <body> tag when a modal window displays. -->
-<body>
-    <script src="../Scripts/Libraries/knockout340.js"></script>
-    <script src="../Scripts/Libraries/webApiRest.js"></script>
-    <script src="../Scripts/configurationPage.js"></script>
-    <header></header>
+<body><header></header>
     <section>
         <div>
 
@@ -21,7 +17,6 @@
 
             <!-- This radio button input is outside of its respective container to allow for easy CSS-selection of hiding/showing advanced fields -->
             <input type="checkbox" id="advancedSettings" checked>
-            <h2 data-bind="text: firstName"></h2>
             <div class="settings">
                 <ul class="settingClient">
                     <li>
@@ -29,15 +24,12 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select data-bind="options: clientList">
-                                <!-- Note: The first <option> is placeholder text -->
-                                <!--<option disabled selected>Select Client</option>
-                                <option>Client Name Here</option>-->
+                            <select data-bind="options: clients, optionsValue:'ClientID', optionsText: 'Name',  value: selectedClient">
                             </select>
                         </div>
                     </li>
                 </ul>
-                <ul class="settingContactList">
+                <ul class="settingContactList" data-bind="visible: isClientSelected">
                     <li>
                         <h2>Campaign Monitor List</h2>
                     </li>
@@ -59,10 +51,7 @@
                             </ul>
                         </div>
                         <div class="dropDown">
-                            <select>
-                                <!-- Note: The first <option> is placeholder text -->
-                                <option disabled selected>Select List</option>
-                                <option>Existing List Name</option>
+                            <select data-bind="options: clientLists, optionsValue:'ListID', optionsText: 'Name',  value: selectedList">
                             </select>
                         </div>
                         <div class="textField">
@@ -362,7 +351,7 @@
 
     </section>
     <!-- LOADING modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display: none;">
+    <div class="modal" data-bind="visible: !isClientSelected">
         <div>
             <div class="icon iconLoading">
                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
@@ -420,7 +409,7 @@
         </div>
     </div>
     <!-- CONNECTION ERROR modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display: none;">
+    <div class="modal" style="display:none;" data-bind="visible: hasConnectionError">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052
@@ -436,5 +425,9 @@
             </div>
         </div>
     </div>
+
+    <script src="../Scripts/Libraries/knockout340.js"></script>
+    <script src="../Scripts/Libraries/webApiRest.js"></script>
+    <script src="../Scripts/configurationPage.js"></script>
 </body>
 </html>

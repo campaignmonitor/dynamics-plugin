@@ -19,6 +19,20 @@ namespace Campmon.Dynamics
             tracer = trace;
         }
 
+        public string GetAccessToken()
+        {
+            var query = new QueryExpression("campmon_configuration");
+            query.TopCount = 1;
+            query.ColumnSet = new ColumnSet("campmon_accesstoken");
+            var result = orgService.RetrieveMultiple(query);
+
+            if (!result.Entities.Any())
+            {
+                return string.Empty;
+            }
+
+            return result.Entities.First().GetAttributeValue<string>("campmon_accesstoken");
+        }
         public CampaignMonitorConfiguration VerifyAndLoadConfig()
         {
             var query = new QueryExpression("campmon_configuration");
