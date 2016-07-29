@@ -46,13 +46,7 @@ namespace Campmon.Dynamics.WorkflowActivities
                 syncData.UpdatedFields.ToList().ForEach(x => viewFilter.ColumnSet.Columns.Add(x));
             }
 
-            // we need the correct email for the subscription, and potentially the fullname(?)
-            // need some sort of name field otherwise it will be blank on CM
-            if (!viewFilter.ColumnSet.Columns.Contains("fullname"))
-            {
-                viewFilter.ColumnSet.Columns.Add("fullname");
-            }
-
+            // we need the correct email for the subscription
             if (!viewFilter.ColumnSet.Columns.Contains(primaryEmail))
             {
                 viewFilter.ColumnSet.Columns.Add(primaryEmail);
@@ -81,16 +75,24 @@ namespace Campmon.Dynamics.WorkflowActivities
                 EntityCollection contacts = orgService.RetrieveMultiple(viewFilter);
                 foreach (Entity contact in contacts.Entities)
                 {
+                    // remove the primary email field as it's sent as a separate param and don't want duplicates on CM
                     var email = contact.Attributes[primaryEmail].ToString();
-                    var name = contact.Attributes["fullname"].ToString();
                     contact.Attributes.Remove(primaryEmail);
-                    contact.Attributes.Remove("fullname");
+
+                    string name = null;
+                    if (contact.Contains("fullname"))
+                    {
+                        name = contact["fullname"].ToString();
+                        contact.Attributes.Remove("fullname");
+                    }
 
 
-                    SubscriberDetail sd = new SubscriberDetail();
-                    
                     var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, contact, contact.Attributes.Keys);
-                    subscribers.Add(new SubscriberDetail(email, name, fields));                    
+                    subscribers.Add(new SubscriberDetail(email, 
+                                                         string.IsNullOrWhiteSpace(name) 
+                                                            ? string.Empty 
+                                                            : name,
+                                                         fields));
                 }
 
                 BulkImportResults importResults = sub.Import(subscribers, false);
