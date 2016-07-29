@@ -23,10 +23,8 @@ var CM = (function () {
 var clients = [];
 CM.executeAction('getclientlist', 'testdata').
  then(function (result) {
-     debugger;
      clients.push(JSON.parse(result.body.OutputData));
  }, function (error) {
-     debugger;
      console.log(JSON.parse(error.body.OutputData));
  });
 
