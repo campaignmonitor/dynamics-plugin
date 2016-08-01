@@ -5,22 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using createsend_dotnet;
-
 namespace Campmon.Dynamics.Plugins.Operations
 {
-    public class GetClientList : IOperation
+    public class GetClients : IOperation
     {
         ConfigurationService _cmService { get; set; }
-        public GetClientList(ConfigurationService cmService)
+        public GetClients(ConfigurationService cmService)
         {
             _cmService = cmService;
         }
 
-        public string Execute(string clientId)
+        public string Execute(string serializedData)
         {
             var auth = new ApiKeyAuthenticationDetails(_cmService.GetAccessToken());
-            var client = new Client(auth, clientId);
-            return JsonConvert.SerializeObject(client.Lists());
+            var clients = new General(auth).Clients();
+            return JsonConvert.SerializeObject(clients);
         }
     }
 }

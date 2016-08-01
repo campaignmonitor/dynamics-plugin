@@ -56,6 +56,7 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
@@ -69,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CampaignMonitorConfiguration.cs" />
+    <Compile Include="CampaignMonitorService.cs" />
     <Compile Include="ConfigurationService.cs" />
     <Compile Include="Logic\SharedLogic.cs" />
     <Compile Include="MetadataHelper.cs" />

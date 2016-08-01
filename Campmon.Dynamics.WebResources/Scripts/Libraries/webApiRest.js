@@ -67,14 +67,10 @@ webAPI.REST = {
 
 webAPI.REST.executeBoundAction = function (type, id, actionName, actionParameters, extraHeaders) {
     var deferred = Q.defer();
-
     id = id ? '(' + id + ')' : '';
-
-    var url = this._webAPIPath() + type + 's' + id + '/' + 'Microsoft.Dynamics.CRM.' + actionName
-
+    var url = this._webAPIPath() + type + 's' + id + '/' + 'Microsoft.Dynamics.CRM.' + actionName;
     var request = superagent.post(url);
-
-    var headers = this._defaultHeaders(extraHeaders)
+    var headers = this._defaultHeaders(extraHeaders);
 
     if (actionParameters) {
         data = JSON.stringify(actionParameters);
@@ -98,13 +94,9 @@ webAPI.REST.executeBoundAction = function (type, id, actionName, actionParameter
 
 
 webAPI.REST.executeUnboundAction = function (actionName, actionParameters, extraHeaders) {
-
     var deferred = Q.defer();
-
     var url = this._webAPIPath() + actionName;
-
     var request = superagent.post(url);
-
     var headers = this._defaultHeaders(extraHeaders);
 
     if (actionParameters) {
@@ -127,19 +119,10 @@ webAPI.REST.executeUnboundAction = function (actionName, actionParameters, extra
     return deferred.promise;
 };
 
-//Aliased with default extraHeaders optional
-webAPI.executeAction = function (actionName, actionParameters) {
-    return webAPI.REST.executeUnboundAction(actionName, actionParameters, null)
-}
-
 webAPI.REST.executeBoundFunction = function (type, id, functionString, extraHeaders) {
-
     var deferred = Q.defer();
-
     id = id ? '(' + id + ')' : '';
-
     var url = this._webAPIPath() + type + 's' + id + '/' + 'Microsoft.Dynamics.CRM.' + functionString;
-
     var headers = this._defaultHeaders(extraHeaders);
 
     superagent.get(url).set(headers).end(function (err, res) {
@@ -155,11 +138,8 @@ webAPI.REST.executeBoundFunction = function (type, id, functionString, extraHead
 };
 
 webAPI.REST.executeUnboundFunction = function (functionString, extraHeaders) {
-
     var deferred = Q.defer();
-
     var url = this._webAPIPath() + functionString
-
     var headers = this._defaultHeaders(extraHeaders);
 
     superagent.get(url).set(headers).end(function (err, res) {
@@ -181,11 +161,8 @@ webAPI.REST.executeUnboundFunction = function (functionString, extraHeaders) {
 webAPI.REST.createEntity = function (type, entity, extraHeaders) {
 
     var deferred = Q.defer();
-
     var data = JSON.stringify(entity);
-
     var url = this._webAPIPath() + type.toLowerCase() + 's';
-
     var headers = this._defaultHeaders(extraHeaders);
 
     headers["Content-Type"] = "application/json";
@@ -203,11 +180,8 @@ webAPI.REST.createEntity = function (type, entity, extraHeaders) {
 };
 
 webAPI.REST.deleteEntity = function (type, id, extraHeaders) {
-
     var deferred = Q.defer();
-
     var url = this._webAPIPath() + type.toLowerCase() + 's' + '(' + id + ')';
-
     var headers = this._defaultHeaders(extraHeaders);
 
     headers["Content-Type"] = "application/json";
