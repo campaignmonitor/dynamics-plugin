@@ -1,10 +1,9 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
-using System;
 using System.Linq;
 using System.Diagnostics;
-using Campmon.Dynamics;
 using Campmon.Dynamics.Logic;
+using Campmon.Dynamics.WorkflowActivities.Model;
 using Newtonsoft.Json;
 using createsend_dotnet;
 using System.Collections.Generic;
@@ -13,10 +12,13 @@ namespace Campmon.Dynamics.WorkflowActivities
 {
     public class SyncHandler
     {
+        private const int BATCH_AMOUNT = 1000;
+
         private IOrganizationService orgService;
         private ITracingService trace;
         private Stopwatch timer;
         private CampaignMonitorConfiguration config;
+        private ConfigurationService configService;
 
         public SyncHandler(IOrganizationService organizationService, ITracingService tracingService, Stopwatch executionTimer)
         {
@@ -24,7 +26,7 @@ namespace Campmon.Dynamics.WorkflowActivities
             trace = tracingService;
             timer = executionTimer;
 
-            var configService = new ConfigurationService(orgService, trace);
+            configService = new ConfigurationService(orgService, trace);
             trace.Trace("Loading configuration.");
             config = configService.VerifyAndLoadConfig();
         }
@@ -33,17 +35,19 @@ namespace Campmon.Dynamics.WorkflowActivities
         {
             trace.Trace("Deserializing bulk sync data.");
             var syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData);
-
-            // get view and modify.
-            // if syncData.UpdatedFields contains data, only sync those fields.
-
             var primaryEmail = SharedLogic.GetPrimaryEmailField(config.SubscriberEmail);
 
+            // retrieve contacts based on the filter, grabbing the columns specified either in the fields to sync (on config entity)
+            // or fields specified in the bulkdata sync fields
             QueryExpression viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
+            viewFilter.ColumnSet.Columns.Clear();
             if (syncData.UpdatedFields.Length > 0)
             {
-                viewFilter.ColumnSet.Columns.Clear();
                 syncData.UpdatedFields.ToList().ForEach(x => viewFilter.ColumnSet.Columns.Add(x));
+            }
+            else
+            {
+                config.SyncFields.ToList().ForEach(x => viewFilter.ColumnSet.Columns.Add(x));
             }
 
             // we need the correct email for the subscription
@@ -52,69 +56,104 @@ namespace Campmon.Dynamics.WorkflowActivities
                 viewFilter.ColumnSet.Columns.Add(primaryEmail);
             }
 
-            if (syncData.PageNumber >= 0)
-            {
-                viewFilter.PageInfo.PageNumber = syncData.PageNumber;
-            }
-
-            if (!string.IsNullOrWhiteSpace(syncData.PagingCookie))
-            {
-                viewFilter.PageInfo.PagingCookie = syncData.PagingCookie;
-            }
-
             viewFilter.AddOrder("modifiedon", OrderType.Ascending);
-            viewFilter.TopCount = 1000;
+            viewFilter.TopCount = BATCH_AMOUNT;
 
             var auth = SharedLogic.GetAuthentication(config);
             var sub = new Subscriber(auth, config.ListId);
-            List<SubscriberDetail> subscribers = new List<SubscriberDetail>();
 
             do
             {
-                // sync batch of 1000 contacts to CM list as subscribers
-                EntityCollection contacts = orgService.RetrieveMultiple(viewFilter);
-                foreach (Entity contact in contacts.Entities)
+                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 0
+                                                    ? syncData.PageNumber
+                                                    : 0;
+
+                if (!string.IsNullOrWhiteSpace(syncData.PagingCookie))
                 {
-                    // remove the primary email field as it's sent as a separate param and don't want duplicates on CM
-                    var email = contact.Attributes[primaryEmail].ToString();
-                    contact.Attributes.Remove(primaryEmail);
-
-                    string name = null;
-                    if (contact.Contains("fullname"))
-                    {
-                        name = contact["fullname"].ToString();
-                        contact.Attributes.Remove("fullname");
-                    }
-
-
-                    var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, contact, contact.Attributes.Keys);
-                    subscribers.Add(new SubscriberDetail(email, 
-                                                         string.IsNullOrWhiteSpace(name) 
-                                                            ? string.Empty 
-                                                            : name,
-                                                         fields));
+                    viewFilter.PageInfo.PagingCookie = syncData.PagingCookie;
                 }
 
-                BulkImportResults importResults = sub.Import(subscribers, false);
-                //if (importResults.FailureDetails.Count > 0)
-                //{
-                //    // some failures occurred.
-                //    foreach (var failure in importResults.FailureDetails)
-                //    {
-                //        // do something here?
-                //        //failure.Code
-                //        //failure.EmailAddress
-                //        //failure.Message
-                //    }
-                //}
+                // sync batch of 1000 contacts to CM list as subscribers
+                EntityCollection contacts = orgService.RetrieveMultiple(viewFilter);                               
+
+                syncData.PagingCookie = contacts.PagingCookie;
+                syncData.PageNumber++;
+
+                var subscribers = GenerateSubscribersList(contacts, primaryEmail);                
+
+                BulkImportResults importResults = sub.Import(subscribers, 
+                    false, // resubscribe
+                    false, // queueSubscriptionBasedAutoResponders
+                    false); // restartSubscriptionBasedAutoResponders
                 
-                viewFilter.PageInfo.PagingCookie = syncData.PagingCookie = contacts.PagingCookie;
-                viewFilter.PageInfo.PageNumber = syncData.PageNumber = syncData.PageNumber + 1; // ?? contacts.PageNumber isn't a thing
+                if (importResults.FailureDetails.Count > 0)
+                {
+                    if (syncData.BulkSyncErrors == null)
+                    {
+                        syncData.BulkSyncErrors = new List<BulkSyncError>();
+                    }
+
+                    // log the errors back into bulk sync data
+                    foreach (var failure in importResults.FailureDetails)
+                    {
+                        syncData.BulkSyncErrors.Add(new BulkSyncError(failure.Code, failure.Message, failure.EmailAddress));
+                    }
+                }
+
+                if (!contacts.MoreRecords)
+                {
+                    syncData.PageNumber = 0;
+                    syncData.PagingCookie = string.Empty;
+                    break;
+                }
             }
             while (timer.ElapsedMilliseconds >= 90000);
 
-            return true;
-            throw new NotImplementedException();
-        }        
+            trace.Trace("Saving bulk data.");
+            string bulkData = JsonConvert.SerializeObject(syncData);
+            config.BulkSyncData = bulkData;            
+            configService.SaveConfig(config);
+
+            return syncData.PageNumber <= 0; // if we're done return true
+        }
+
+        private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail)
+        {
+            var subscribers = new List<SubscriberDetail>();
+
+            foreach (Entity contact in contacts.Entities.Where(x => !string.IsNullOrWhiteSpace(x[primaryEmail].ToString())))
+            {
+                // remove the primary email field, it's sent as a separate param and we don't want duplicate fields
+                var email = contact.Attributes[primaryEmail].ToString();
+                contact.Attributes.Remove(primaryEmail);
+
+                // temporary; I could technically just look at contacts collection for duplicates correct?
+                // basically since those are the ones that match the filter to be sent.
+                // this will be way slower since it needs to do retrieve multiples for EVERY contact coming in.
+                if (!config.SyncDuplicateEmails && SharedLogic.CheckEmailIsDuplicate(orgService, primaryEmail, email))
+                {
+                    continue;
+                }
+
+                string name = null;
+                if (contact.Contains("fullname"))
+                {
+                    name = contact["fullname"].ToString();
+                    contact.Attributes.Remove("fullname");
+                }
+
+
+                var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, trace, contact, contact.Attributes.Keys);
+                subscribers.Add(new SubscriberDetail {
+                    EmailAddress = email,
+                    Name = string.IsNullOrWhiteSpace(name) 
+                        ? string.Empty 
+                        : name,
+                    CustomFields = fields
+                });
+            }
+
+            return subscribers;
+        }
     }
 }
