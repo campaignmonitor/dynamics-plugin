@@ -56,8 +56,8 @@
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.8.1.0.2\lib\net452\Microsoft.Xrm.Sdk.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SonomaPartners.Crm.Toolkit, Version=8.0.2.0, Culture=neutral, PublicKeyToken=f30227255a839074, processorArchitecture=MSIL">
@@ -98,7 +98,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="CampaignMonitorKey.snk" />
-    <None Include="ILMerge.props" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -106,9 +105,6 @@
       <Project>{5ad4b4f2-5b15-419e-82be-1297d23480f6}</Project>
       <Name>Campmon.Dynamics</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ILMergeOrder.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
