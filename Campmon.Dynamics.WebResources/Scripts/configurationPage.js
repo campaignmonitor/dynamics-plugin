@@ -5,8 +5,9 @@
 
     global.Campmon = global.Campmon || {};
     global.Campmon.ConfigurationPage = global.Campmon.ConfigurationPage || (function () {
-        function CampmonViewModel(config) {
+        function CampmonViewModel() {
             var self = this;
+            self.isLoading = ko.observable(true);
 
             self.clients = ko.observableArray();
             self.clientLists = ko.observableArray();
@@ -14,17 +15,15 @@
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
             self.hasConnectionError = ko.observable(false);
-            self.isClientSelected = ko.observable(false);
 
-            self.selectedPrimaryEmail = ko.observable(config.SubscriberEmail)
+            self.selectedPrimaryEmail = ko.observable();
         }
 
         function init() {
-            var config = loadConfig();
-            var vm = new CampmonViewModel(config);
+            var vm = new CampmonViewModel();
 
             vm.selectedClient.subscribe(function (selectedClient) {
-                CMPlugin.executeAction('getclientlist', selectedClient)
+                Campmon.Plugin.executeAction('getclientlist', selectedClient)
                     .then(function (result) {
                         //TODO: If no client lists default to Sync to New List Option
                         vm.clientLists(JSON.parse(result.body.OutputData));
@@ -42,30 +41,17 @@
                         alert(config.Error);
                     }
                     vm.clients(config.Clients);
-                    vm.isClientSelected(true);
+
+                    if (vm.clients().length == 1) {
+                        vm.selectedClient(vm.clients()[0]);
+                    }
+                    //todo: set view model props from config
+
+                    vm.isLoading(false);
                 }, function (error) {
                     vm.hasConnectionError = true;
                     console.log(JSON.parse(error.response.text));
                 });
-        }
-
-        function loadConfig() {
-            // TODO: Implement loading functionality
-            return {
-                AccessToken: "",
-                BulkSyncData: "",
-                BulkSyncInProgress: false,
-                ClientId: "",
-                ClientName: "",
-                ListId: "",
-                ListName: "",
-                SetUpError: "",
-                SyncDuplicateEmails: false,
-                SyncFields: [],
-                SyncViewId: "",
-                SyncViewName: "",        
-                SubscriberEmail: "778230000"
-            };
         }
 
         return {
