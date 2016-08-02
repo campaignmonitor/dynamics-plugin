@@ -59,7 +59,7 @@ namespace Campmon.Dynamics.WorkflowActivities
             viewFilter.AddOrder("modifiedon", OrderType.Ascending);
             viewFilter.TopCount = BATCH_AMOUNT;
 
-            var auth = SharedLogic.GetAuthentication(config);
+            var auth = Authenticator.GetAuthentication(config);
             var sub = new Subscriber(auth, config.ListId);
 
             do

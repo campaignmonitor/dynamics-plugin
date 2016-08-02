@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authenticator.cs" />
     <Compile Include="CampaignMonitorConfiguration.cs" />
     <Compile Include="CampaignMonitorService.cs" />
     <Compile Include="ConfigurationService.cs" />
