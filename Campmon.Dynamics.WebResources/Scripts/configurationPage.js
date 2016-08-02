@@ -1,56 +1,69 @@
 ﻿/// <reference path="Libraries/webApiRest.js" />
 /// <reference path="Libraries/knockout340.js" />
+(function (global, webAPI, ko) {
+    'use strict';
 
+    global.Campmon = global.Campmon || {};
+    global.Campmon.ConfigurationPage = global.Campmon.ConfigurationPage || (function () {
+        function CampmonViewModel() {
+            var self = this;
 
-function CampMonViewModel() {
-    var self = this;
+            self.clients = ko.observableArray();
+            self.clientLists = ko.observableArray();
 
-    self.clients = ko.observableArray();
-    self.clientLists = ko.observableArray();
+            self.selectedClient = ko.observable();
+            self.selectedList = ko.observable();
+            self.hasConnectionError = ko.observable(false);
+            self.isClientSelected = ko.observable(false);
+        }
 
-    self.selectedClient = ko.observable();
-    self.selectedList = ko.observable();
-    self.hasConnectionError = ko.observable(false);
-    self.isClientSelected = ko.observable(false);
-}
-var cm = new CampMonViewModel();
-ko.applyBindings(cm);
+        function init() {
+            var vm = new CampmonViewModel();
 
+            vm.selectedClient.subscribe(function (selectedClient) {
+                CMPlugin.executeAction('getclientlist', selectedClient)
+                    .then(function (result) {
+                        //TODO: If no client lists default to Sync to New List Option
+                        vm.clientLists(JSON.parse(result.body.OutputData));
+                    }, function (error) {
+                        alert("Error retrieving lists for selected client.");
+                    });
+            });
 
+            ko.applyBindings(vm);
 
-var CMPlugin = (function () {
-    const _pluginAction = 'campmon_ExecuteOperationAction';
-    var pluginInput = function (operation, data) {
+            Campmon.Plugin.executeAction('loadmetadata', null)
+                .then(function (result) {
+                    vm.clients(JSON.parse(result.body.OutputData));
+                    vm.isClientSelected(true);
+                }, function (error) {
+                    vm.hasConnectionError = true;
+                    console.log(JSON.parse(error.response.text));
+                });
+        }
+
         return {
-            OperationName: operation,
-            InputData: data
+            init: init
         };
-    }
-    var executeAction = function (action, data) {
-        return webAPI.REST.executeUnboundAction(_pluginAction, pluginInput(action, data), null);
-    }
-    return {
-        executeAction: executeAction
-    }
-})();
+    })();
 
+    global.Campmon.Plugin = global.Campmon.Plugin || (function () {
+        var _actionName = 'campmon_ExecuteOperationAction';
 
-CMPlugin.executeAction('getclients', null).
- then(function (result) {
-     cm.clients(JSON.parse(result.body.OutputData));
-     cm.isClientSelected(true);
- }, function (error) {
-     cm.hasConnectionError = true;
-     console.log(JSON.parse(error.response.text));
- });
+        var pluginInput = function (operation, data) {
+            return {
+                OperationName: operation,
+                InputData: data
+            };
+        }
 
+        var executeAction = function (action, data) {
+            return webAPI.REST.executeUnboundAction(_actionName, pluginInput(action, data), null);
+        }
 
-cm.selectedClient.subscribe(function (selectedClient) {
-    CMPlugin.executeAction('getclientlist', selectedClient).
-    then(function (result) {
-        //TODO: If no client lists default to Sync to New List Option
-        cm.clientLists(JSON.parse(result.body.OutputData));
-    }, function (error) {
-        alert("Error retrieving lists for selected client.");
-    });
-});
+        return {
+            executeAction: executeAction
+        }
+    })();
+
+})(this, webAPI, ko);

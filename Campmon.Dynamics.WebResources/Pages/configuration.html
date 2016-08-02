@@ -7,6 +7,10 @@
     <!--[if IE]>
         <link href="Styles/styles_ie.css" rel="stylesheet" type="text/css">
     <![endif]-->
+    <script src="../Scripts/Libraries/knockout340.js"></script>
+    <script src="../../ClientGlobalContext.js.aspx" type="text/javascript"></script>
+    <script src="../Scripts/Libraries/webApiRest.js"></script>
+    <script src="../Scripts/configurationPage.js"></script>
 </head>
 <!-- Add class "noScroll" to <body> tag when a modal window displays. -->
 <body><header></header>
@@ -425,9 +429,10 @@
             </div>
         </div>
     </div>
-
-    <script src="../Scripts/Libraries/knockout340.js"></script>
-    <script src="../Scripts/Libraries/webApiRest.js"></script>
-    <script src="../Scripts/configurationPage.js"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            Campmon.ConfigurationPage.init();
+        });
+    </script>
 </body>
 </html>
