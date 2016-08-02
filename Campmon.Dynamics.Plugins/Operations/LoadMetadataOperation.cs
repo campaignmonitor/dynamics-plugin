@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using createsend_dotnet;
 using Newtonsoft.Json;
+using Microsoft.Xrm.Sdk.Query;
 
 namespace Campmon.Dynamics.Plugins.Operations
 {
@@ -13,22 +14,41 @@ namespace Campmon.Dynamics.Plugins.Operations
     {
         private ConfigurationService configService;
         private ITracingService trace;
+        private IOrganizationService orgService;
 
-        public LoadMetadataOperation(ConfigurationService service, ITracingService tracer)
+        public LoadMetadataOperation(ConfigurationService configSvc, IOrganizationService orgSvc, ITracingService tracer)
         {
-            configService = service;
+            configService = configSvc;
             trace = tracer;
+            orgService = orgSvc;
         }
 
         public string Execute(string serializedData)
+        {
+            ConfigurationData config = new ConfigurationData();
+            try
+            {
+                config = BuildConfigurationData(serializedData);
+            }
+            catch (Exception ex)
+            {
+                config.Error = $"Unable to retrieve configuration data. {ex.Message}";
+            }
+
+            return JsonConvert.SerializeObject(config);
+        }
+
+        private ConfigurationData BuildConfigurationData(string serializedData)
         {
             var output = new ConfigurationData();
 
             var config = configService.VerifyAndLoadConfig();
             if (config == null)
             {
-                return output.Serialize();
+                return output;
             }
+
+            output.ConfigurationExists = true;
 
             var auth = Authenticator.GetAuthentication(config);
             var general = new General(auth);
@@ -42,7 +62,37 @@ namespace Campmon.Dynamics.Plugins.Operations
                 output.Lists = client.Lists();
             }
 
-            return output.Serialize();
+            output.BulkSyncInProgress = config.BulkSyncInProgress;
+            output.SyncDuplicateEmails = config.SyncDuplicateEmails;
+            output.SubscriberEmail = config.SubscriberEmail != null ? config.SubscriberEmail.Value : default(int);
+
+            var views = GetContactViews();
+            foreach(var view in views.Where(v => v.ViewId == config.SyncViewId))
+            {
+                view.IsSelected = true;
+            }
+
+            output.Views = views;
+
+            return output;
+        }
+
+        private IEnumerable<SyncView> GetContactViews()
+        {
+            var query = new QueryExpression("savedquery"); // system views
+            query.ColumnSet = new ColumnSet("savedqueryid", "name");
+            query.Criteria.AddCondition("returnedtypecode", ConditionOperator.Equal, 2); // contacts
+            query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0); // active state
+            query.Criteria.AddCondition("querytype", ConditionOperator.Equal, 0); // application views
+
+
+            var result = orgService.RetrieveMultiple(query);
+
+            return result.Entities.Select(e => new SyncView
+            {
+                ViewId = e.Id,
+                ViewName = e.GetAttributeValue<string>("name")
+            });
         }
     }
 

@@ -22,12 +22,13 @@ namespace Campmon.Dynamics.Plugins
             var configService = new ConfigurationService(serviceProvider.CreateSystemOrganizationService(), serviceProvider.GetTracingService());
             
             var trace = serviceProvider.GetTracingService();
+            var orgService = serviceProvider.CreateSystemOrganizationService();
 
             var operationFactory = new Dictionary<string, Func<IOperation>>
             {
                 { "getclients", () => new GetClients(configService) },
                 { "getclientlist", ()=> new GetClientList(configService) },
-                { "loadmetadata", () => new LoadMetadataOperation(configService, trace) }
+                { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) }
             };
 
             var pluginContext = serviceProvider.GetPluginExecutionContext();
