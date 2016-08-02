@@ -20,7 +20,7 @@
             <h1>Campaign Monitor Sync Settings</h1>
 
             <!-- This radio button input is outside of its respective container to allow for easy CSS-selection of hiding/showing advanced fields -->
-            <input type="checkbox" id="advancedSettings" checked>
+            <input type="checkbox" id="advancedSettings">
             <div class="settings">
                 <ul class="settingClient">
                     <li>
@@ -28,7 +28,7 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select data-bind="options: clients, optionsValue:'ClientID', optionsText: 'Name',  value: selectedClient">
+                            <select data-bind="options: clients, optionsValue:'ClientID', optionsText: 'Name',  value: selectedClient, optionsCaption: 'Select Client...'">
                             </select>
                         </div>
                     </li>

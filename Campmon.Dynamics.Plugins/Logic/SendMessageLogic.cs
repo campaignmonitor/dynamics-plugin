@@ -8,7 +8,7 @@ using Campmon.Dynamics.Logic;
 
 namespace Campmon.Dynamics.Plugins.Logic
 {
-    class SendMessageLogic
+    public class SendMessageLogic
     {
         private IOrganizationService orgService;
         private ITracingService tracer;
@@ -22,7 +22,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             ConfigurationService configService = new ConfigurationService(orgService, tracer);
             campaignMonitorConfig = configService.VerifyAndLoadConfig();
-            authDetails = SharedLogic.GetAuthentication(campaignMonitorConfig);
+            authDetails = Authenticator.GetAuthentication(campaignMonitorConfig);
         }
 
         public void SendMessage(Entity target)

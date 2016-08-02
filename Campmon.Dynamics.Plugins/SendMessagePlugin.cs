@@ -5,7 +5,7 @@ using Microsoft.Xrm.Sdk;
 
 namespace Campmon.Dynamics.Plugins
 {
-    class SendMessagePlugin : PluginBase
+    public class SendMessagePlugin : PluginBase
     {
         public override void OnExecute(IServiceProvider serviceProvider)
         {

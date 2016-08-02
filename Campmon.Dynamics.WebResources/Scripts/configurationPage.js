@@ -34,7 +34,11 @@
 
             Campmon.Plugin.executeAction('loadmetadata', null)
                 .then(function (result) {
-                    vm.clients(JSON.parse(result.body.OutputData));
+                    var config = JSON.parse(result.body.OutputData);
+                    if (config.Error) {
+                        alert(config.Error);
+                    }
+                    vm.clients(config.Clients);
                     vm.isClientSelected(true);
                 }, function (error) {
                     vm.hasConnectionError = true;

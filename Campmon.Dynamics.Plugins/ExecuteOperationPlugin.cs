@@ -9,27 +9,25 @@ using Newtonsoft.Json;
 
 namespace Campmon.Dynamics.Plugins
 {
+    //  campmon_ExecuteOperationAction
+    //  Input:
+    //    OperationName
+    //    InputData
+    //  Output:
+    //    OutputData        
     public class ExecuteOperationPlugin : PluginBase
     {
         public override void OnExecute(IServiceProvider serviceProvider)
         {
-            /*
-              campmon_ExecuteOperationAction
-              Input:
-                OperationName
-                InputData
-              Output:
-                OutputData             
-            */
             var configService = new ConfigurationService(serviceProvider.CreateSystemOrganizationService(), serviceProvider.GetTracingService());
-            //TODO: Cache this service?
+            
             var trace = serviceProvider.GetTracingService();
 
             var operationFactory = new Dictionary<string, Func<IOperation>>
             {
                 { "getclients", () => new GetClients(configService) },
                 { "getclientlist", ()=> new GetClientList(configService) },
-                { "loadmetadata", () => new LoadMetadataOperation() }
+                { "loadmetadata", () => new LoadMetadataOperation(configService, trace) }
             };
 
             var pluginContext = serviceProvider.GetPluginExecutionContext();
