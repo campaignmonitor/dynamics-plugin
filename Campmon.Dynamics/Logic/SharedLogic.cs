@@ -119,11 +119,6 @@ namespace Campmon.Dynamics.Logic
             return query;
         }
 
-        public static AuthenticationDetails GetAuthentication(CampaignMonitorConfiguration config)
-        {
-            return new ApiKeyAuthenticationDetails(config.AccessToken);
-        }
-
         private static bool IsNumeric(object Expression)
         {
             double retNum;

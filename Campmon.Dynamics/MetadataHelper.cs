@@ -2,18 +2,22 @@
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
+using System.Collections.Generic;
 
 namespace Campmon.Dynamics
 {
-    class MetadataHelper
+    public class MetadataHelper
     {
         private IOrganizationService orgService;
         private ITracingService tracer;
+
+        private IDictionary<string, string> primaryAttributes;
 
         public MetadataHelper(IOrganizationService organizationService, ITracingService trace)
         {
             orgService = organizationService;
             tracer = trace;
+            primaryAttributes = new Dictionary<string, string>();
         }
 
         public string GetOptionSetValueLabel(string entityLogicalName, string attribute, int optionSetValue)
@@ -54,15 +58,21 @@ namespace Campmon.Dynamics
 
         public string GetEntityPrimaryAttribute(string entityLogicalName)
         {
-            RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
+            if (!primaryAttributes.ContainsKey(entityLogicalName))
             {
-                LogicalName = entityLogicalName,
-                RetrieveAsIfPublished = true,
-                EntityFilters = EntityFilters.Entity
-            };
+                RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
+                {
+                    LogicalName = entityLogicalName,
+                    RetrieveAsIfPublished = true,
+                    EntityFilters = EntityFilters.Entity
+                };
 
-            RetrieveEntityResponse metaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);
-            return metaData.EntityMetadata.PrimaryNameAttribute;            
+                RetrieveEntityResponse metaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);
+
+                primaryAttributes[entityLogicalName] = metaData.EntityMetadata.PrimaryNameAttribute;
+            }
+
+            return primaryAttributes[entityLogicalName];
         }
     }
 }
