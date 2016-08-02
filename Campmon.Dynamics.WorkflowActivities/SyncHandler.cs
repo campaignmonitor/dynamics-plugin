@@ -43,11 +43,11 @@ namespace Campmon.Dynamics.WorkflowActivities
             viewFilter.ColumnSet.Columns.Clear();
             if (syncData.UpdatedFields.Length > 0)
             {
-                syncData.UpdatedFields.ToList().ForEach(x => viewFilter.ColumnSet.Columns.Add(x));
+                viewFilter.ColumnSet.Columns.AddRange(syncData.UpdatedFields);
             }
             else
             {
-                config.SyncFields.ToList().ForEach(x => viewFilter.ColumnSet.Columns.Add(x));
+                viewFilter.ColumnSet.Columns.AddRange(config.SyncFields);
             }
 
             // we need the correct email for the subscription
