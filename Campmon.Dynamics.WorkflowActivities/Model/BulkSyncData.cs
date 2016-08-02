@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Campmon.Dynamics.WorkflowActivities
+namespace Campmon.Dynamics.WorkflowActivities.Model
 {
     public class BulkSyncData
     {
@@ -16,5 +16,6 @@ namespace Campmon.Dynamics.WorkflowActivities
         public string PagingCookie { get; set; }
         public int PageNumber { get; set; }
         public string[] UpdatedFields { get; set; }
+        public List<BulkSyncError> BulkSyncErrors { get; set; }
     }
 }
