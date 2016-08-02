@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using createsend_dotnet;
 using Newtonsoft.Json;
 using Microsoft.Xrm.Sdk.Query;
+using SonomaPartners.Crm.Toolkit;
 
 namespace Campmon.Dynamics.Plugins.Operations
 {
@@ -74,7 +75,24 @@ namespace Campmon.Dynamics.Plugins.Operations
 
             output.Views = views;
 
+            var fields = GetContactFields();
+
+
             return output;
+        }
+
+        private IEnumerable<SyncField> GetContactFields()
+        {
+            var metadataHelper = new MetadataHelper(orgService, trace);
+            var attributes = metadataHelper.GetEntityAttributes("contact");
+
+            return attributes.Select(a => new SyncField
+            {
+                DisplayName = a.DisplayName.UserLocalizedLabel.Label,
+                LogicalName = a.LogicalName,
+                IsChecked = false,
+                IsRecommended = false
+            });
         }
 
         private IEnumerable<SyncView> GetContactViews()
