@@ -16,7 +16,7 @@
             self.hasConnectionError = ko.observable(false);
             self.isClientSelected = ko.observable(false);
 
-            self.selectedPrimaryEmail = ko.observable(config.PrimaryEmailField)
+            self.selectedPrimaryEmail = ko.observable(config.SubscriberEmail)
         }
 
         function init() {
