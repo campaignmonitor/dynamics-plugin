@@ -5,7 +5,7 @@
 
     global.Campmon = global.Campmon || {};
     global.Campmon.ConfigurationPage = global.Campmon.ConfigurationPage || (function () {
-        function CampmonViewModel() {
+        function CampmonViewModel(config) {
             var self = this;
 
             self.clients = ko.observableArray();
@@ -15,10 +15,13 @@
             self.selectedList = ko.observable();
             self.hasConnectionError = ko.observable(false);
             self.isClientSelected = ko.observable(false);
+
+            self.selectedPrimaryEmail = ko.observable(config.SubscriberEmail)
         }
 
         function init() {
-            var vm = new CampmonViewModel();
+            var config = loadConfig();
+            var vm = new CampmonViewModel(config);
 
             vm.selectedClient.subscribe(function (selectedClient) {
                 CMPlugin.executeAction('getclientlist', selectedClient)
@@ -40,6 +43,25 @@
                     vm.hasConnectionError = true;
                     console.log(JSON.parse(error.response.text));
                 });
+        }
+
+        function loadConfig() {
+            // TODO: Implement loading functionality
+            return {
+                AccessToken: "",
+                BulkSyncData: "",
+                BulkSyncInProgress: false,
+                ClientId: "",
+                ClientName: "",
+                ListId: "",
+                ListName: "",
+                SetUpError: "",
+                SyncDuplicateEmails: false,
+                SyncFields: [],
+                SyncViewId: "",
+                SyncViewName: "",        
+                SubscriberEmail: "778230000"
+            };
         }
 
         return {
