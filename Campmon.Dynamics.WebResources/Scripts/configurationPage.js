@@ -17,6 +17,15 @@
             self.hasConnectionError = ko.observable(false);
 
             self.selectedPrimaryEmail = ko.observable();
+
+            self.isDisconnecting = ko.observable(false);
+            self.changeDisconnectingStatus = ko.observable();
+            self.disconnect = ko.observable();
+
+            // can we have a function for visible binding that returns true/false if a given attribute is checked?
+            self.email1Selected = ko.observable(false);
+            self.email2Selected = ko.observable(false);
+            self.email3Selected = ko.observable(false);
         }
 
         function init() {
@@ -29,6 +38,19 @@
                         vm.clientLists(JSON.parse(result.body.OutputData));
                     }, function (error) {
                         alert("Error retrieving lists for selected client.");
+                    });
+            });
+
+            vm.changeDisconnectingStatus.subscribe(function () {
+                vm.isDisconnecting(!!!vm.isDisconnecting());
+            });
+
+            vm.disconnect.subscribe(function () {
+                Campmon.Plugin.executeAction('disconnect', '')
+                    .then(function (result) {
+                        // todo: go back to OAuth page
+                    }, function (error) {
+                        alert("Error: " + error);
                     });
             });
 

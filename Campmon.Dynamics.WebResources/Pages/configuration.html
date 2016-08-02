@@ -297,19 +297,19 @@
                         <p>Which field should be used as the subscriber's email address in Campaign Monitor?</p>
                         <div class="radioButtons">
                             <ul>
-                                <li class="labelWidthVerySmall">
+                                <li class="labelWidthVerySmall" data-bind="visible: email1Selected">
                                     <input type="radio" id="subscriberEmail1" name="subscriberEmail" value="778230000" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail1">
                                         <p>Email</p>
                                     </label>
                                 </li>
-                                <li class="labelWidthSmall">
+                                <li class="labelWidthSmall"  data-bind="visible: email2Selected">
                                     <input type="radio" id="subscriberEmail2" name="subscriberEmail" value="778230001" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail2">
                                         <p>Email Address 2</p>
                                     </label>
                                 </li>
-                                <li class="labelWidthSmall">
+                                <li class="labelWidthSmall"  data-bind="visible: email3Selected">
                                     <input type="radio" id="subscriberEmail3" name="subscriberEmail" value="778230002" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail3">
                                         <p>Email Address 3</p>
@@ -345,7 +345,7 @@
                             <button type="submit" class="buttonPrimary">Save &amp; Sync</button>
                         </div>
                         <div class="buttons">
-                            <button type="submit" class="buttonLink">Disconnect from Campaign Monitor</button>
+                            <button type="submit" class="buttonLink" data-bind="click: changeDisconnectingStatus">Disconnect from Campaign Monitor</button>
                         </div>
                     </li>
                 </ul>
@@ -395,7 +395,7 @@
         </div>
     </div>
     <!-- DISCONNECT CONFIRMATION modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display: none;">
+    <div class="modal" data-bind="visible: isDisconnecting">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052
@@ -407,8 +407,8 @@
             <h1>Confirm Disconnect</h1>
             <p>Disconnecting from Campaign Monitor will reset all sync settings.</p>
             <div class="buttons">
-                <button type="submit" class="buttonPrimary">Disconnect</button>
-                <button type="submit" class="buttonSecondary">Cancel</button>
+                <button type="submit" class="buttonPrimary" data-bind="click: disconnect">Disconnect</button>
+                <button type="submit" class="buttonSecondary" data-bind="click: changeDisconnectingStatus">Cancel</button>
             </div>
         </div>
     </div>
