@@ -93,9 +93,7 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select>
-                                <option>All Contacts</option>
-                                <option>Another View of Contacts</option>
+                            <select data-bind="options: views, optionsValue: 'ViewId', optionsText: 'ViewName', value: selectedView, optionsCaption: 'Select List...'">                                
                             </select>
                         </div>
                     </li>
@@ -106,185 +104,17 @@
                     </li>
                     <li>
                         <h3>Recommended</h3>
-                        <ul class="columns columnsShort">
-                            <li>
-                                <input type="checkbox" id="fieldAnniversary" checked>
-                                <label for="fieldAnniversary">Anniversary</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldAnnualIncome" checked>
-                                <label for="fieldAnnualIncome">Annual Income</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldBirthday" checked>
-                                <label for="fieldBirthday">Birthday</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldCity" checked>
-                                <label for="fieldCity">City</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldCompanyName" checked>
-                                <label for="fieldCompanyName">Company Name</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldCountryRegion" checked>
-                                <label for="fieldCountryRegion">Country/Region</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldDepartment" checked>
-                                <label for="fieldDepartment">Department</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldDoNotAllowEmails" checked>
-                                <label for="fieldDoNotAllowEmails">Do not allow Emails</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldEmail" checked>
-                                <label for="fieldEmail">Email</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldEmailAddress2" checked>
-                                <label for="fieldEmailAddress2">Email Address 2</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldEmailAddress3" checked>
-                                <label for="fieldEmailAddress3">Email Address 3</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFirstName" checked>
-                                <label for="fieldFirstName">First Name</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFullName" checked>
-                                <label for="fieldFullName">Full Name</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldGender" checked>
-                                <label for="fieldGender">Gender</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldJobTitle" checked>
-                                <label for="fieldJobTitle">Job Title</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldLastDateIncludedInCampaign" checked>
-                                <label for="fieldLastDateIncludedInCampaign">Last Date Included in Campaign</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldLastName" checked>
-                                <label for="fieldLastName">Last Name</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldMaritalStatus" checked>
-                                <label for="fieldMaritalStatus">Marital Status</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldNoOfChildren" checked>
-                                <label for="fieldNoOfChildren">No. of Children</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldPreferredMethodOfContact" checked>
-                                <label for="fieldPreferredMethodOfContact">Preferred Method of Contact</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldPrimaryContactName" checked>
-                                <label for="fieldPrimaryContactName">Primary Contact Name</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldStatus" checked>
-                                <label for="fieldStatus">Status</label>
+                        <ul class="columns columnsShort" data-bind="foreach: fields">
+                            <li data-bind="if: IsRecommended">
+                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked, event: { change: $parent.fieldChanged }" />
+                                <label data-bind="text: DisplayName, attr: { for: LogicalName }" />
                             </li>
                         </ul>
                         <h3>Other Fields</h3>
-                        <ul class="columns columnsTall">
-                            <li>
-                                <input type="checkbox" id="fieldFieldName1">
-                                <label for="fieldFieldName1">Field Name 1</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName2">
-                                <label for="fieldFieldName2">Field Name 2</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName3">
-                                <label for="fieldFieldName3">Field Name 3</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName4">
-                                <label for="fieldFieldName4">Field Name 4</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName5">
-                                <label for="fieldFieldName5">Field Name 5</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName6">
-                                <label for="fieldFieldName6">Field Name 6</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName7">
-                                <label for="fieldFieldName7">Field Name 7</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName8">
-                                <label for="fieldFieldName8">Field Name 8</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName9">
-                                <label for="fieldFieldName9">Field Name 9</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName10">
-                                <label for="fieldFieldName10">Field Name 10</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName11">
-                                <label for="fieldFieldName11">Field Name 11</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName12">
-                                <label for="fieldFieldName12">Field Name 12</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName13">
-                                <label for="fieldFieldName13">Field Name 13</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName14">
-                                <label for="fieldFieldName14">Field Name 14</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName15">
-                                <label for="fieldFieldName15">Field Name 15</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName16">
-                                <label for="fieldFieldName16">Field Name 16</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName17">
-                                <label for="fieldFieldName17">Field Name 17</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName18">
-                                <label for="fieldFieldName18">Field Name 18</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName19">
-                                <label for="fieldFieldName19">Field Name 19</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName20">
-                                <label for="fieldFieldName20">Field Name 20</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName21">
-                                <label for="fieldFieldName21">Field Name 21</label>
-                            </li>
-                            <li>
-                                <input type="checkbox" id="fieldFieldName22">
-                                <label for="fieldFieldName22">Field Name 22</label>
+                        <ul class="columns columnsTall" data-bind="foreach: fields">
+                            <li data-bind="ifnot: IsRecommended">
+                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked, event: { change: $parent.fieldChanged }" />
+                                <label data-bind="text: DisplayName, attr: { for: LogicalName }" />
                             </li>
                         </ul>
                     </li>
@@ -297,19 +127,19 @@
                         <p>Which field should be used as the subscriber's email address in Campaign Monitor?</p>
                         <div class="radioButtons">
                             <ul>
-                                <li class="labelWidthVerySmall">
+                                <li class="labelWidthVerySmall" data-bind="visible: email1Selected">
                                     <input type="radio" id="subscriberEmail1" name="subscriberEmail" value="778230000" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail1">
                                         <p>Email</p>
                                     </label>
                                 </li>
-                                <li class="labelWidthSmall">
+                                <li class="labelWidthSmall"  data-bind="visible: email2Selected">
                                     <input type="radio" id="subscriberEmail2" name="subscriberEmail" value="778230001" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail2">
                                         <p>Email Address 2</p>
                                     </label>
                                 </li>
-                                <li class="labelWidthSmall">
+                                <li class="labelWidthSmall"  data-bind="visible: email3Selected">
                                     <input type="radio" id="subscriberEmail3" name="subscriberEmail" value="778230002" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail3">
                                         <p>Email Address 3</p>
@@ -321,14 +151,14 @@
                         <div class="radioButtons">
                             <ul>
                                 <li class="labelWidthVeryLarge">
-                                    <input type="radio" id="sameEmailSyncOneContact" name="sameEmailAddress" checked>
+                                    <input type="radio" id="sameEmailSyncOneContact" name="sameEmailAddress" value="true" data-bind="checked: syncDuplicateEmails">
                                     <label for="sameEmailSyncOneContact">
                                         <p>Sync one contact per email address</p>
                                         <p>The most recently modified contact will be synced to Campaign Monitor.</p>
                                     </label>
                                 </li>
                                 <li class="labelWidthVeryLarge">
-                                    <input type="radio" id="sameEmailDoNotSync" name="sameEmailAddress">
+                                    <input type="radio" id="sameEmailDoNotSync" name="sameEmailAddress" value="false" data-bind="checked: syncDuplicateEmails">
                                     <label for="sameEmailDoNotSync">
                                         <p>Do not sync these contacts</p>
                                     </label>
@@ -345,7 +175,7 @@
                             <button type="submit" class="buttonPrimary">Save &amp; Sync</button>
                         </div>
                         <div class="buttons">
-                            <button type="submit" class="buttonLink">Disconnect from Campaign Monitor</button>
+                            <button type="submit" class="buttonLink" data-bind="click: changeDisconnectingStatus">Disconnect from Campaign Monitor</button>
                         </div>
                     </li>
                 </ul>
@@ -395,7 +225,7 @@
         </div>
     </div>
     <!-- DISCONNECT CONFIRMATION modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display: none;">
+    <div class="modal" data-bind="visible: isDisconnecting">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052
@@ -407,8 +237,8 @@
             <h1>Confirm Disconnect</h1>
             <p>Disconnecting from Campaign Monitor will reset all sync settings.</p>
             <div class="buttons">
-                <button type="submit" class="buttonPrimary">Disconnect</button>
-                <button type="submit" class="buttonSecondary">Cancel</button>
+                <button type="submit" class="buttonPrimary" data-bind="click: disconnect">Disconnect</button>
+                <button type="submit" class="buttonSecondary" data-bind="click: changeDisconnectingStatus">Cancel</button>
             </div>
         </div>
     </div>
