@@ -11,16 +11,40 @@
 
             self.clients = ko.observableArray();
             self.clientLists = ko.observableArray();
+            self.views = ko.observableArray();
 
+            self.selectedView = ko.observable();
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
             self.hasConnectionError = ko.observable(false);
 
             self.selectedPrimaryEmail = ko.observable();
+
+            self.isDisconnecting = ko.observable(false);
+            self.changeDisconnectingStatus = ko.observable();
+            self.disconnect = ko.observable();
+
+            self.fields = ko.observableArray();
+            self.fieldChanged = ko.observable();
+
+            self.syncDuplicateEmails = ko.observable();
+
+            self.ObservableField = function (logicalName, displayName, isChecked, isRecommended) {
+                var self = this;
+                self.LogicalName = ko.observable(logicalName);
+                self.DisplayName = ko.observable(displayName);
+                self.IsChecked = ko.observable(isChecked);
+                self.IsRecommended = ko.observable(isRecommended);
+            };
+
+            self.email1Selected = ko.observable(true);
+            self.email2Selected = ko.observable(true);
+            self.email3Selected = ko.observable(true);
         }
 
         function init() {
             var vm = new CampmonViewModel();
+
 
             vm.selectedClient.subscribe(function (selectedClient) {
                 Campmon.Plugin.executeAction('getclientlist', selectedClient)
@@ -32,26 +56,137 @@
                     });
             });
 
+            vm.changeDisconnectingStatus.subscribe(function () {
+                vm.isDisconnecting(!vm.isDisconnecting());
+            });
+
+            vm.disconnect.subscribe(function () {
+                Campmon.Plugin.executeAction('disconnect', '')
+                    .then(function (result) {
+                        // todo: go back to OAuth page
+                    }, function (error) {
+                        alert("Error: " + error);
+                    });
+            });
+
+            vm.fieldChanged.subscribe(function (field) {
+                return verifyFieldChange(vm, field);                               
+            });
+
             ko.applyBindings(vm);
 
-            Campmon.Plugin.executeAction('loadmetadata', null)
+            Campmon.Plugin.executeAction('loadmetadata', "")
                 .then(function (result) {
                     var config = JSON.parse(result.body.OutputData);
+
                     if (config.Error) {
                         alert(config.Error);
+                        return;
                     }
-                    vm.clients(config.Clients);
+
+                    if (config.Clients) {
+                        vm.clients(config.Clients);
+                    }
 
                     if (vm.clients().length == 1) {
                         vm.selectedClient(vm.clients()[0]);
                     }
-                    //todo: set view model props from config
 
+                    if (config.SubscriberEmail) {
+                        vm.selectedPrimaryEmail(config.SubscriberEmail.toString());
+                    }
+
+                    addAndSelectView(vm, config.Views);
+                    addFields(vm, config.Fields);
+
+                    vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
                     vm.isLoading(false);
                 }, function (error) {
-                    vm.hasConnectionError = true;
+                    vm.hasConnectionError(true);
                     console.log(JSON.parse(error.response.text));
                 });
+        }
+
+        function addAndSelectView(vm, views) {
+            var viewsArr = [];
+            var selectedViewId = "";
+
+            views.forEach(function (view) {
+                viewsArr.push(view);
+                if (view.IsSelected) {
+                    selectedViewId = view.ViewId;
+                }
+            });
+
+            vm.views(viewsArr);
+            vm.selectedView(selectedViewId);
+        }
+
+        function addFields(vm, fields) {
+            var fieldArr = [];
+            fields.forEach(function (field) {
+                fieldArr.push(new vm.ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
+
+                if (field.LogicalName === "emailaddress1") {
+                    vm.email1Selected(field.IsChecked);
+                } else if (field.LogicalName === "emailaddress2") {
+                    vm.email2Selected(field.IsChecked);
+                } else if (field.LogicalName === "emailaddress3") {
+                    vm.email3Selected(field.IsChecked);
+                }
+            });
+            vm.fields(fieldArr);
+        }
+
+        function verifyFieldChange(vm, field) {
+            var EMAIL1VAL = "778230000";
+            var EMAIL2VAL = "778230001";
+            var EMAIL3VAL = "778230002";
+            var ERROR_NONESELECTED = "At least one of the email fields must be selected in order to sync with Campaign Monitor.";
+
+            if (field.LogicalName() === "emailaddress1") {
+                if (!vm.email2Selected() && !vm.email3Selected() && !field.IsChecked()) {
+                    alert(ERROR_NONESELECTED);
+                    field.IsChecked(!field.IsChecked());
+                    return false;
+                }
+
+                if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL1VAL) {
+                    vm.selectedPrimaryEmail(vm.email2Selected()
+                                            ? EMAIL2VAL
+                                            : EMAIL3VAL)
+                }
+                vm.email1Selected(field.IsChecked());
+            } else if (field.LogicalName() === "emailaddress2") {
+                if (!vm.email1Selected() && !vm.email3Selected() && !field.IsChecked()) {
+                    alert(ERROR_NONESELECTED);
+                    field.IsChecked(!field.IsChecked());
+                    return false;
+                }
+
+                if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL2VAL) {
+                    vm.selectedPrimaryEmail(vm.email1Selected()
+                                            ? EMAIL1VAL
+                                            : EMAIL3VAL)
+                }
+
+                vm.email2Selected(field.IsChecked());
+            } else if (field.LogicalName() === "emailaddress3") {
+                if (!vm.email1Selected() && !vm.email2Selected() && !field.IsChecked()) {
+                    alert(ERROR_NONESELECTED);
+                    field.IsChecked(!field.IsChecked());
+                    return false;
+                }
+
+                if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL3VAL) {
+                    vm.selectedPrimaryEmail(vm.email1Selected()
+                                            ? EMAIL1VAL
+                                            : EMAIL2VAL)
+                }
+
+                vm.email3Selected(field.IsChecked());
+            }
+            return true;
         }
 
         return {
