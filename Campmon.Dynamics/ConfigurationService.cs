@@ -61,7 +61,7 @@ namespace Campmon.Dynamics
                 ListName = configEntity.GetAttributeValue<string>("campmon_listname"),
                 SetUpError = configEntity.GetAttributeValue<string>("campmon_setuperror"),
                 SyncDuplicateEmails = configEntity.GetAttributeValue<bool>("campmon_syncduplicateemails"),
-                SyncFields = configEntity.Contains("campmon_syncfields")
+                SyncFields = configEntity.Contains("campmon_syncfields") && !string.IsNullOrWhiteSpace(configEntity.GetAttributeValue<string>("campmon_syncfields"))
                     ? configEntity.GetAttributeValue<string>("campmon_syncfields").Split(',')
                     : Enumerable.Empty<string>(),
                 SyncViewId = configEntity.Contains("campmon_syncviewid")

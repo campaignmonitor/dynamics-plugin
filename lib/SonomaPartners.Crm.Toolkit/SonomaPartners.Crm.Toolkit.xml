@@ -4,6 +4,678 @@
         <name>SonomaPartners.Crm.Toolkit</name>
     </assembly>
     <members>
+        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions">
+            <summary>
+            Extension methods for IServiceProvider
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.GetService``1(System.IServiceProvider)">
+            <summary>
+            Get a service of type T from the service provider.
+            </summary>
+            <typeparam name="T">Type of service.</typeparam>
+            <param name="serviceProvider"></param>
+            <returns>Instance of service type T.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.GetPluginExecutionContext(System.IServiceProvider)">
+            <summary>
+            Get the plugin execution context from the service provider.
+            </summary>
+            <param name="serviceProvider"></param>
+            <returns>IPluginExecutionContext instance.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationService(System.IServiceProvider,System.Guid)">
+            <summary>
+            Create an instance of IOrganizationService for a user.
+            </summary>
+            <param name="serviceProvider"></param>
+            <param name="userId">Id of user to call the service.</param>
+            <returns>Instance of IOrganizationService.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateSystemOrganizationService(System.IServiceProvider)">
+            <summary>
+            Creates the system organization service.
+            </summary>
+            <param name="serviceProvider">IServiceProvider from the plugin.</param>
+            <returns>Instance of IOrganizationService</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationServiceAsCurrentUser(System.IServiceProvider)">
+            <summary>
+            Create an instance of IOrganizationService for the current user executing the plugin.
+            </summary>
+            <param name="serviceProvider">IServiceProvider from the plugin.</param>
+            <returns>Instance of IOrganizationService.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.GetTracingService(System.IServiceProvider)">
+            <summary>
+            Get the tracing service from the service provider.
+            </summary>
+            <param name="serviceProvider"></param>
+            <returns>ITracingService instance.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationContext``1(System.IServiceProvider,System.Guid)">
+            <summary>
+            Create an OrganizationServiceContext.
+            </summary>
+            <typeparam name="T">Type of OrganizationServiceContext.</typeparam>
+            <param name="serviceProvider">Service provider.</param>
+            <param name="userId">Id of the user to call the service.</param>
+            <returns>Instance of OrganizationServiceContext type T.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateSystemOrganizationContext``1(System.IServiceProvider)">
+            <summary>
+            Create an OrganizationServiceContext for the system user.
+            </summary>
+            <typeparam name="T">Type of OrganizationServiceContext.</typeparam>
+            <param name="serviceProvider">Service provider.</param>
+            <returns>Instance of OrganizationServiceContext type T.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationContextAsCurrentUser``1(System.IServiceProvider)">
+            <summary>
+            Create an OrganizationServiceContext for the current user executing the plugin.
+            </summary>
+            <typeparam name="T">Type of OrganizationServiceContext.</typeparam>
+            <param name="serviceProvider">Service provider.</param>
+            <returns>Instance of OrganizationServiceContext type T.</returns>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.OrgServiceExtensions">
+            <summary>
+            Extension methods for IOrganizationService.
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.EntityReference,System.String[])">
+            <summary>
+            Retrieve a strongly-typed entity from the organization service.
+            </summary>
+            <typeparam name="T">Entity type.</typeparam>
+            <param name="service">IOrganizationService instance.</param>
+            <param name="er">EntityReference of target record.</param>
+            <param name="attributeNames">Attribute names to be retrieved.</param>
+            <returns>Strongly-typed entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.EntityReference,Microsoft.Xrm.Sdk.Query.ColumnSet)">
+            <summary>
+            Retrieve a strongly-typed entity from the organization service.
+            </summary>
+            <typeparam name="T">Entity type.</typeparam>
+            <param name="service">IOrganizationService instance.</param>
+            <param name="er">EntityReference of target record.</param>
+            <param name="columns">ColumnSet to be retrieved.</param>
+            <returns>Strongly-typed entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.Guid,System.String[])">
+            <summary>
+            Retrieve a strongly-typed entity from the organization service.
+            </summary>
+            <typeparam name="T">Entity type.</typeparam>
+            <param name="service">IOrganizationService instance.</param>
+            <param name="logicalName">Logical name of target record.</param>
+            <param name="id">Id of target record.</param>
+            <param name="attributeNames">Attributes to be retrieved.</param>
+            <returns>Strongly-typed entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.Guid,Microsoft.Xrm.Sdk.Query.ColumnSet)">
+            <summary>
+            Retrieve a strongly-typed entity from the organization service.
+            </summary>
+            <typeparam name="T">Entity type.</typeparam>
+            <param name="service">IOrganizationService instance.</param>
+            <param name="logicalName">Logical name of target record.</param>
+            <param name="id">Id of target record.</param>
+            <param name="columns">Columns to be retrieved.</param>
+            <returns>Strongly-typed entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.EntityReference,Microsoft.Xrm.Sdk.Query.ColumnSet)">
+            <summary>
+            Retrieve an entity from the organization service by EntityReference.
+            </summary>
+            <param name="service">IOrganizationService instance.</param>
+            <param name="er">EntityReference of target record.</param>
+            <param name="columns">Columns to be retrieved.</param>
+            <returns>Entity record.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.RetrieveMultiple``1(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.Query.QueryBase)">
+            <summary>
+            Retrieve multiple strongly-typed entities from the organization service.
+            </summary>
+            <typeparam name="T">Entity type.</typeparam>
+            <param name="service">IOrganizationService instance.</param>
+            <param name="query">Query to execute.</param>
+            <returns>Strongly-typed IEnumerable of the query results.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.RetrieveMultipleAll(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.Int32,System.String,System.Int32)">
+            <summary>
+            Retrieve multiple pages of results for a fetch query in a single EntityCollection.
+            </summary>
+            <param name="orgService">IOrganizationService instance.</param>
+            <param name="fetchXml">Fetch string to execute.</param>
+            <param name="pageNumber">Page number to start from. Default is 1.</param>
+            <param name="pagingCookie">Paging cookie to use. Default is null.</param>
+            <param name="count">Number of records to retrieve. Default is 5000.</param>
+            <returns>EntityCollection of all results from the query.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.RetrieveMultipleAll(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.Query.QueryExpression)">
+            <summary>
+            Retrieve multiple pages of results for a QueryExpression in a single EntityCollection.
+            </summary>
+            <param name="orgService">IOrganization service instance.</param>
+            <param name="query">QueryExpression to execute.</param>
+            <returns>EntityCollection of all results from the query.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultiple(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest})">
+            <summary>
+            Executes an ExecuteMultipleRequest for a collection of requests, returning responses and continuing on error.
+            </summary>
+            <param name="service">IOrganizationService.</param>
+            <param name="requestCollection">Collection of requests to execute.</param>
+            <returns>ExecuteMultipleResponse with CRM responses.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultiple(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest},System.Boolean,System.Boolean)">
+            <summary>
+            Executes an ExecuteMultipleRequest for a collection of requests.
+            </summary>
+            <param name="service">IOrganizationService.</param>
+            <param name="requestCollection">Collection of requests to execute.</param>
+            <param name="continueOnError">If set to <c>true</c>, continue executing requests if one encounters an error.</param>
+            <param name="returnResponses">If set to <c>true</c>, return responses for successful requests.</param>
+            <returns>ExecuteMultipleResponse.</returns>
+            <exception cref="T:System.ArgumentException">requestCollection must be 1000 requests or less</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultiple(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest},Microsoft.Xrm.Sdk.ExecuteMultipleSettings)">
+            <summary>
+            Executes an ExecuteMultipleRequest for a collection of requests with specified settings.
+            </summary>
+            <param name="service">IOrganizationService.</param>
+            <param name="requestCollection">Collection of requests to execute.</param>
+            <param name="requestSettings">The request settings.</param>
+            <returns>ExecuteMultipleResponse.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultipleAll(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest})">
+            <summary>
+            Executes an ExecuteMultipleRequest for every set of 1000 requests in the collection, returning responses and continuing on error.
+            </summary>
+            <param name="service">IOrganizationService.</param>
+            <param name="requestCollection">Collection of requests to execute.</param>
+            <returns>Collection of ExecuteMultipleResponse for the executed ExecuteMultipleRequests.</returns>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.IEnumerableExtenstions">
+            <summary>
+            Extension methods for IEnumerable.
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.IEnumerableExtenstions.Batch``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
+            <summary>
+            Batches the source sequence into sized buckets.
+            </summary>
+            <typeparam name="TSource">Type of elements in <paramref name="source"/> sequence.</typeparam>
+            <param name="source">The source sequence.</param>
+            <param name="size">Size of buckets.</param>
+            <returns>A sequence of buckets containing elements of the source collection.</returns>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.IEnumerableExtenstions.Batch``2(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{System.Collections.Generic.IEnumerable{``0},``1})">
+            <summary>
+            Batches the source sequence into sized buckets and applies a projection to each bucket.
+            </summary>
+            <typeparam name="TSource">Type of elements in <paramref name="source"/> sequence.</typeparam>
+            <typeparam name="TResult">Type of result returned by <paramref name="resultSelector"/>.</typeparam>
+            <param name="source">The source sequence.</param>
+            <param name="size">Size of buckets.</param>
+            <param name="resultSelector">The projection to apply to each bucket.</param>
+            <returns>A sequence of projections on equally sized buckets containing elements of the source collection.</returns>
+            <remarks>
+            This operator uses deferred execution and streams its results (buckets and bucket content).
+            It is also identical to <see cref="!:Partition&lt;TSource&gt;(System.Collections.Generic.IEnumerable&lt;TSource&gt;,int)"/>.
+            </remarks>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.PluginStage">
+            <summary>
+            The execution stage in the plugin pipeline.
+            </summary>
+        </member>
+        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.None">
+            <summary>
+            Represents no specific stage.
+            </summary>
+        </member>
+        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.PreValidation">
+            <summary>
+            Occurs before validation. Not inside the transaction.
+            </summary>
+        </member>
+        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.PreOperation">
+            <summary>
+            Occurs before the default operation. Inside the transaction.
+            </summary>
+        </member>
+        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.PostOperation">
+            <summary>
+            Occurs after the default operation. Inside the transaction.
+            </summary>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager">
+            <summary>
+            Manages a long-running, thread-safe connection to the Organization Service.
+            </summary>
+            <remarks>
+            Initializes an IServiceManagement instance one time that is re-used across connections as recommended by Microsoft. Credentials are authenticated as needed when the security token is close to expiring. Proxy types are applied at the service management level to prevent multithreading errors.
+            </remarks>
+            <seealso cref="T:SonomaPartners.Crm.Toolkit.IOrgServiceManager"/>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.IOrgServiceManager">
+            <summary>
+            Defines an object that returns an instance of IOrganizationService.
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.IOrgServiceManager.GetOrgService">
+            <summary>
+            Gets an instance of IOrganizationService.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager"/> class.
+            </summary>
+            <param name="connectionString">The connection string.</param>
+            <exception cref="T:System.ArgumentNullException">connectionString</exception>
+            <exception cref="T:System.Exception">ServiceManagement initialization error.</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager.GetOrgService">
+            <summary>
+            Gets an instance of IOrganizationService.
+            </summary>
+            <returns>An instance of IOrganizationService.</returns>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions">
+            <summary>
+            Extension methods for IPluginExecutionContext
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetTargetEntity``1(Microsoft.Xrm.Sdk.IPluginExecutionContext)">
+            <summary>
+            Gets the target entity from plugin context input parameters and casts to type T.
+            </summary>
+            <typeparam name="T">Strongly-typed Entity.</typeparam>
+            <param name="context">The context.</param>
+            <returns>Target entity cast to type T.</returns>
+            <exception cref="T:System.ArgumentNullException">context</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetTargetEntity(Microsoft.Xrm.Sdk.IPluginExecutionContext)">
+            <summary>
+            Gets the target entity from plugin context input parameters.
+            </summary>
+            <param name="context">The context.</param>
+            <returns>Target entity.</returns>
+            <exception cref="T:System.ArgumentNullException">context</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetInputParameter``1(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
+            <summary>
+            Gets the named input parameters and attempts to cast as type T.
+            </summary>
+            <typeparam name="T">Type of the input parameter.</typeparam>
+            <param name="context">The context.</param>
+            <param name="parameterName">Name of the parameter.</param>
+            <returns>Input parameter as type T, or null if does not cast.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            context
+            or
+            parameterName
+            </exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetInputParameter(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
+            <summary>
+            Gets the named input parameter.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="parameterName">Name of the parameter.</param>
+            <returns>The input parameter as <c>object</c> type.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            context
+            or
+            parameterName
+            </exception>
+            <exception cref="T:Microsoft.Xrm.Sdk.InvalidPluginExecutionException">
+            Unable to retrieve parameter from context.
+            </exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPreEntityImage``1(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
+            <summary>
+            Gets the entity pre image as type T.
+            </summary>
+            <typeparam name="T">Strongly-typed Entity.</typeparam>
+            <param name="context">The context.</param>
+            <param name="preImageName">Name of the pre image.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">
+            context
+            or
+            preImageName
+            </exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPreEntityImage(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
+            <summary>
+            Gets the entity pre image.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="preImageName">Name of the pre image.</param>
+            <returns>Pre Image Entity instance.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            context
+            or
+            preImageName
+            </exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPostEntityImage``1(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
+            <summary>
+            Gets the entity post image.
+            </summary>
+            <typeparam name="T">Strongly-typed Entity.</typeparam>
+            <param name="context">The context.</param>
+            <param name="postImageName">Name of the post image.</param>
+            <returns>Entity Post Image cast to type T.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            context
+            or
+            postImageName
+            </exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPostEntityImage(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
+            <summary>
+            Gets the post entity image.
+            </summary>
+            <param name="context">The context.</param>
+            <param name="postImageName">Name of the post image.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">
+            context
+            or
+            postImageName
+            </exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetEntityImage(Microsoft.Xrm.Sdk.EntityImageCollection,System.String)">
+            <summary>
+            Gets the entity image from an image collection.
+            </summary>
+            <param name="imageCollection">The image collection.</param>
+            <param name="imageName">Name of the image.</param>
+            <returns>Entity</returns>
+            <exception cref="T:System.ArgumentNullException">
+            imageCollection
+            or
+            imageName
+            </exception>
+            <exception cref="T:Microsoft.Xrm.Sdk.InvalidPluginExecutionException">Unable to retrieve image from context.</exception>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.MetadataService">
+            <summary>
+            Utility to execute CRM Metadata Requests.
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.RetrieveAttribute(System.String,System.String)">
+            <summary>
+            Get metadata for an attribute.
+            </summary>
+            <param name="entityName">Name of the entity containing the attribute.</param>
+            <param name="attributeName">Attribute name to retrieve.</param>
+            <returns>AttributeMetadata from a RetrieveAttributeResponse.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.RetrieveEntity(System.String,Microsoft.Xrm.Sdk.Metadata.EntityFilters)">
+            <summary>
+            Get metadata for an entity.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="entityFilter">Filter for the type of metadata to retrieve.</param>
+            <returns>EntityMetadata from a RetrieveEntityResponse.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetTypeCodeFromEntityName(System.String)">
+            <summary>
+            Get the integer type code for an entity by logical name.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <returns>The integer typecode for the entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetEntityNameFromTypeCode(System.Int32)">
+            <summary>
+            Get the logical name for an entity by typecode.
+            </summary>
+            <param name="typeCode">Integer typecode of the entity.</param>
+            <returns>The string logical name for the entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetEntityNameFromTypeCode(System.Int32,System.Boolean)">
+            <summary>
+            Get the logical name or display name for an entity by typecode.
+            </summary>
+            <param name="typeCode">Integer typecode of the entity.</param>
+            <param name="displayName">True to return the display name, false to return the logical name.</param>
+            <returns>The logical or display name of the entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStatusOptionsForEntityByState(System.String,System.Int32)">
+            <summary>
+            Get the valid status options for a given entity state.
+            </summary>
+            <param name="entity">Logical name of the entity.</param>
+            <param name="state">Integer value of the entity state.</param>
+            <returns>List of OptionMetadata with each valid status option.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetCorrespondingStateOfStatus(System.String,System.Int32)">
+            <summary>
+            Get state option that corresponds to an entity's status value.
+            </summary>
+            <param name="entity">Logical name of the entity.</param>
+            <param name="status">Integer value of the entity status.</param>
+            <returns>OptionMetadata for the entity state.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetPrimaryAttributeName(System.String)">
+            <summary>
+            Gets the name of the primary attribute for an entity.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <returns>Logical name of the PrimaryNameAttribute for the requested entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromStatusString(System.String,System.String)">
+            <summary>
+            Gets the integer value for an entity's statuscode by name.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="statuscodeName">Name of the statuscode.</param>
+            <returns>Integer value for the statuscode.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromStateString(System.String,System.String)">
+            <summary>
+            Gets the integer value for an entity's statecode.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="statecodeName">Name of the statecode.</param>
+            <returns>Integer value for the statecode.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromPicklistString(System.String,System.String,System.String)">
+            <summary>
+            Gets the integer value for a picklist option by name.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="picklistValue">Name of the picklist option.</param>
+            <returns>Integer value for the picklist option.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromPicklistString(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Gets the integer value for a picklist option by name and language code.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="picklistValue">Name of the picklist option.</param>
+            <param name="languageCode">Language code of the picklist option.</param>
+            <returns>Integer value for the picklist option.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromPicklistInt(System.String,System.String,System.Int32)">
+            <summary>
+            Gets the label for a picklist option integer value.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="picklistValue">Integer value of the picklist option.</param>
+            <returns>User-localized label for the picklist option.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromPicklistInt(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets the label for a picklist option integer value and country code.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="picklistValue">Integer value of the picklist option.</param>
+            <param name="languageCode">Integer language code of the picklist option.</param>
+            <returns>Localized label for the picklist option.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromBooleanValue(System.String,System.String,System.Boolean)">
+            <summary>
+            Gets the label for a boolean attribute value.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="booleanValue">Boolean value of the attribute.</param>
+            <returns>User-localized label for the boolean value. </returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromBooleanValue(System.String,System.String,System.Boolean,System.Int32)">
+            <summary>
+            Gets the label for a boolean attribute value and language code.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="booleanValue">Boolean value of the attribute.</param>
+            <param name="languageCode">Integer language code of the label.</param>
+            <returns>Localized label for the boolean value. </returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromStatusInt(System.String,System.String,System.Int32)">
+            <summary>
+            Gets the label for an entity's integer statecode.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <param name="statusCode">Integer value of the statuscode</param>
+            <returns>User-localized label of the statuscode.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.DoesAttributeExistOnEntity(System.String,System.String)">
+            <summary>
+            Determine if an attribute exists on a given entity.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <returns>True/False if the attribute is present on the entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetDisplayNameFromEntity(System.String)">
+            <summary>
+            Gets the display name for an entity.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <returns>Display name of the entity.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetDisplayNameFromAttribute(System.String,System.String)">
+            <summary>
+            Gets the display name for an attribute.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <param name="attributeName">Logical name of the attribute.</param>
+            <returns>Display name of the attribute.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetPrimaryKeyName(System.String)">
+            <summary>
+            Get the name of an entity's primary key attribute.
+            </summary>
+            <param name="entityName">Logical name of the entity.</param>
+            <returns>Logical name of the entity's primary key.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.RetrieveGlobalOptionSet(System.String)">
+            <summary>
+            Gets the metadata for a global option set.
+            </summary>
+            <param name="globalOptionSetName">Logical name of the option set.</param>
+            <returns>List of OptionMetadata for the option set.</returns>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.PluginBase">
+            <summary>
+            Abstract base class for Plugins. Implements <see cref="T:Microsoft.Xrm.Sdk.IPluginExecutionContext"></see> as required by the CRM SDK and can execute custom code by overriding one of the OnExecute, OnCreate, OnUpdate, or OnDelete functions.
+            </summary>
+            <seealso cref="T:Microsoft.Xrm.Sdk.IPlugin"/>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.Execute(System.IServiceProvider)">
+            <summary>
+            Executes plug-in code in response to an event.
+            </summary>
+            <param name="serviceProvider">Type: Returns_IServiceProvider. A container for service objects. Contains references to the plug-in execution context (<see cref="T:Microsoft.Xrm.Sdk.IPluginExecutionContext"></see>), tracing service (<see cref="T:Microsoft.Xrm.Sdk.ITracingService"></see>), organization service (<see cref="T:Microsoft.Xrm.Sdk.IOrganizationServiceFactory"></see>), and notification service (<see cref="T:Microsoft.Xrm.Sdk.IServiceEndpointNotificationService"></see>).</param>
+            <exception cref="T:System.ArgumentNullException">serviceProvider</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnExecute(System.IServiceProvider)">
+            <summary>
+            Called when the plugin is executed for any message.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnCreate(System.IServiceProvider)">
+            <summary>
+            Called when the plugin is executed for a create message if OnExecute is not overriden.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnUpdate(System.IServiceProvider)">
+            <summary>
+            Called when the plugin is executed for an update message if OnExecute is not overriden.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnDelete(System.IServiceProvider)">
+            <summary>
+            Called when the plugin is executed for a delete message if OnExecute is not overriden.
+            </summary>
+            <param name="serviceProvider">The service provider.</param>
+        </member>
+        <member name="T:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString">
+            <summary>
+            Connection string parser. For internal use by OrgServiceTokenManager only.
+            </summary>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString"/> class.
+            </summary>
+            <param name="connectionString">The connection string.</param>
+            <exception cref="T:System.ArgumentException">connectionString</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.CreateServiceUri">
+            <summary>
+            Creates the OrganizationService URI from connection string parameters.
+            </summary>
+            <returns>Uri for the OrganizationService.</returns>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.CreateCredential">
+            <summary>
+            Creates the credential from connection string parameters. If not supplied, returns default Windows credentials.
+            </summary>
+            <returns>AuthenticationCredentials from the parameters.</returns>
+            <exception cref="T:System.InvalidOperationException">UserName and Password are needed in connection string.</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.GetProxyTimeout">
+            <summary>
+            Gets the proxy timeout.
+            </summary>
+            <returns>Timeout value in minutes.</returns>
+            <exception cref="T:System.InvalidOperationException">Timeout in connection string is invalid.</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.AreProxyTypesEnabled">
+            <summary>
+            Determines if proxy types should be enabled.
+            </summary>
+            <returns>True/false if proxy types should be enabled.</returns>
+            <exception cref="T:System.InvalidOperationException">EnableProxyTypes in connection string is invalid.</exception>
+        </member>
+        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.FindFirstKeyWithValue(System.String[])">
+            <summary>
+            Finds the first key with a value.
+            </summary>
+            <param name="possibleKeys">The possible keys.</param>
+            <returns>String value for the key.</returns>
+        </member>
         <member name="T:SonomaPartners.Crm.Toolkit.EntityExtensions">
             <summary>
             Extension methods for Entity and attribute types.
@@ -177,679 +849,6 @@
             <param name="me"></param>
             <param name="AttributeKey">Attribute name.</param>
             <returns>The value of the attribute as type T.</returns>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.IEnumerableExtenstions">
-            <summary>
-            Extension methods for IEnumerable.
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.IEnumerableExtenstions.Batch``1(System.Collections.Generic.IEnumerable{``0},System.Int32)">
-            <summary>
-            Batches the source sequence into sized buckets.
-            </summary>
-            <typeparam name="TSource">Type of elements in <paramref name="source"/> sequence.</typeparam>
-            <param name="source">The source sequence.</param>
-            <param name="size">Size of buckets.</param>
-            <returns>A sequence of buckets containing elements of the source collection.</returns>
-            <remarks>
-            </remarks>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.IEnumerableExtenstions.Batch``2(System.Collections.Generic.IEnumerable{``0},System.Int32,System.Func{System.Collections.Generic.IEnumerable{``0},``1})">
-            <summary>
-            Batches the source sequence into sized buckets and applies a projection to each bucket.
-            </summary>
-            <typeparam name="TSource">Type of elements in <paramref name="source"/> sequence.</typeparam>
-            <typeparam name="TResult">Type of result returned by <paramref name="resultSelector"/>.</typeparam>
-            <param name="source">The source sequence.</param>
-            <param name="size">Size of buckets.</param>
-            <param name="resultSelector">The projection to apply to each bucket.</param>
-            <returns>A sequence of projections on equally sized buckets containing elements of the source collection.</returns>
-            <remarks>
-            This operator uses deferred execution and streams its results (buckets and bucket content).
-            It is also identical to <see cref="!:Partition&lt;TSource&gt;(System.Collections.Generic.IEnumerable&lt;TSource&gt;,int)"/>.
-            </remarks>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString">
-            <summary>
-            Connection string parser. For internal use by OrgServiceTokenManager only.
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString"/> class.
-            </summary>
-            <param name="connectionString">The connection string.</param>
-            <exception cref="T:System.ArgumentException">connectionString</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.CreateServiceUri">
-            <summary>
-            Creates the OrganizationService URI from connection string parameters.
-            </summary>
-            <returns>Uri for the OrganizationService.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.CreateCredential">
-            <summary>
-            Creates the credential from connection string parameters. If not supplied, returns default Windows credentials.
-            </summary>
-            <returns>AuthenticationCredentials from the parameters.</returns>
-            <exception cref="T:System.InvalidOperationException">UserName and Password are needed in connection string.</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.GetProxyTimeout">
-            <summary>
-            Gets the proxy timeout.
-            </summary>
-            <returns>Timeout value in minutes.</returns>
-            <exception cref="T:System.InvalidOperationException">Timeout in connection string is invalid.</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.AreProxyTypesEnabled">
-            <summary>
-            Determines if proxy types should be enabled.
-            </summary>
-            <returns>True/false if proxy types should be enabled.</returns>
-            <exception cref="T:System.InvalidOperationException">EnableProxyTypes in connection string is invalid.</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.CrmConnectionString.FindFirstKeyWithValue(System.String[])">
-            <summary>
-            Finds the first key with a value.
-            </summary>
-            <param name="possibleKeys">The possible keys.</param>
-            <returns>String value for the key.</returns>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.IOrgServiceManager">
-            <summary>
-            Defines an object that returns an instance of IOrganizationService.
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.IOrgServiceManager.GetOrgService">
-            <summary>
-            Gets an instance of IOrganizationService.
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.MetadataService">
-            <summary>
-            Utility to execute CRM Metadata Requests.
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.RetrieveAttribute(System.String,System.String)">
-            <summary>
-            Get metadata for an attribute.
-            </summary>
-            <param name="entityName">Name of the entity containing the attribute.</param>
-            <param name="attributeName">Attribute name to retrieve.</param>
-            <returns>AttributeMetadata from a RetrieveAttributeResponse.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.RetrieveEntity(System.String,Microsoft.Xrm.Sdk.Metadata.EntityFilters)">
-            <summary>
-            Get metadata for an entity.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="entityFilter">Filter for the type of metadata to retrieve.</param>
-            <returns>EntityMetadata from a RetrieveEntityResponse.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetTypeCodeFromEntityName(System.String)">
-            <summary>
-            Get the integer type code for an entity by logical name.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <returns>The integer typecode for the entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetEntityNameFromTypeCode(System.Int32)">
-            <summary>
-            Get the logical name for an entity by typecode.
-            </summary>
-            <param name="typeCode">Integer typecode of the entity.</param>
-            <returns>The string logical name for the entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetEntityNameFromTypeCode(System.Int32,System.Boolean)">
-            <summary>
-            Get the logical name or display name for an entity by typecode.
-            </summary>
-            <param name="typeCode">Integer typecode of the entity.</param>
-            <param name="displayName">True to return the display name, false to return the logical name.</param>
-            <returns>The logical or display name of the entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStatusOptionsForEntityByState(System.String,System.Int32)">
-            <summary>
-            Get the valid status options for a given entity state.
-            </summary>
-            <param name="entity">Logical name of the entity.</param>
-            <param name="state">Integer value of the entity state.</param>
-            <returns>List of OptionMetadata with each valid status option.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetCorrespondingStateOfStatus(System.String,System.Int32)">
-            <summary>
-            Get state option that corresponds to an entity's status value.
-            </summary>
-            <param name="entity">Logical name of the entity.</param>
-            <param name="status">Integer value of the entity status.</param>
-            <returns>OptionMetadata for the entity state.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetPrimaryAttributeName(System.String)">
-            <summary>
-            Gets the name of the primary attribute for an entity.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <returns>Logical name of the PrimaryNameAttribute for the requested entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromStatusString(System.String,System.String)">
-            <summary>
-            Gets the integer value for an entity's statuscode by name.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="statuscodeName">Name of the statuscode.</param>
-            <returns>Integer value for the statuscode.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromStateString(System.String,System.String)">
-            <summary>
-            Gets the integer value for an entity's statecode.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="statecodeName">Name of the statecode.</param>
-            <returns>Integer value for the statecode.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromPicklistString(System.String,System.String,System.String)">
-            <summary>
-            Gets the integer value for a picklist option by name.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="picklistValue">Name of the picklist option.</param>
-            <returns>Integer value for the picklist option.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetIntValueFromPicklistString(System.String,System.String,System.String,System.Int32)">
-            <summary>
-            Gets the integer value for a picklist option by name and language code.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="picklistValue">Name of the picklist option.</param>
-            <param name="languageCode">Language code of the picklist option.</param>
-            <returns>Integer value for the picklist option.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromPicklistInt(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.String,System.Int32)">
-            <summary>
-            Gets the label for a picklist option integer value.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="picklistValue">Integer value of the picklist option.</param>
-            <returns>User-localized label for the picklist option.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromPicklistInt(System.String,System.String,System.Int32,System.Int32)">
-            <summary>
-            Gets the label for a picklist option integer value and country code.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="picklistValue">Integer value of the picklist option.</param>
-            <param name="languageCode">Integer language code of the picklist option.</param>
-            <returns>Localized label for the picklist option.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromBooleanValue(System.String,System.String,System.Boolean)">
-            <summary>
-            Gets the label for a boolean attribute value.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="booleanValue">Boolean value of the attribute.</param>
-            <returns>User-localized label for the boolean value. </returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromBooleanValue(System.String,System.String,System.Boolean,System.Int32)">
-            <summary>
-            Gets the label for a boolean attribute value and language code.
-            </summary>
-            <param name="metadataService">Instance of IOrganizationService to execute the request.</param>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="booleanValue">Boolean value of the attribute.</param>
-            <param name="languageCode">Integer language code of the label.</param>
-            <returns>Localized label for the boolean value. </returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetStringValueFromStatusInt(System.String,System.String,System.Int32)">
-            <summary>
-            Gets the label for an entity's integer statecode.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <param name="statusCode">Integer value of the statuscode</param>
-            <returns>User-localized label of the statuscode.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.DoesAttributeExistOnEntity(System.String,System.String)">
-            <summary>
-            Determine if an attribute exists on a given entity.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <returns>True/False if the attribute is present on the entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetDisplayNameFromEntity(System.String)">
-            <summary>
-            Gets the display name for an entity.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <returns>Display name of the entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetDisplayNameFromAttribute(System.String,System.String)">
-            <summary>
-            Gets the display name for an attribute.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <param name="attributeName">Logical name of the attribute.</param>
-            <returns>Display name of the attribute.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.GetPrimaryKeyName(System.String)">
-            <summary>
-            Get the name of an entity's primary key attribute.
-            </summary>
-            <param name="entityName">Logical name of the entity.</param>
-            <returns>Logical name of the entity's primary key.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.MetadataService.RetrieveGlobalOptionSet(System.String)">
-            <summary>
-            Gets the metadata for a global option set.
-            </summary>
-            <param name="globalOptionSetName">Logical name of the option set.</param>
-            <returns>List of OptionMetadata for the option set.</returns>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.OrgServiceExtensions">
-            <summary>
-            Extension methods for IOrganizationService.
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.EntityReference,System.String[])">
-            <summary>
-            Retrieve a strongly-typed entity from the organization service.
-            </summary>
-            <typeparam name="T">Entity type.</typeparam>
-            <param name="service">IOrganizationService instance.</param>
-            <param name="er">EntityReference of target record.</param>
-            <param name="attributeNames">Attribute names to be retrieved.</param>
-            <returns>Strongly-typed entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.EntityReference,Microsoft.Xrm.Sdk.Query.ColumnSet)">
-            <summary>
-            Retrieve a strongly-typed entity from the organization service.
-            </summary>
-            <typeparam name="T">Entity type.</typeparam>
-            <param name="service">IOrganizationService instance.</param>
-            <param name="er">EntityReference of target record.</param>
-            <param name="columns">ColumnSet to be retrieved.</param>
-            <returns>Strongly-typed entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.Guid,System.String[])">
-            <summary>
-            Retrieve a strongly-typed entity from the organization service.
-            </summary>
-            <typeparam name="T">Entity type.</typeparam>
-            <param name="service">IOrganizationService instance.</param>
-            <param name="logicalName">Logical name of target record.</param>
-            <param name="id">Id of target record.</param>
-            <param name="attributeNames">Attributes to be retrieved.</param>
-            <returns>Strongly-typed entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve``1(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.Guid,Microsoft.Xrm.Sdk.Query.ColumnSet)">
-            <summary>
-            Retrieve a strongly-typed entity from the organization service.
-            </summary>
-            <typeparam name="T">Entity type.</typeparam>
-            <param name="service">IOrganizationService instance.</param>
-            <param name="logicalName">Logical name of target record.</param>
-            <param name="id">Id of target record.</param>
-            <param name="columns">Columns to be retrieved.</param>
-            <returns>Strongly-typed entity.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.Retrieve(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.EntityReference,Microsoft.Xrm.Sdk.Query.ColumnSet)">
-            <summary>
-            Retrieve an entity from the organization service by EntityReference.
-            </summary>
-            <param name="service">IOrganizationService instance.</param>
-            <param name="er">EntityReference of target record.</param>
-            <param name="columns">Columns to be retrieved.</param>
-            <returns>Entity record.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.RetrieveMultiple``1(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.Query.QueryBase)">
-            <summary>
-            Retrieve multiple strongly-typed entities from the organization service.
-            </summary>
-            <typeparam name="T">Entity type.</typeparam>
-            <param name="service">IOrganizationService instance.</param>
-            <param name="query">Query to execute.</param>
-            <returns>Strongly-typed IEnumerable of the query results.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.RetrieveMultipleAll(Microsoft.Xrm.Sdk.IOrganizationService,System.String,System.Int32,System.String,System.Int32)">
-            <summary>
-            Retrieve multiple pages of results for a fetch query in a single EntityCollection.
-            </summary>
-            <param name="orgService">IOrganizationService instance.</param>
-            <param name="fetchXml">Fetch string to execute.</param>
-            <param name="pageNumber">Page number to start from. Default is 1.</param>
-            <param name="pagingCookie">Paging cookie to use. Default is null.</param>
-            <param name="count">Number of records to retrieve. Default is 5000.</param>
-            <returns>EntityCollection of all results from the query.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.RetrieveMultipleAll(Microsoft.Xrm.Sdk.IOrganizationService,Microsoft.Xrm.Sdk.Query.QueryExpression)">
-            <summary>
-            Retrieve multiple pages of results for a QueryExpression in a single EntityCollection.
-            </summary>
-            <param name="orgService">IOrganization service instance.</param>
-            <param name="query">QueryExpression to execute.</param>
-            <returns>EntityCollection of all results from the query.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultiple(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest})">
-            <summary>
-            Executes an ExecuteMultipleRequest for a collection of requests, returning responses and continuing on error.
-            </summary>
-            <param name="service">IOrganizationService.</param>
-            <param name="requestCollection">Collection of requests to execute.</param>
-            <returns>ExecuteMultipleResponse with CRM responses.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultiple(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest},System.Boolean,System.Boolean)">
-            <summary>
-            Executes an ExecuteMultipleRequest for a collection of requests.
-            </summary>
-            <param name="service">IOrganizationService.</param>
-            <param name="requestCollection">Collection of requests to execute.</param>
-            <param name="continueOnError">If set to <c>true</c>, continue executing requests if one encounters an error.</param>
-            <param name="returnResponses">If set to <c>true</c>, return responses for successful requests.</param>
-            <returns>ExecuteMultipleResponse.</returns>
-            <exception cref="T:System.ArgumentException">requestCollection must be 1000 requests or less</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultiple(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest},Microsoft.Xrm.Sdk.ExecuteMultipleSettings)">
-            <summary>
-            Executes an ExecuteMultipleRequest for a collection of requests with specified settings.
-            </summary>
-            <param name="service">IOrganizationService.</param>
-            <param name="requestCollection">Collection of requests to execute.</param>
-            <param name="requestSettings">The request settings.</param>
-            <returns>ExecuteMultipleResponse.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.OrgServiceExtensions.ExecuteMultipleAll(Microsoft.Xrm.Sdk.IOrganizationService,System.Collections.Generic.IEnumerable{Microsoft.Xrm.Sdk.OrganizationRequest})">
-            <summary>
-            Executes an ExecuteMultipleRequest for every set of 1000 requests in the collection, returning responses and continuing on error.
-            </summary>
-            <param name="service">IOrganizationService.</param>
-            <param name="requestCollection">Collection of requests to execute.</param>
-            <returns>Collection of ExecuteMultipleResponse for the executed ExecuteMultipleRequests.</returns>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions">
-            <summary>
-            Extension methods for IPluginExecutionContext
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetTargetEntity``1(Microsoft.Xrm.Sdk.IPluginExecutionContext)">
-            <summary>
-            Gets the target entity from plugin context input parameters and casts to type T.
-            </summary>
-            <typeparam name="T">Strongly-typed Entity.</typeparam>
-            <param name="context">The context.</param>
-            <returns>Target entity cast to type T.</returns>
-            <exception cref="T:System.ArgumentNullException">context</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetTargetEntity(Microsoft.Xrm.Sdk.IPluginExecutionContext)">
-            <summary>
-            Gets the target entity from plugin context input parameters.
-            </summary>
-            <param name="context">The context.</param>
-            <returns>Target entity.</returns>
-            <exception cref="T:System.ArgumentNullException">context</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetInputParameter``1(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
-            <summary>
-            Gets the named input parameters and attempts to cast as type T.
-            </summary>
-            <typeparam name="T">Type of the input parameter.</typeparam>
-            <param name="context">The context.</param>
-            <param name="parameterName">Name of the parameter.</param>
-            <returns>Input parameter as type T, or null if does not cast.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            context
-            or
-            parameterName
-            </exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetInputParameter(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
-            <summary>
-            Gets the named input parameter.
-            </summary>
-            <param name="context">The context.</param>
-            <param name="parameterName">Name of the parameter.</param>
-            <returns>The input parameter as <c>object</c> type.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            context
-            or
-            parameterName
-            </exception>
-            <exception cref="T:Microsoft.Xrm.Sdk.InvalidPluginExecutionException">
-            Unable to retrieve parameter from context.
-            </exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPreEntityImage``1(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
-            <summary>
-            Gets the entity pre image as type T.
-            </summary>
-            <typeparam name="T">Strongly-typed Entity.</typeparam>
-            <param name="context">The context.</param>
-            <param name="preImageName">Name of the pre image.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException">
-            context
-            or
-            preImageName
-            </exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPreEntityImage(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
-            <summary>
-            Gets the entity pre image.
-            </summary>
-            <param name="context">The context.</param>
-            <param name="preImageName">Name of the pre image.</param>
-            <returns>Pre Image Entity instance.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            context
-            or
-            preImageName
-            </exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPostEntityImage``1(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
-            <summary>
-            Gets the entity post image.
-            </summary>
-            <typeparam name="T">Strongly-typed Entity.</typeparam>
-            <param name="context">The context.</param>
-            <param name="postImageName">Name of the post image.</param>
-            <returns>Entity Post Image cast to type T.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            context
-            or
-            postImageName
-            </exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetPostEntityImage(Microsoft.Xrm.Sdk.IPluginExecutionContext,System.String)">
-            <summary>
-            Gets the post entity image.
-            </summary>
-            <param name="context">The context.</param>
-            <param name="postImageName">Name of the post image.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException">
-            context
-            or
-            postImageName
-            </exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IPluginExecutionContextExtensions.GetEntityImage(Microsoft.Xrm.Sdk.EntityImageCollection,System.String)">
-            <summary>
-            Gets the entity image from an image collection.
-            </summary>
-            <param name="imageCollection">The image collection.</param>
-            <param name="imageName">Name of the image.</param>
-            <returns>Entity</returns>
-            <exception cref="T:System.ArgumentNullException">
-            imageCollection
-            or
-            imageName
-            </exception>
-            <exception cref="T:Microsoft.Xrm.Sdk.InvalidPluginExecutionException">Unable to retrieve image from context.</exception>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions">
-            <summary>
-            Extension methods for IServiceProvider
-            </summary>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.GetService``1(System.IServiceProvider)">
-            <summary>
-            Get a service of type T from the service provider.
-            </summary>
-            <typeparam name="T">Type of service.</typeparam>
-            <param name="serviceProvider"></param>
-            <returns>Instance of service type T.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.GetPluginExecutionContext(System.IServiceProvider)">
-            <summary>
-            Get the plugin execution context from the service provider.
-            </summary>
-            <param name="serviceProvider"></param>
-            <returns>IPluginExecutionContext instance.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationService(System.IServiceProvider,System.Guid)">
-            <summary>
-            Create an instance of IOrganizationService for a user.
-            </summary>
-            <param name="serviceProvider"></param>
-            <param name="userId">Id of user to call the service.</param>
-            <returns>Instance of IOrganizationService.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateSystemOrganizationService(System.IServiceProvider)">
-            <summary>
-            Creates the system organization service.
-            </summary>
-            <param name="serviceProvider">IServiceProvider from the plugin.</param>
-            <returns>Instance of IOrganizationService</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationServiceAsCurrentUser(System.IServiceProvider)">
-            <summary>
-            Create an instance of IOrganizationService for the current user executing the plugin.
-            </summary>
-            <param name="serviceProvider">IServiceProvider from the plugin.</param>
-            <returns>Instance of IOrganizationService.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.GetTracingService(System.IServiceProvider)">
-            <summary>
-            Get the tracing service from the service provider.
-            </summary>
-            <param name="serviceProvider"></param>
-            <returns>ITracingService instance.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationContext``1(System.IServiceProvider,System.Guid)">
-            <summary>
-            Create an OrganizationServiceContext.
-            </summary>
-            <typeparam name="T">Type of OrganizationServiceContext.</typeparam>
-            <param name="serviceProvider">Service provider.</param>
-            <param name="userId">Id of the user to call the service.</param>
-            <returns>Instance of OrganizationServiceContext type T.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateSystemOrganizationContext``1(System.IServiceProvider)">
-            <summary>
-            Create an OrganizationServiceContext for the system user.
-            </summary>
-            <typeparam name="T">Type of OrganizationServiceContext.</typeparam>
-            <param name="serviceProvider">Service provider.</param>
-            <returns>Instance of OrganizationServiceContext type T.</returns>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.IServiceProviderExtensions.CreateOrganizationContextAsCurrentUser``1(System.IServiceProvider)">
-            <summary>
-            Create an OrganizationServiceContext for the current user executing the plugin.
-            </summary>
-            <typeparam name="T">Type of OrganizationServiceContext.</typeparam>
-            <param name="serviceProvider">Service provider.</param>
-            <returns>Instance of OrganizationServiceContext type T.</returns>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.PluginBase">
-            <summary>
-            Abstract base class for Plugins. Implements <see cref="T:Microsoft.Xrm.Sdk.IPluginExecutionContext"></see> as required by the CRM SDK and can execute custom code by overriding one of the OnExecute, OnCreate, OnUpdate, or OnDelete functions.
-            </summary>
-            <seealso cref="T:Microsoft.Xrm.Sdk.IPlugin"/>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.Execute(System.IServiceProvider)">
-            <summary>
-            Executes plug-in code in response to an event.
-            </summary>
-            <param name="serviceProvider">Type: Returns_IServiceProvider. A container for service objects. Contains references to the plug-in execution context (<see cref="T:Microsoft.Xrm.Sdk.IPluginExecutionContext"></see>), tracing service (<see cref="T:Microsoft.Xrm.Sdk.ITracingService"></see>), organization service (<see cref="T:Microsoft.Xrm.Sdk.IOrganizationServiceFactory"></see>), and notification service (<see cref="T:Microsoft.Xrm.Sdk.IServiceEndpointNotificationService"></see>).</param>
-            <exception cref="T:System.ArgumentNullException">serviceProvider</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnExecute(System.IServiceProvider)">
-            <summary>
-            Called when the plugin is executed for any message.
-            </summary>
-            <param name="serviceProvider">The service provider.</param>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnCreate(System.IServiceProvider)">
-            <summary>
-            Called when the plugin is executed for a create message if OnExecute is not overriden.
-            </summary>
-            <param name="serviceProvider">The service provider.</param>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnUpdate(System.IServiceProvider)">
-            <summary>
-            Called when the plugin is executed for an update message if OnExecute is not overriden.
-            </summary>
-            <param name="serviceProvider">The service provider.</param>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Plugins.PluginBase.OnDelete(System.IServiceProvider)">
-            <summary>
-            Called when the plugin is executed for a delete message if OnExecute is not overriden.
-            </summary>
-            <param name="serviceProvider">The service provider.</param>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.Plugins.PluginStage">
-            <summary>
-            The execution stage in the plugin pipeline.
-            </summary>
-        </member>
-        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.None">
-            <summary>
-            Represents no specific stage.
-            </summary>
-        </member>
-        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.PreValidation">
-            <summary>
-            Occurs before validation. Not inside the transaction.
-            </summary>
-        </member>
-        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.PreOperation">
-            <summary>
-            Occurs before the default operation. Inside the transaction.
-            </summary>
-        </member>
-        <member name="F:SonomaPartners.Crm.Toolkit.Plugins.PluginStage.PostOperation">
-            <summary>
-            Occurs after the default operation. Inside the transaction.
-            </summary>
-        </member>
-        <member name="T:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager">
-            <summary>
-            Manages a long-running, thread-safe connection to the Organization Service.
-            </summary>
-            <remarks>
-            Initializes an IServiceManagement instance one time that is re-used across connections as recommended by Microsoft. Credentials are authenticated as needed when the security token is close to expiring. Proxy types are applied at the service management level to prevent multithreading errors.
-            </remarks>
-            <seealso cref="T:SonomaPartners.Crm.Toolkit.IOrgServiceManager"/>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager.#ctor(System.String)">
-            <summary>
-            Initializes a new instance of the <see cref="T:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager"/> class.
-            </summary>
-            <param name="connectionString">The connection string.</param>
-            <exception cref="T:System.ArgumentNullException">connectionString</exception>
-            <exception cref="T:System.Exception">ServiceManagement initialization error.</exception>
-        </member>
-        <member name="M:SonomaPartners.Crm.Toolkit.Proxy.OrgServiceTokenManager.GetOrgService">
-            <summary>
-            Gets an instance of IOrganizationService.
-            </summary>
-            <returns>An instance of IOrganizationService.</returns>
         </member>
     </members>
 </doc>

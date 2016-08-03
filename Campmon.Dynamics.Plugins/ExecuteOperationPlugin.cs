@@ -19,7 +19,8 @@ namespace Campmon.Dynamics.Plugins
     {
         public override void OnExecute(IServiceProvider serviceProvider)
         {
-            var configService = new ConfigurationService(serviceProvider.CreateSystemOrganizationService(), serviceProvider.GetTracingService());
+            var orgService = serviceProvider.CreateSystemOrganizationService();
+            var configService = new ConfigurationService(orgService, serviceProvider.GetTracingService());
             
             var trace = serviceProvider.GetTracingService();
 
@@ -27,7 +28,7 @@ namespace Campmon.Dynamics.Plugins
             {
                 { "getclients", () => new GetClients(configService) },
                 { "getclientlist", ()=> new GetClientList(configService) },
-                { "loadmetadata", () => new LoadMetadataOperation(configService, trace) }
+                { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) }
             };
 
             var pluginContext = serviceProvider.GetPluginExecutionContext();
@@ -38,19 +39,23 @@ namespace Campmon.Dynamics.Plugins
             trace.Trace($"Operation: {operationName} Input: {inputData}");
 
             if (!operationFactory.ContainsKey(operationName))
+            {
+                trace.Trace("Operation not defined.");
                 return;
+            }
 
             var operation = operationFactory[operationName].Invoke();
             string outputData = null;
 
             try
             {
+                trace.Trace("Executing operation.");
                 outputData = operation.Execute(inputData);
             }
             catch (Exception ex)
             {
-                //todo: serialize exception for output
-                outputData = JsonConvert.SerializeObject($"An error occured. Message: {ex.Message}");
+                trace.Trace($"Fatal error: {ex.Message}");
+                throw;
             }
 
             pluginContext.OutputParameters["OutputData"] = outputData;

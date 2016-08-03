@@ -3,6 +3,7 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using System.Collections.Generic;
+using SonomaPartners.Crm.Toolkit;
 
 namespace Campmon.Dynamics
 {
@@ -10,66 +11,49 @@ namespace Campmon.Dynamics
     {
         private IOrganizationService orgService;
         private ITracingService tracer;
+        private MetadataService metadata;
 
         private IDictionary<string, string> primaryAttributes;
+        private IDictionary<string, string> optionSetLabels;
 
         public MetadataHelper(IOrganizationService organizationService, ITracingService trace)
         {
+            trace.Trace("Constructing MetadataHelper.");
             orgService = organizationService;
             tracer = trace;
+            metadata = new MetadataService(orgService);
+
             primaryAttributes = new Dictionary<string, string>();
+            optionSetLabels = new Dictionary<string, string>();
         }
 
         public string GetOptionSetValueLabel(string entityLogicalName, string attribute, int optionSetValue)
         {
-            var request = new RetrieveAttributeRequest
+            var dictKey = string.Format("{0}{1}", entityLogicalName, attribute);
+            if (!optionSetLabels.ContainsKey(dictKey))
             {
-                EntityLogicalName = entityLogicalName,
-                LogicalName = attribute,
-                RetrieveAsIfPublished = true
-            };
-
-            var attResponse = (RetrieveAttributeResponse)orgService.Execute(request);
-            var attMetadata = (EnumAttributeMetadata)attResponse.AttributeMetadata;
-
-            var optionMetadata = attMetadata.OptionSet.Options.Where(x => x.Value == optionSetValue).FirstOrDefault();
-
-            if (optionMetadata != null && optionMetadata.Label != null && optionMetadata.Label.UserLocalizedLabel != null)
-            {
-                return optionMetadata.Label.UserLocalizedLabel.Label;
+                var label = metadata.GetStringValueFromPicklistInt(entityLogicalName, attribute, optionSetValue);
+                if (string.IsNullOrEmpty(label))
+                {
+                    tracer.Trace("Invalid OptionSet value");
+                }
+                optionSetLabels[dictKey] = label;
             }
 
-            tracer.Trace("Invalid OptionSet value");
-            return string.Empty;
+            return primaryAttributes[entityLogicalName];
         }
 
         public AttributeMetadata[] GetEntityAttributes(string entityLogicalName)
         {
-            RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
-            {
-                LogicalName = entityLogicalName,
-                RetrieveAsIfPublished = true,
-                EntityFilters = EntityFilters.Attributes
-            };
-
-            RetrieveEntityResponse entityMetaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);           
-            return entityMetaData.EntityMetadata.Attributes;
+            tracer.Trace("Getting entity attributes.");
+            return metadata.RetrieveEntity(entityLogicalName, EntityFilters.Attributes).Attributes;
         }
 
         public string GetEntityPrimaryAttribute(string entityLogicalName)
         {
             if (!primaryAttributes.ContainsKey(entityLogicalName))
             {
-                RetrieveEntityRequest getEntityMetadataRequest = new RetrieveEntityRequest
-                {
-                    LogicalName = entityLogicalName,
-                    RetrieveAsIfPublished = true,
-                    EntityFilters = EntityFilters.Entity
-                };
-
-                RetrieveEntityResponse metaData = (RetrieveEntityResponse)orgService.Execute(getEntityMetadataRequest);
-
-                primaryAttributes[entityLogicalName] = metaData.EntityMetadata.PrimaryNameAttribute;
+                primaryAttributes[entityLogicalName] = metadata.GetPrimaryAttributeName(entityLogicalName);
             }
 
             return primaryAttributes[entityLogicalName];
