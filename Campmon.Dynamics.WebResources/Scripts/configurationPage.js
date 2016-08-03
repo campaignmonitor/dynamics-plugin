@@ -69,56 +69,7 @@
             });
 
             vm.fieldChanged.subscribe(function (field) {
-                if (field.LogicalName() === "emailaddress1") {
-                    if (!vm.email2Selected() && !vm.email3Selected() && !field.IsChecked()) {
-                        alert("At least one of the email fields must be selected in order to sync with Campaign Monitor.");
-                        field.IsChecked(!field.IsChecked());
-                        return false;
-                    }
-
-                    if (!field.IsChecked() && vm.selectedPrimaryEmail() === "778230000") {
-                        if (vm.email2Selected()) {
-                            vm.selectedPrimaryEmail("778230001");
-                        } else {
-                            vm.selectedPrimaryEmail("778230002");
-                        }
-                    }
-                    vm.email1Selected(field.IsChecked());
-                } else if (field.LogicalName() === "emailaddress2") {
-                    if (!vm.email1Selected() && !vm.email3Selected() && !field.IsChecked()) {
-                        alert("At least one of the email fields must be selected in order to sync with Campaign Monitor.");
-                        field.IsChecked(!field.IsChecked());
-                        return false;
-                    }
-
-                    if (!field.IsChecked() && vm.selectedPrimaryEmail() === "778230001") {
-                        if (vm.email1Selected()) {
-                            vm.selectedPrimaryEmail("778230000");
-                        } else {
-                            vm.selectedPrimaryEmail("778230002");
-                        }
-                    }
-
-                    vm.email2Selected(field.IsChecked());
-                } else if (field.LogicalName() === "emailaddress3") {
-                    if (!vm.email1Selected() && !vm.email2Selected() && !field.IsChecked()) {
-                        alert("At least one of the email fields must be selected in order to sync with Campaign Monitor.");
-                        field.IsChecked(!field.IsChecked());
-                        return false;
-                    }
-
-                    if (!field.IsChecked() && vm.selectedPrimaryEmail() === "778230002") {
-                        if (vm.email1Selected()) {
-                            vm.selectedPrimaryEmail("778230000");
-                        } else {
-                            vm.selectedPrimaryEmail("778230001");
-                        }
-                    }
-
-                    vm.email3Selected(field.IsChecked());
-                }
-
-                return true;
+                return verifyFieldChange(vm, field);                               
             });
 
             ko.applyBindings(vm);
@@ -184,6 +135,58 @@
                 }
             });
             vm.fields(fieldArr);
+        }
+
+        function verifyFieldChange(vm, field) {
+            var EMAIL1VAL = "778230000";
+            var EMAIL2VAL = "778230001";
+            var EMAIL3VAL = "778230002";
+            var ERROR_NONESELECTED = "At least one of the email fields must be selected in order to sync with Campaign Monitor.";
+
+            if (field.LogicalName() === "emailaddress1") {
+                if (!vm.email2Selected() && !vm.email3Selected() && !field.IsChecked()) {
+                    alert(ERROR_NONESELECTED);
+                    field.IsChecked(!field.IsChecked());
+                    return false;
+                }
+
+                if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL1VAL) {
+                    vm.selectedPrimaryEmail(vm.email2Selected()
+                                            ? EMAIL2VAL
+                                            : EMAIL3VAL)
+                }
+                vm.email1Selected(field.IsChecked());
+            } else if (field.LogicalName() === "emailaddress2") {
+                if (!vm.email1Selected() && !vm.email3Selected() && !field.IsChecked()) {
+                    alert(ERROR_NONESELECTED);
+                    field.IsChecked(!field.IsChecked());
+                    return false;
+                }
+
+                if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL2VAL) {
+
+                    vm.selectedPrimaryEmail(vm.email1Selected()
+                                            ? EMAIL1VAL
+                                            : EMAIL3VAL)
+                }
+
+                vm.email2Selected(field.IsChecked());
+            } else if (field.LogicalName() === "emailaddress3") {
+                if (!vm.email1Selected() && !vm.email2Selected() && !field.IsChecked()) {
+                    alert(ERROR_NONESELECTED);
+                    field.IsChecked(!field.IsChecked());
+                    return false;
+                }
+
+                if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL3VAL) {
+                    vm.selectedPrimaryEmail(vm.email1Selected()
+                                            ? EMAIL1VAL
+                                            : EMAIL2VAL)
+                }
+
+                vm.email3Selected(field.IsChecked());
+            }
+            return true;
         }
 
         return {
