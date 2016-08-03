@@ -2,6 +2,7 @@
 using Microsoft.Xrm.Sdk.Query;
 using System;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Campmon.Dynamics
 {
@@ -69,13 +70,13 @@ namespace Campmon.Dynamics
                     : Guid.Empty,
                 SyncViewName = configEntity.GetAttributeValue<string>("campmon_syncviewname"),
                 SubscriberEmail = configEntity.Contains("campmon_subscriberemail")
-                    ? configEntity.GetAttributeValue<OptionSetValue>("campmon_subscriberemail")
-                    : new OptionSetValue(-1)
+                    ? (SubscriberEmailValues)(configEntity.GetAttributeValue<OptionSetValue>("campmon_subscriberemail").Value)
+                    : SubscriberEmailValues.EmailAddress1
             };
 
             // check if ClientID, AccessToken, SusbcriberEmail fields are correct, and if not then return null
             if (string.IsNullOrWhiteSpace(config.AccessToken) || string.IsNullOrWhiteSpace(config.ClientId) 
-                || config.SubscriberEmail.Value < 0)
+                || !configEntity.Contains("campmon_subscriberemail"))
             {
                 tracer.Trace("Configuration record does not contain ClientID, AccessToken, or SubscriberEmail");
                 return null;
@@ -86,7 +87,38 @@ namespace Campmon.Dynamics
 
         public void SaveConfig(CampaignMonitorConfiguration config)
         {
-            throw new NotImplementedException();
+            var query = new QueryExpression("campmon_configuration");
+            query.TopCount = 1;
+            query.ColumnSet = new ColumnSet("campmon_configurationid");
+
+            var result = orgService.RetrieveMultiple(query);
+            var configurationId = Guid.Empty;
+
+            if (result.Entities.Any())
+            {
+                configurationId = result.Entities[0].Id;
+            }
+
+            var entity = new Entity("campmon_configuration");
+            entity["campmon_clientid"] = config.ClientId;
+            entity["campmon_clientname"] = config.ClientName;
+            entity["campmon_listid"] = config.ListId;
+            entity["campmon_listname"] = config.ListName;
+            entity["campmon_syncduplicateemails"] = config.SyncDuplicateEmails;
+            entity["campmon_syncfields"] = string.Join(",", config.SyncFields);
+            entity["campmon_syncviewid"] = config.SyncViewId;
+            entity["campmon_syncviewname"] = config.SyncViewName;
+            entity["campmon_subscriberemail"] = new OptionSetValue((int)config.SubscriberEmail);
+
+            if (configurationId == Guid.Empty)
+            {
+                orgService.Create(entity);
+            }
+            else
+            {
+                entity.Id = configurationId;
+                orgService.Update(entity);
+            }
         }
 
     }

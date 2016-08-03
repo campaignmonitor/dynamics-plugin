@@ -11,15 +11,13 @@ namespace Campmon.Dynamics.Logic
 {
     public class SharedLogic
     {
-        public static string GetPrimaryEmailField(OptionSetValue val)
+        public static string GetPrimaryEmailField(SubscriberEmailValues val)
         {
-            int value = val.Value;
 
             // get corresponding email field from contact entity based on value of optionset from config
-            if (Enum.IsDefined(typeof(SubscriberEmailValues), value))
+            if (Enum.IsDefined(typeof(SubscriberEmailValues), val))
             {
-                SubscriberEmailValues emailField = (SubscriberEmailValues)value;
-                return emailField.ToString().ToLower();
+                return val.ToString().ToLower();
             }
 
             return string.Empty;

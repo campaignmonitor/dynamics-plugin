@@ -87,10 +87,12 @@
     <Compile Include="ExecuteOperationPlugin.cs" />
     <Compile Include="Logic\ContactSyncLogic.cs" />
     <Compile Include="Logic\SendMessageLogic.cs" />
+    <Compile Include="Operations\ConfigurationData.cs" />
     <Compile Include="Operations\GetClientList.cs" />
     <Compile Include="Operations\GetClients.cs" />
     <Compile Include="Operations\IOperation.cs" />
     <Compile Include="Operations\LoadMetadataOperation.cs" />
+    <Compile Include="Operations\SaveConfigurationOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SendMessagePlugin.cs" />
   </ItemGroup>

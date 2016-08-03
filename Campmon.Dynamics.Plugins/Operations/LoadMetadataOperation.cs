@@ -96,7 +96,7 @@ namespace Campmon.Dynamics.Plugins.Operations
 
             output.BulkSyncInProgress = config.BulkSyncInProgress;
             output.SyncDuplicateEmails = config.SyncDuplicateEmails;
-            output.SubscriberEmail = config.SubscriberEmail != null ? config.SubscriberEmail.Value : default(int);
+            output.SubscriberEmail = (int)config.SubscriberEmail;
 
             output.Views = GetContactViews(config);
             output.Fields = GetContactFields(config);
@@ -117,7 +117,8 @@ namespace Campmon.Dynamics.Plugins.Operations
                 {
                     DisplayName = a.DisplayName?.UserLocalizedLabel?.Label,
                     LogicalName = a.LogicalName,
-                    IsChecked = config.SyncFields.Contains(a.LogicalName),
+                    IsChecked = config.SyncFields.Contains(a.LogicalName)
+                        || (!config.SyncFields.Any() && RecommendedFields.Contains(a.LogicalName)),
                     IsRecommended = RecommendedFields.Contains(a.LogicalName)
                 })
                 .OrderBy(f => f.DisplayName);

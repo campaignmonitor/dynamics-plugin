@@ -28,6 +28,6 @@ namespace Campmon.Dynamics
         public IEnumerable<string> SyncFields { get; set; }
         public Guid SyncViewId { get; set; }
         public string SyncViewName { get; set; }
-        public OptionSetValue SubscriberEmail { get; set; }
+        public SubscriberEmailValues SubscriberEmail { get; set; }
     }
 }
