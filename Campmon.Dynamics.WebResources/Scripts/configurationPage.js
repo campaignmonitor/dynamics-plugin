@@ -16,6 +16,7 @@
             self.selectedView = ko.observable();
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
+            self.newListName = ko.observable();
             self.hasConnectionError = ko.observable(false);
 
             self.selectedPrimaryEmail = ko.observable();
@@ -40,6 +41,11 @@
             self.email1Selected = ko.observable(true);
             self.email2Selected = ko.observable(true);
             self.email3Selected = ko.observable(true);
+
+            self.isConfigValid = ko.computed(function () {
+                return self.selectedClient()
+                    && (self.selectedList() || self.newListName());
+            });
         }
 
         function init() {
