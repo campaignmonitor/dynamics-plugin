@@ -119,7 +119,8 @@ namespace Campmon.Dynamics.Plugins.Operations
                     LogicalName = a.LogicalName,
                     IsChecked = config.SyncFields.Contains(a.LogicalName),
                     IsRecommended = RecommendedFields.Contains(a.LogicalName)
-                });
+                })
+                .OrderBy(f => f.DisplayName);
         }
 
         private IEnumerable<SyncView> GetContactViews(CampaignMonitorConfiguration config)
