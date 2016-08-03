@@ -60,9 +60,8 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SonomaPartners.Crm.Toolkit, Version=8.0.2.0, Culture=neutral, PublicKeyToken=f30227255a839074, processorArchitecture=MSIL">
-      <HintPath>..\packages\SonomaPartners.Crm.Toolkit.8.0.2\lib\SonomaPartners.Crm.Toolkit.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SonomaPartners.Crm.Toolkit">
+      <HintPath>..\lib\SonomaPartners.Crm.Toolkit\SonomaPartners.Crm.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

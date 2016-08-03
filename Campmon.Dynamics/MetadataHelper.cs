@@ -18,6 +18,7 @@ namespace Campmon.Dynamics
 
         public MetadataHelper(IOrganizationService organizationService, ITracingService trace)
         {
+            trace.Trace("Constructing MetadataHelper.");
             orgService = organizationService;
             tracer = trace;
             metadata = new MetadataService(orgService);
@@ -44,6 +45,7 @@ namespace Campmon.Dynamics
 
         public AttributeMetadata[] GetEntityAttributes(string entityLogicalName)
         {
+            tracer.Trace("Getting entity attributes.");
             return metadata.RetrieveEntity(entityLogicalName, EntityFilters.Attributes).Attributes;
         }
 
