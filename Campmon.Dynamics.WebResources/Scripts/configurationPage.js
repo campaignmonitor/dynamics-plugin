@@ -36,7 +36,7 @@
                 self.IsChecked = ko.observable(isChecked);
                 self.IsRecommended = ko.observable(isRecommended);
             };
-          
+
             self.email1Selected = ko.observable(true);
             self.email2Selected = ko.observable(true);
             self.email3Selected = ko.observable(true);
@@ -69,28 +69,63 @@
             });
 
             vm.fieldChanged.subscribe(function (field) {
-
-                // todo: add logic to select subscriber email if fields are hidden
-                // e.g. if subscriber email = Email Address 2 and we hide it, then default it to whatever is still shown
-
-                // todo: If user deselects all 3 email fields, give an error stating that at least one must be chosen
-                // and do not uncheck the box they last selected
                 if (field.LogicalName() === "emailaddress1") {
+                    if (!vm.email2Selected() && !vm.email3Selected() && !field.IsChecked()) {
+                        alert("At least one of the email fields must be selected in order to sync with Campaign Monitor.");
+                        field.IsChecked(!field.IsChecked());
+                        return false;
+                    }
+
+                    if (!field.IsChecked() && vm.selectedPrimaryEmail() === "778230000") {
+                        if (vm.email2Selected()) {
+                            vm.selectedPrimaryEmail("778230001");
+                        } else {
+                            vm.selectedPrimaryEmail("778230002");
+                        }
+                    }
                     vm.email1Selected(field.IsChecked());
                 } else if (field.LogicalName() === "emailaddress2") {
+                    if (!vm.email1Selected() && !vm.email3Selected() && !field.IsChecked()) {
+                        alert("At least one of the email fields must be selected in order to sync with Campaign Monitor.");
+                        field.IsChecked(!field.IsChecked());
+                        return false;
+                    }
+
+                    if (!field.IsChecked() && vm.selectedPrimaryEmail() === "778230001") {
+                        if (vm.email1Selected()) {
+                            vm.selectedPrimaryEmail("778230000");
+                        } else {
+                            vm.selectedPrimaryEmail("778230002");
+                        }
+                    }
+
                     vm.email2Selected(field.IsChecked());
                 } else if (field.LogicalName() === "emailaddress3") {
+                    if (!vm.email1Selected() && !vm.email2Selected() && !field.IsChecked()) {
+                        alert("At least one of the email fields must be selected in order to sync with Campaign Monitor.");
+                        field.IsChecked(!field.IsChecked());
+                        return false;
+                    }
+
+                    if (!field.IsChecked() && vm.selectedPrimaryEmail() === "778230002") {
+                        if (vm.email1Selected()) {
+                            vm.selectedPrimaryEmail("778230000");
+                        } else {
+                            vm.selectedPrimaryEmail("778230001");
+                        }
+                    }
+
                     vm.email3Selected(field.IsChecked());
                 }
 
                 return true;
             });
-            
+
             ko.applyBindings(vm);
 
             Campmon.Plugin.executeAction('loadmetadata', "")
                 .then(function (result) {
-                    var config = JSON.parse(result.body.OutputData);                    
+                    var config = JSON.parse(result.body.OutputData);
 
                     if (config.Error) {
                         alert(config.Error);
@@ -109,8 +144,8 @@
                         vm.selectedPrimaryEmail(config.SubscriberEmail.toString());
                     }
 
-                    addAndSelectView(vm, config.Views);                                       
-                    addFields(vm, config.Fields);                    
+                    addAndSelectView(vm, config.Views);
+                    addFields(vm, config.Fields);
 
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
                     vm.isLoading(false);
@@ -135,10 +170,18 @@
             vm.selectedView(selectedViewId);
         }
 
-        function addFields(vm, fields) {            
+        function addFields(vm, fields) {
             var fieldArr = [];
             fields.forEach(function (field) {
                 fieldArr.push(new vm.ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
+
+                if (field.LogicalName === "emailaddress1") {
+                    vm.email1Selected(field.IsChecked);
+                } else if (field.LogicalName === "emailaddress2") {
+                    vm.email2Selected(field.IsChecked);
+                } else if (field.LogicalName === "emailaddress3") {
+                    vm.email3Selected(field.IsChecked);
+                }
             });
             vm.fields(fieldArr);
         }
