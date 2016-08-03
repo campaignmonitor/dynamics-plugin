@@ -106,7 +106,14 @@
                     </li>
                     <li>
                         <h3>Recommended</h3>
-                        <ul class="columns columnsShort">
+                        <ul class="columns columnsShort" data-bind="foreach: fields">
+                            <li data-bind="if: IsRecommended">
+                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked" />
+                                <label data-bind="text: DisplayName, attr: { for: LogicalName }" />
+                            </li>
+                        </ul>
+
+                        <!--<ul class="columns columnsShort">
                             <li>
                                 <input type="checkbox" id="fieldAnniversary" checked>
                                 <label for="fieldAnniversary">Anniversary</label>
@@ -195,9 +202,16 @@
                                 <input type="checkbox" id="fieldStatus" checked>
                                 <label for="fieldStatus">Status</label>
                             </li>
-                        </ul>
+                        </ul>-->
                         <h3>Other Fields</h3>
-                        <ul class="columns columnsTall">
+                        <ul class="columns columnsTall" data-bind="foreach: fields">
+                            <li data-bind="ifnot: IsRecommended">
+                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked" />
+                                <label data-bind="text: DisplayName, attr: { for: LogicalName }" />
+                            </li>
+                        </ul>
+
+                        <!--<ul class="columns columnsTall">
                             <li>
                                 <input type="checkbox" id="fieldFieldName1">
                                 <label for="fieldFieldName1">Field Name 1</label>
@@ -286,7 +300,7 @@
                                 <input type="checkbox" id="fieldFieldName22">
                                 <label for="fieldFieldName22">Field Name 22</label>
                             </li>
-                        </ul>
+                        </ul>-->
                     </li>
                 </ul>
                 <ul class="settingSubscriberEmail">
@@ -321,14 +335,14 @@
                         <div class="radioButtons">
                             <ul>
                                 <li class="labelWidthVeryLarge">
-                                    <input type="radio" id="sameEmailSyncOneContact" name="sameEmailAddress" checked>
+                                    <input type="radio" id="sameEmailSyncOneContact" name="sameEmailAddress" value="true" data-bind="checked: syncDuplicateEmails">
                                     <label for="sameEmailSyncOneContact">
                                         <p>Sync one contact per email address</p>
                                         <p>The most recently modified contact will be synced to Campaign Monitor.</p>
                                     </label>
                                 </li>
                                 <li class="labelWidthVeryLarge">
-                                    <input type="radio" id="sameEmailDoNotSync" name="sameEmailAddress">
+                                    <input type="radio" id="sameEmailDoNotSync" name="sameEmailAddress" value="false" data-bind="checked: syncDuplicateEmails">
                                     <label for="sameEmailDoNotSync">
                                         <p>Do not sync these contacts</p>
                                     </label>

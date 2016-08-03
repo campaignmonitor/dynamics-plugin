@@ -22,10 +22,14 @@
             self.changeDisconnectingStatus = ko.observable();
             self.disconnect = ko.observable();
 
-            // can we have a function for visible binding that returns true/false if a given attribute is checked?
-            self.email1Selected = ko.observable(false);
-            self.email2Selected = ko.observable(false);
-            self.email3Selected = ko.observable(false);
+            self.fields = ko.observableArray();
+
+            self.syncDuplicateEmails = ko.observable();
+          
+            // clean these up once fields are correctly implemented
+            self.email1Selected = ko.observable(true);
+            self.email2Selected = ko.observable(true);
+            self.email3Selected = ko.observable(true);
         }
 
         function init() {
@@ -53,7 +57,7 @@
                         alert("Error: " + error);
                     });
             });
-
+            
             ko.applyBindings(vm);
 
             Campmon.Plugin.executeAction('loadmetadata', null)
@@ -67,8 +71,48 @@
                     if (vm.clients().length == 1) {
                         vm.selectedClient(vm.clients()[0]);
                     }
-                    //todo: set view model props from config
 
+                    if (config.SubscriberEmail) {
+                        vm.selectedPrimaryEmail(config.SubscriberEmail.toString());
+                    }
+                    
+                    // ko best practices: use the underlying array as to not repaint every time a field is added
+                    var fieldArr = vm.fields();
+                    fieldArr.push(new ObservableField("email", "Email", true, true));
+                    fieldArr.push(new ObservableField("emailaddress2", "Email Address 2", true, true));
+                    fieldArr.push(new ObservableField("emailaddress3", "Email Address 3", true, true));
+
+                    function ObservableField(logicalName, displayName, isChecked, isRecommended) {
+                        var self = this;
+                        self.LogicalName = ko.observable(logicalName);
+                        self.DisplayName = ko.observable(displayName);
+                        self.IsChecked = ko.observable(isChecked);
+                        self.IsRecommended = ko.observable(isRecommended);
+                    }
+
+                    if (config.Fields) {                        
+                        for (var field in config.Fields) {
+                            fieldArr.push(new ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
+                        }                        
+                    }
+
+                    vm.fields.valueHasMutated();
+
+                    vm.fields().every(function (f) {
+                        debugger;
+                        if (f.LogicalName() === "email") {
+                            f.IsChecked.subscribe(function (newVal) { vm.email1Selected(newVal); });
+                        } else if (f.LogicalName() === "emailaddress2") {
+                            f.IsChecked.subscribe(function (newVal) { debugger; vm.email2Selected(newVal); });
+                        } else if (f.LogicalName() === "emailaddress3") {
+                            f.IsChecked.subscribe(function (newVal) { vm.email3Selected(newVal); });
+                        }
+                    });
+
+                    if (config.SyncDuplicateEmails) {
+                        vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
+                    }
+                    
                     vm.isLoading(false);
                 }, function (error) {
                     vm.hasConnectionError = true;
