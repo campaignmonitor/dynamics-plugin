@@ -25,7 +25,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 config.SyncViewName = string.Empty;
 
             config.SyncViewId = Guid.Empty;
-            config.SyncFields.ToList().Clear();            
+            config.SyncFields = Enumerable.Empty<String>();           
 
             config.SyncDuplicateEmails =
                 config.BulkSyncInProgress = false;

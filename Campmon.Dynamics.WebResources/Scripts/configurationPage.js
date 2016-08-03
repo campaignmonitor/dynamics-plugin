@@ -45,6 +45,7 @@
         function init() {
             var vm = new CampmonViewModel();
 
+
             vm.selectedClient.subscribe(function (selectedClient) {
                 Campmon.Plugin.executeAction('getclientlist', selectedClient)
                     .then(function (result) {
@@ -56,7 +57,7 @@
             });
 
             vm.changeDisconnectingStatus.subscribe(function () {
-                vm.isDisconnecting(!!!vm.isDisconnecting());
+                vm.isDisconnecting(!vm.isDisconnecting());
             });
 
             vm.disconnect.subscribe(function () {
@@ -113,7 +114,7 @@
             views.forEach(function (view) {
                 viewsArr.push(view);
                 if (view.IsSelected) {
-                    selectedView = view.ViewId;
+                    selectedViewId = view.ViewId;
                 }
             });
 
@@ -164,7 +165,6 @@
                 }
 
                 if (!field.IsChecked() && vm.selectedPrimaryEmail() === EMAIL2VAL) {
-
                     vm.selectedPrimaryEmail(vm.email1Selected()
                                             ? EMAIL1VAL
                                             : EMAIL3VAL)
