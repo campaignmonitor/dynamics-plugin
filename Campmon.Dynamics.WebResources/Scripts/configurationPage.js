@@ -12,15 +12,19 @@
             self.clients = ko.observableArray();
             self.clientLists = ko.observableArray();
             self.views = ko.observableArray();
-
-            self.selectedView = ko.observable();
+            
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
+            self.selectedView = ko.observable();
+
+            self.listType = ko.observable("existingList");
             self.newListName = ko.observable();
             self.confirmedOptIn = ko.observable();
-            self.optInType = ko.observable();
-            self.hasConnectionError = ko.observable(false);
+            self.optInType = ko.observable();            
 
+            self.savedListId = ko.observable();
+            self.savedListName = ko.observable();
+            
             self.selectedPrimaryEmail = ko.observable();
 
             self.isDisconnecting = ko.observable(false);
@@ -54,8 +58,24 @@
             self.criticalError = ko.observable(false);
             self.hasConnectionError = ko.observable(false);
 
-            self.saveAndSync = function () {
-                debugger;
+            self.ResetConfig = function () {                
+                var fields = self.fields();
+
+                fields.forEach(function (field) {
+                    field.IsChecked(field.IsRecommended());
+                });
+
+                self.fields(fields);
+
+                self.syncDuplicateEmails("true");
+                self.selectedPrimaryEmail("778230000");
+                self.selectedView(null);
+                self.email1Selected = ko.observable(true);
+                self.email2Selected = ko.observable(true);
+                self.email3Selected = ko.observable(true);
+            };
+
+            self.saveAndSync = function () {                
                 var data = {
                     Error: null,
                     BulkSyncInProgress: false,
@@ -89,9 +109,11 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        debugger;
-                    }, function (error) {
-                        debugger;
+                        // TODO: Maybe make a success modal? Or do something that's a little nicer than an alert
+                        alert("Save successful!");
+                    }, function (error) {                        
+                        self.errorMessage("Error saving configuration.");
+                        self.hasError(true);
                     });
             };
         }
@@ -99,15 +121,35 @@
         function init() {
             var vm = new CampmonViewModel();
 
-            vm.selectedClient.subscribe(function (selectedClient) {
+            vm.selectedClient.subscribe(function (selectedClient) {                
+                if (!selectedClient) return;
                 Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
                     .then(function (result) {
-                        //TODO: If no client lists default to Sync to New List Option
-                        vm.clientLists(JSON.parse(result.body.OutputData));
+
+                        var lists = JSON.parse(result.body.OutputData);
+                        if (lists.length <= 0) {
+                            vm.listType("newList");                            
+                        } else {                            
+                            vm.clientLists(JSON.parse(result.body.OutputData));
+                            vm.listType("existingList");
+
+                            if (vm.savedListId() && vm.savedListName()) {                                
+                                selectList(vm, vm.savedListId(), vm.savedListName())                                
+
+                                // s.t. when client is changed again we don't bother to autoset the list
+                                vm.savedListId(false);
+                                vm.savedListName(false);
+                            }
+                        }
+                        vm.ResetConfig();
                     }, function (error) {
                         vm.errorMessage("Error retrieving lists for selected client.")
                         vm.hasError(true);
                     });
+            });
+
+            vm.selectedList.subscribe(function (selectedList) {
+                vm.ResetConfig();
             });
 
             vm.changeDisconnectingStatus.subscribe(function () {
@@ -119,7 +161,7 @@
                     .then(function (result) {
                         // todo: go back to OAuth page
                     }, function (error) {
-                        vm.errorMessage(error.toString());
+                        vm.errorMessage("Error disconnecting from Campaign Monitor.");
                         vm.hasError(true);
                     });
             });
@@ -133,30 +175,48 @@
             Campmon.Plugin.executeAction('loadmetadata', "")
                 .then(function (result) {
                     var config = JSON.parse(result.body.OutputData);
-
                     if (config.Error) {
                         vm.errorMessage(config.Error);
                         vm.hasError(true);
                         vm.criticalError(true);
                         return;
-                    }
+                    }                    
 
                     if (config.Clients) {
                         vm.clients(config.Clients);
-                    }
-
+                    }                                                                            
+                    
                     if (vm.clients().length == 1) {
                         vm.selectedClient(vm.clients()[0]);
+                    } else {
+                        var client = ko.utils.arrayFilter(vm.clients(), function (cl) {
+                            return cl.ClientID === config.ClientId && cl.Name === config.ClientName;
+                        });
+
+                        if (client.length > 0) {
+                            vm.selectedClient(client[0]);
+                        }
+                    }
+
+                    if (config.ListId && config.ListName) {
+                        // loading list is async, so if it's loaded select the right list, otherwise save vals
+                        if (vm.clientLists().length > 1) {
+                            selectList(vm, config.ListId, config.listName);
+                        } else {                         
+                            vm.savedListId(config.ListId);
+                            vm.savedListName(config.ListName);
+                        }
                     }
 
                     if (config.SubscriberEmail) {
                         vm.selectedPrimaryEmail(config.SubscriberEmail.toString());
                     }
-
+                    
                     addAndSelectView(vm, config.Views);
                     addFields(vm, config.Fields);
 
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
+
                     vm.isLoading(false);
                 }, function (error) {
                     vm.hasConnectionError(true);
@@ -247,6 +307,17 @@
                 vm.email3Selected(field.IsChecked());
             }
             return true;
+        }
+
+        function selectList(vm, listId, listName)
+        {
+            var list = ko.utils.arrayFilter(vm.clientLists(), function (l) {
+                return l.ListID === listId && l.Name === listName;
+            });
+
+            if (list.length > 0) {
+                vm.selectedList(list[0]);
+            }
         }
 
         return {
