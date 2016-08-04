@@ -11,6 +11,7 @@ namespace Campmon.Dynamics
     public class CampaignMonitorService
     {
         private CampaignMonitorConfiguration _config { get; set; }
+        private AuthenticationDetails auth { get; set; }
 
         public CampaignMonitorService(CampaignMonitorConfiguration config)
         {
@@ -18,13 +19,19 @@ namespace Campmon.Dynamics
                 throw new ArgumentNullException("config");
 
             _config = config;
+            auth = new ApiKeyAuthenticationDetails(_config.AccessToken);
         }
 
-        //TODO: Add methods used across operations here and cache the service to provide quicker turnaround
         public General GetAuthGeneral()
         {
-            var auth = new ApiKeyAuthenticationDetails(_config.AccessToken);
             return new General(auth);
+        }
+
+        public string CreateCustomField(string listId, string name, CustomFieldDataType type)
+        {
+            var list = new List(auth, listId);
+
+            return list.CreateCustomField(name, type, null);
         }
  
     }
