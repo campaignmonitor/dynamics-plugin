@@ -51,8 +51,24 @@
             self.criticalError = ko.observable(false);
             self.hasConnectionError = ko.observable(false);
 
-            self.saveAndSync = function () {
-                debugger;
+            self.ResetConfig = function () {                
+                var fields = self.fields();
+
+                fields.forEach(function (field) {
+                    field.IsChecked(field.IsRecommended());
+                });
+
+                self.fields(fields);
+
+                self.syncDuplicateEmails("true");
+                self.selectedPrimaryEmail("778230000");
+                self.selectedView(null);
+                self.email1Selected = ko.observable(true);
+                self.email2Selected = ko.observable(true);
+                self.email3Selected = ko.observable(true);
+            };
+
+            self.saveAndSync = function () {                
                 var data = {
                     Error: null,
                     BulkSyncInProgress: false,
@@ -85,9 +101,10 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        debugger;
-                    }, function (error) {
-                        debugger;
+                        // TODO: let the user know that it was successful
+                    }, function (error) {                        
+                        vm.errorMessage("Error saving configuration.");
+                        vm.hasError(true);
                     });
             };
         }
@@ -96,14 +113,20 @@
             var vm = new CampmonViewModel();
 
             vm.selectedClient.subscribe(function (selectedClient) {
+                
                 Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
-                    .then(function (result) {
+                    .then(function (result) {                        
                         //TODO: If no client lists default to Sync to New List Option
                         vm.clientLists(JSON.parse(result.body.OutputData));
+                        vm.ResetConfig();
                     }, function (error) {
                         vm.errorMessage("Error retrieving lists for selected client.")
                         vm.hasError(true);
                     });
+            });
+
+            vm.selectedList.subscribe(function (selectedList) {
+                vm.ResetConfig();
             });
 
             vm.changeDisconnectingStatus.subscribe(function () {
@@ -115,7 +138,7 @@
                     .then(function (result) {
                         // todo: go back to OAuth page
                     }, function (error) {
-                        vm.errorMessage(error.toString());
+                        vm.errorMessage("Error disconnecting from Campaign Monitor.");
                         vm.hasError(true);
                     });
             });
@@ -129,7 +152,7 @@
             Campmon.Plugin.executeAction('loadmetadata', "")
                 .then(function (result) {
                     var config = JSON.parse(result.body.OutputData);
-
+                                        
                     if (config.Error) {
                         vm.errorMessage(config.Error);
                         vm.hasError(true);
@@ -148,7 +171,7 @@
                     if (config.SubscriberEmail) {
                         vm.selectedPrimaryEmail(config.SubscriberEmail.toString());
                     }
-
+                    
                     addAndSelectView(vm, config.Views);
                     addFields(vm, config.Fields);
 
