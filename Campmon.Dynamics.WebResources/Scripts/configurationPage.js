@@ -16,8 +16,7 @@
             self.selectedView = ko.observable();
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
-            self.newListName = ko.observable();
-            self.hasConnectionError = ko.observable(false);
+            self.newListName = ko.observable();            
 
             self.selectedPrimaryEmail = ko.observable();
 
@@ -46,6 +45,11 @@
                 return self.selectedClient()
                     && (self.selectedList() || self.newListName());
             });
+
+            self.hasError = ko.observable(false);
+            self.errorMessage = ko.observable("");
+            self.criticalError = ko.observable(false);
+            self.hasConnectionError = ko.observable(false);
 
             self.saveAndSync = function () {
                 debugger;
@@ -91,14 +95,14 @@
         function init() {
             var vm = new CampmonViewModel();
 
-
             vm.selectedClient.subscribe(function (selectedClient) {
                 Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
                     .then(function (result) {
                         //TODO: If no client lists default to Sync to New List Option
                         vm.clientLists(JSON.parse(result.body.OutputData));
                     }, function (error) {
-                        alert("Error retrieving lists for selected client.");
+                        vm.errorMessage("Error retrieving lists for selected client.")
+                        vm.hasError(true);
                     });
             });
 
@@ -111,7 +115,8 @@
                     .then(function (result) {
                         // todo: go back to OAuth page
                     }, function (error) {
-                        alert("Error: " + error);
+                        vm.errorMessage(error.toString());
+                        vm.hasError(true);
                     });
             });
 
@@ -126,7 +131,9 @@
                     var config = JSON.parse(result.body.OutputData);
 
                     if (config.Error) {
-                        alert(config.Error);
+                        vm.errorMessage(config.Error);
+                        vm.hasError(true);
+                        vm.criticalError(true);
                         return;
                     }
 
@@ -192,7 +199,8 @@
 
             if (field.LogicalName() === "emailaddress1") {
                 if (!vm.email2Selected() && !vm.email3Selected() && !field.IsChecked()) {
-                    alert(ERROR_NONESELECTED);
+                    vm.hasError(true);
+                    vm.errorMessage(ERROR_NONESELECTED);
                     field.IsChecked(!field.IsChecked());
                     return false;
                 }
@@ -205,7 +213,8 @@
                 vm.email1Selected(field.IsChecked());
             } else if (field.LogicalName() === "emailaddress2") {
                 if (!vm.email1Selected() && !vm.email3Selected() && !field.IsChecked()) {
-                    alert(ERROR_NONESELECTED);
+                    vm.hasError(true);
+                    vm.errorMessage(ERROR_NONESELECTED);
                     field.IsChecked(!field.IsChecked());
                     return false;
                 }
@@ -219,7 +228,8 @@
                 vm.email2Selected(field.IsChecked());
             } else if (field.LogicalName() === "emailaddress3") {
                 if (!vm.email1Selected() && !vm.email2Selected() && !field.IsChecked()) {
-                    alert(ERROR_NONESELECTED);
+                    vm.hasError(true);
+                    vm.errorMessage(ERROR_NONESELECTED);
                     field.IsChecked(!field.IsChecked());
                     return false;
                 }
