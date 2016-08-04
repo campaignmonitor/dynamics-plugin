@@ -13,7 +13,8 @@
     <script src="../Scripts/configurationPage.js"></script>
 </head>
 <!-- Add class "noScroll" to <body> tag when a modal window displays. -->
-<body><header></header>
+<body>
+    <header></header>
     <section>
         <div>
 
@@ -28,8 +29,7 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select data-bind="options: clients, optionsValue:'ClientID', optionsText: 'Name',  value: selectedClient, optionsCaption: 'Select Client...'">
-                            </select>
+                            <select data-bind="options: clients, optionsValue:'ClientID', optionsText: 'Name',  value: selectedClient, optionsCaption: 'Select Client...'"></select>
                         </div>
                     </li>
                 </ul>
@@ -55,8 +55,7 @@
                             </ul>
                         </div>
                         <div class="dropDown">
-                            <select data-bind="options: clientLists, optionsValue:'ListID', optionsText: 'Name',  value: selectedList, optionsCaption: 'Select List...'">
-                            </select>
+                            <select data-bind="options: clientLists, optionsValue:'ListID', optionsText: 'Name',  value: selectedList, optionsCaption: 'Select List...'"></select>
                         </div>
                         <div class="textField">
                             <input type="text" placeholder="Enter list name" data-bind="value: newListName, valueUpdate: 'input'">
@@ -93,8 +92,7 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select data-bind="options: views, optionsValue: 'ViewId', optionsText: 'ViewName', value: selectedView, optionsCaption: 'Select List...'">                                
-                            </select>
+                            <select data-bind="options: views, optionsValue: 'ViewId', optionsText: 'ViewName', value: selectedView, optionsCaption: 'Select List...'"></select>
                         </div>
                     </li>
                 </ul>
@@ -133,13 +131,13 @@
                                         <p>Email</p>
                                     </label>
                                 </li>
-                                <li class="labelWidthSmall"  data-bind="visible: email2Selected">
+                                <li class="labelWidthSmall" data-bind="visible: email2Selected">
                                     <input type="radio" id="subscriberEmail2" name="subscriberEmail" value="778230001" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail2">
                                         <p>Email Address 2</p>
                                     </label>
                                 </li>
-                                <li class="labelWidthSmall"  data-bind="visible: email3Selected">
+                                <li class="labelWidthSmall" data-bind="visible: email3Selected">
                                     <input type="radio" id="subscriberEmail3" name="subscriberEmail" value="778230002" data-bind="checked: selectedPrimaryEmail">
                                     <label for="subscriberEmail3">
                                         <p>Email Address 3</p>
@@ -225,7 +223,7 @@
         </div>
     </div>
     <!-- DISCONNECT CONFIRMATION modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" data-bind="visible: isDisconnecting">
+    <div class="modal" style="display:none;" data-bind="visible: isDisconnecting">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052
@@ -243,7 +241,8 @@
         </div>
     </div>
     <!-- CONNECTION ERROR modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display:none;" data-bind="visible: hasConnectionError">
+
+    <div class="modal" style="display:none;" data-bind="visible: (hasError() || hasConnectionError())">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052
@@ -252,10 +251,12 @@
                 <line x1="22.5" y1="11" x2="22.5" y2="24" />
                 <circle cx="22.5" cy="30.5" r="2.5" />
             </svg>
-            <h1>Connection Error</h1>
-            <p>Unable to connect to Campaign Monitor. Please try again. If the problem persists, please contact <a href="mailto:support@campaignmonitor.com">support@campaignmonitor.com</a> for support.</p>
-            <div class="buttons">
-                <button type="submit" class="buttonPrimary">OK</button>
+            <h1 data-bind="visible: hasConnectionError">Connection Error</h1>
+            <h1 data-bind="visible: hasError">Error</h1>
+            <p data-bind="text: errorMessage"></p>
+            <p data-bind="visible: hasConnectionError">Unable to connect to Campaign Monitor. Please try again. If the problem persists, please contact <a href="mailto:support@campaignmonitor.com">support@campaignmonitor.com</a> for support.</p>
+            <div class="buttons" data-bind="visible: !criticalError() && !hasConnectionError()">
+                <button type="submit" class="buttonPrimary" data-bind="click: hasError(false)">OK</button>
             </div>
         </div>
     </div>
