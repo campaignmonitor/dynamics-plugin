@@ -29,7 +29,8 @@
                     </li>
                     <li>
                         <div class="dropDown">
-                            <select data-bind="options: clients, optionsValue:'ClientID', optionsText: 'Name',  value: selectedClient, optionsCaption: 'Select Client...'"></select>
+                            <select data-bind="options: clients, optionsText: 'Name', value: selectedClient, optionsCaption: 'Select Client...'">
+                            </select>
                         </div>
                     </li>
                 </ul>
@@ -55,7 +56,8 @@
                             </ul>
                         </div>
                         <div class="dropDown">
-                            <select data-bind="options: clientLists, optionsValue:'ListID', optionsText: 'Name',  value: selectedList, optionsCaption: 'Select List...'"></select>
+                            <select data-bind="options: clientLists, optionsText: 'Name', value: selectedList, optionsCaption: 'Select List...'">
+                            </select>
                         </div>
                         <div class="textField">
                             <input type="text" placeholder="Enter list name" data-bind="value: newListName, valueUpdate: 'input'">
@@ -170,7 +172,7 @@
                     <li>
                         <!-- Add "disabled" attribute to <button> when button is disabled -->
                         <div class="buttons">
-                            <button type="submit" class="buttonPrimary" data-bind="enable: isConfigValid">Save &amp; Sync</button>
+                            <button type="submit" class="buttonPrimary" data-bind="enable: isConfigValid, click: saveAndSync">Save &amp; Sync</button>
                         </div>
                         <div class="buttons">
                             <button type="submit" class="buttonLink" data-bind="click: changeDisconnectingStatus">Disconnect from Campaign Monitor</button>

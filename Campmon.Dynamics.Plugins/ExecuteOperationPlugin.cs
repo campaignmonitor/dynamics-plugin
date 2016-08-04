@@ -29,7 +29,7 @@ namespace Campmon.Dynamics.Plugins
                 { "getclients", () => new GetClients(configService) },
                 { "getclientlist", ()=> new GetClientList(configService) },
                 { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) },
-                { "saveconfiguration", () => new SaveConfigurationOperation(configService) }
+                { "saveconfiguration", () => new SaveConfigurationOperation(configService, trace) }
             };
 
             var pluginContext = serviceProvider.GetPluginExecutionContext();
@@ -37,7 +37,7 @@ namespace Campmon.Dynamics.Plugins
             var operationName = pluginContext.InputParameters["OperationName"] as string;
             var inputData = pluginContext.InputParameters["InputData"] as string;
 
-            trace.Trace($"Operation: {operationName} Input: {inputData}");
+            trace.Trace("Operation: {0} Input: {1}", operationName, inputData);
 
             if (!operationFactory.ContainsKey(operationName))
             {
