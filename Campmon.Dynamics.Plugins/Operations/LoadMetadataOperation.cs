@@ -102,7 +102,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             output.ClientName = config.ClientName;
 
             output.ListId = config.ListId;
-            output.ListId = config.ListId;
+            output.ListName = config.ListName;
 
             output.Views = GetContactViews(config);
             output.Fields = GetContactFields(config);
