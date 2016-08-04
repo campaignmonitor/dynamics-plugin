@@ -46,6 +46,46 @@
                 return self.selectedClient()
                     && (self.selectedList() || self.newListName());
             });
+
+            self.saveAndSync = function () {
+                debugger;
+                var data = {
+                    Error: null,
+                    BulkSyncInProgress: false,
+                    ConfigurationExists: false,
+                    Clients: [{
+                        ClientId: self.selectedClient().ClientID,
+                        Name: self.selectedClient().Name,
+                    }],
+                    Lists: [{
+                        ListId: self.selectedList().ListID,
+                        Name: self.selectedList().Name,
+                    }],
+                    Fields: self.fields()
+                        .filter(function (f) { return f.IsChecked() })
+                        .map(function (f) { return {
+                            LogicalName: f.LogicalName(),
+                            DisplayName: f.DisplayName(),
+                            IsChecked: f.IsChecked(),
+                            IsRecommended: false
+                        }
+                        }),
+                    Views: self.selectedView() ? [{
+                        ViewId: self.selectedView() ? self.selectedView().ViewId : null,
+                        ViewName: self.selectedView() ? self.selectedView().Name : null,
+                        IsSelected: true
+                    }] : null,
+                    SyncDuplicateEmails: self.syncDuplicateEmails(),
+                    SubscriberEmail: self.selectedPrimaryEmail()
+                };
+
+                Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
+                    .then(function (result) {
+                        debugger;
+                    }, function (error) {
+                        debugger;
+                    });
+            };
         }
 
         function init() {
@@ -53,7 +93,7 @@
 
 
             vm.selectedClient.subscribe(function (selectedClient) {
-                Campmon.Plugin.executeAction('getclientlist', selectedClient)
+                Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
                     .then(function (result) {
                         //TODO: If no client lists default to Sync to New List Option
                         vm.clientLists(JSON.parse(result.body.OutputData));
@@ -205,8 +245,8 @@
 
         var pluginInput = function (operation, data) {
             return {
-                OperationName: operation,
-                InputData: data
+                'OperationName': operation,
+                'InputData': data
             };
         }
 

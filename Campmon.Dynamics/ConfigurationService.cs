@@ -87,6 +87,8 @@ namespace Campmon.Dynamics
 
         public void SaveConfig(CampaignMonitorConfiguration config)
         {
+            tracer.Trace("Saving configuration");
+
             var query = new QueryExpression("campmon_configuration");
             query.TopCount = 1;
             query.ColumnSet = new ColumnSet("campmon_configurationid");
@@ -96,6 +98,7 @@ namespace Campmon.Dynamics
 
             if (result.Entities.Any())
             {
+                tracer.Trace("Using existing configuration id.");
                 configurationId = result.Entities[0].Id;
             }
 
@@ -106,16 +109,18 @@ namespace Campmon.Dynamics
             entity["campmon_listname"] = config.ListName;
             entity["campmon_syncduplicateemails"] = config.SyncDuplicateEmails;
             entity["campmon_syncfields"] = string.Join(",", config.SyncFields);
-            entity["campmon_syncviewid"] = config.SyncViewId;
+            entity["campmon_syncviewid"] = config.SyncViewId.ToString();
             entity["campmon_syncviewname"] = config.SyncViewName;
             entity["campmon_subscriberemail"] = new OptionSetValue((int)config.SubscriberEmail);
 
             if (configurationId == Guid.Empty)
             {
+                tracer.Trace("Creating new configuration record.");
                 orgService.Create(entity);
             }
             else
             {
+                tracer.Trace("Updating existing configuration record.");
                 entity.Id = configurationId;
                 orgService.Update(entity);
             }
