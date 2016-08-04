@@ -25,7 +25,9 @@ namespace Campmon.Dynamics.Plugins.Operations
             trace.Trace("Deserializing input.");
             var userInput = JsonConvert.DeserializeObject<ConfigurationData>(serializedData);
             trace.Trace("Loading current configuration.");
-            var currentConfig = configService.VerifyAndLoadConfig();
+            var oldConfig = configService.VerifyAndLoadConfig();
+            var auth = Authenticator.GetAuthentication(
+                    oldConfig != null ? oldConfig.AccessToken : configService.GetAccessToken());
 
             var updatedConfig = new CampaignMonitorConfiguration
             {
@@ -39,8 +41,26 @@ namespace Campmon.Dynamics.Plugins.Operations
                 SyncViewId = userInput.Views != null ? userInput.Views.First().ViewId : Guid.Empty,
                 SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null
             };
-            
+
+            if (string.IsNullOrEmpty(updatedConfig.ListId))
+            {
+                // create a new list
+                trace.Trace("Creating new list {0}", updatedConfig.ListName);
+                updatedConfig.ListId = List.Create(auth, updatedConfig.ClientId, updatedConfig.ListName, null, userInput.ConfirmedOptIn, null, UnsubscribeSetting.OnlyThisList);
+            }
+
             configService.SaveConfig(updatedConfig);
+
+
+            if (oldConfig != null)
+            {
+                var newFields = updatedConfig.SyncFields.Except(oldConfig.SyncFields);
+                var removedFields = oldConfig.SyncFields.Except(updatedConfig.SyncFields);
+            }
+            else
+            {
+
+            }
 
             // todo: create custom fields and kick off workflow
             return "saved";

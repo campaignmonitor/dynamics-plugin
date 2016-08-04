@@ -10,9 +10,9 @@ namespace Campmon.Dynamics
 {
     public class CampaignMonitorService
     {
-        private ConfigurationService _config { get; set; }
+        private CampaignMonitorConfiguration _config { get; set; }
 
-        public CampaignMonitorService(ConfigurationService config)
+        public CampaignMonitorService(CampaignMonitorConfiguration config)
         {
             if (config == null)
                 throw new ArgumentNullException("config");
@@ -23,13 +23,8 @@ namespace Campmon.Dynamics
         //TODO: Add methods used across operations here and cache the service to provide quicker turnaround
         public General GetAuthGeneral()
         {
-            var auth = new ApiKeyAuthenticationDetails(_config.GetAccessToken());
+            var auth = new ApiKeyAuthenticationDetails(_config.AccessToken);
             return new General(auth);
-        }
-
-        public string GetAuthToken()
-        {
-            return _config.GetAccessToken();
         }
  
     }

@@ -17,6 +17,8 @@
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
             self.newListName = ko.observable();
+            self.confirmedOptIn = ko.observable();
+            self.optInType = ko.observable();
             self.hasConnectionError = ko.observable(false);
 
             self.selectedPrimaryEmail = ko.observable();
@@ -57,10 +59,6 @@
                         ClientId: self.selectedClient().ClientID,
                         Name: self.selectedClient().Name,
                     }],
-                    Lists: [{
-                        ListId: self.selectedList().ListID,
-                        Name: self.selectedList().Name,
-                    }],
                     Fields: self.fields()
                         .filter(function (f) { return f.IsChecked() })
                         .map(function (f) { return {
@@ -76,8 +74,13 @@
                         IsSelected: true
                     }] : null,
                     SyncDuplicateEmails: self.syncDuplicateEmails(),
+                    ConfirmedOptIn: self.confirmedOptIn() == 'true',
                     SubscriberEmail: self.selectedPrimaryEmail()
                 };
+
+                data.Lists = self.selectedList()
+                    ? [{ ListId: self.selectedList().ListID, Name: self.selectedList().Name }]
+                    : [{ ListId: null, Name: self.newListName()}];
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {

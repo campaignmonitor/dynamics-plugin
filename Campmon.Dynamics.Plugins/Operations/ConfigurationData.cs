@@ -19,6 +19,7 @@ namespace Campmon.Dynamics.Plugins.Operations
         public IEnumerable<SyncView> Views { get; set; }
         public bool SyncDuplicateEmails { get; set; }
         public int SubscriberEmail { get; set; }
+        public bool ConfirmedOptIn { get; set; }
 
         public string Serialize()
         {
