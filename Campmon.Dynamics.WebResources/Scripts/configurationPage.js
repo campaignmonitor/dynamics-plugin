@@ -198,9 +198,6 @@
                         }
                     }
 
-                    config.ListId = "a9ec74df5e18345882d29688296a83fb";
-                    config.ListName = "ACME List";
-
                     if (config.ListId && config.ListName) {
                         // loading list is async, so if it's loaded select the right list, otherwise save vals
                         if (vm.clientLists().length > 1) {
