@@ -39,8 +39,8 @@
                         <h2>Campaign Monitor List</h2>
                     </li>
                     <li>
-                        <input type="radio" id="syncToExistingList" name="contactList" checked data-bind="click: function() { newListName(null); return true; }">
-                        <input type="radio" id="syncToNewList" name="contactList" data-bind="click: function() { selectedList(null); return true; }">
+                        <input type="radio" id="syncToExistingList" name="contactList" value="existingList" data-bind="checked: listType, click: function() { newListName(null); return true; }">
+                        <input type="radio" id="syncToNewList" name="contactList" value="newList" data-bind="checked: listType, click: function() { selectedList(null); return true; }">
                         <div class="radioButtons">
                             <ul>
                                 <li class="labelWidthMedium">

@@ -15,10 +15,12 @@
             
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
+            self.selectedView = ko.observable();
+
+            self.listType = ko.observable("existingList");
             self.newListName = ko.observable();
             self.confirmedOptIn = ko.observable();
-            self.optInType = ko.observable();
-            self.hasConnectionError = ko.observable(false);
+            self.optInType = ko.observable();            
 
             self.savedListId = ko.observable();
             self.savedListName = ko.observable();
@@ -107,10 +109,11 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        // TODO: let the user know that it was successful
+                        // TODO: Maybe make a success modal? Or do something that's a little nicer than an alert
+                        alert("Save successful!");
                     }, function (error) {                        
-                        vm.errorMessage("Error saving configuration.");
-                        vm.hasError(true);
+                        self.errorMessage("Error saving configuration.");
+                        self.hasError(true);
                     });
             };
         }
@@ -125,20 +128,15 @@
 
                         var lists = JSON.parse(result.body.OutputData);
                         if (lists.length <= 0) {
-                            //TODO: If no client lists default to Sync to New List Option
-                        } else {
+                            vm.listType("newList");                            
+                        } else {                            
                             vm.clientLists(JSON.parse(result.body.OutputData));
+                            vm.listType("existingList");
 
-                            if (vm.savedListId() && vm.savedListName()) {
-                                var list= ko.utils.arrayFilter(vm.clients(), function (l) {
-                                    return l.ListID === vm.savedListId() &&
-                                                l.Name === vm.savedListName();
-                                });
+                            if (vm.savedListId() && vm.savedListName()) {                                
+                                selectList(vm, vm.savedListId(), vm.savedListName())                                
 
-                                if (list.length > 0) {
-                                    vm.selectedList(list[0]);
-                                }
-
+                                // s.t. when client is changed again we don't bother to autoset the list
                                 vm.savedListId(false);
                                 vm.savedListName(false);
                             }
@@ -150,7 +148,7 @@
                     });
             });
 
-            vm.selectedList.subscribe(function (selectedList) {                
+            vm.selectedList.subscribe(function (selectedList) {
                 vm.ResetConfig();
             });
 
@@ -199,11 +197,18 @@
                             vm.selectedClient(client[0]);
                         }
                     }
-                    
+
+                    config.ListId = "a9ec74df5e18345882d29688296a83fb";
+                    config.ListName = "ACME List";
+
                     if (config.ListId && config.ListName) {
-                        // save these since selected client pulling lists is async
-                        vm.savedListId(config.ListId);
-                        vm.savedListName(config.ListName);
+                        // loading list is async, so if it's loaded select the right list, otherwise save vals
+                        if (vm.clientLists().length > 1) {
+                            selectList(vm, config.ListId, config.listName);
+                        } else {                         
+                            vm.savedListId(config.ListId);
+                            vm.savedListName(config.ListName);
+                        }
                     }
 
                     if (config.SubscriberEmail) {
@@ -305,6 +310,17 @@
                 vm.email3Selected(field.IsChecked());
             }
             return true;
+        }
+
+        function selectList(vm, listId, listName)
+        {
+            var list = ko.utils.arrayFilter(vm.clientLists(), function (l) {
+                return l.ListID === listId && l.Name === listName;
+            });
+
+            if (list.length > 0) {
+                vm.selectedList(list[0]);
+            }
         }
 
         return {
