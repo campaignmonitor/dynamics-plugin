@@ -10,12 +10,6 @@ namespace Campmon.Dynamics.Plugins.Operations
 {
     public class ConfigurationData
     {
-        public string ClientId { get; set; }
-        public string ClientName { get; set; }
-
-        public string ListId { get; set; }
-        public string ListName { get; set; }
-
         public string Error { get; set; }
         public bool BulkSyncInProgress { get; set; }
         public bool ConfigurationExists { get; set; }
@@ -24,7 +18,12 @@ namespace Campmon.Dynamics.Plugins.Operations
         public IEnumerable<SyncField> Fields { get; set; }
         public IEnumerable<SyncView> Views { get; set; }
         public bool SyncDuplicateEmails { get; set; }
-        public int SubscriberEmail { get; set; }        
+        public int SubscriberEmail { get; set; }
+        public bool ConfirmedOptIn { get; set; }
+        public string ClientId { get; set; }
+        public string ClientName { get; set; }
+        public string ListId { get; set; }
+        public string ListName { get; set; }
 
         public string Serialize()
         {

@@ -65,14 +65,14 @@
                         <div class="radioButtons">
                             <ul>
                                 <li class="labelWidthLarge">
-                                    <input type="radio" id="optInSingle" name="newListOptIn" checked>
+                                    <input type="radio" id="optInSingle" name="newListOptIn" value="false" checked data-bind="checked: confirmedOptIn">
                                     <label for="optInSingle">
                                         <p>Single Opt-In</p>
                                         <p>CRM Contacts will be automatically subscribed to the list.</p>
                                     </label>
                                 </li>
                                 <li class="labelWidthVeryLarge">
-                                    <input type="radio" id="optInConfirmed" name="newListOptIn">
+                                    <input type="radio" id="optInConfirmed" name="newListOptIn" value="true" data-bind="checked: confirmedOptIn">
                                     <label for="optInConfirmed">
                                         <p>Confirmed Opt-In</p>
                                         <p>CRM Contacts must confirm their email address before being subscribed to the list.</p>

@@ -13,5 +13,10 @@ namespace Campmon.Dynamics
         {
             return new ApiKeyAuthenticationDetails(config.AccessToken);
         }
+
+        public static AuthenticationDetails GetAuthentication(string accessToken)
+        {
+            return new ApiKeyAuthenticationDetails(accessToken);
+        }
     }
 }
