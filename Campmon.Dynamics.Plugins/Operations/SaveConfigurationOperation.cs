@@ -61,11 +61,9 @@ namespace Campmon.Dynamics.Plugins.Operations
             {
                 var cmService = new CampaignMonitorService(updatedConfig);
                 var attributes = metadata.GetEntityAttributes("contact");
-                trace.Trace("test");
                 var newFields = updatedConfig.SyncFields.Except(oldConfig.SyncFields);
-                trace.Trace("test");
                 var removedFields = oldConfig.SyncFields.Except(updatedConfig.SyncFields);
-                trace.Trace("test");
+
                 // create new custom fields
                 foreach (var fieldName in newFields)
                 {

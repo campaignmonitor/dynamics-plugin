@@ -37,8 +37,8 @@ namespace Campmon.Dynamics
         public void DeleteCustomField(string listId, string name)
         {
             var list = new List(auth, listId);
-
-            list.DeleteCustomField(name);
+            var fieldKey = string.Format("[{0}]", name.Replace(" ", ""));
+            list.DeleteCustomField(fieldKey);
         }
  
     }
