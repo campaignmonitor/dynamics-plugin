@@ -59,11 +59,36 @@ namespace Campmon.Dynamics.Plugins.Operations
 
             if (oldConfig != null)
             {
+                var cmService = new CampaignMonitorService(updatedConfig);
+                var attributes = metadata.GetEntityAttributes("contact");
+                trace.Trace("test");
                 var newFields = updatedConfig.SyncFields.Except(oldConfig.SyncFields);
+                trace.Trace("test");
                 var removedFields = oldConfig.SyncFields.Except(updatedConfig.SyncFields);
+                trace.Trace("test");
                 // create new custom fields
+                foreach (var fieldName in newFields)
+                {
+                    var attribute = attributes
+                        .Where(a => a.LogicalName == fieldName)
+                        .First();
 
+                    var displayName = attribute.DisplayName.UserLocalizedLabel.Label;
+                    trace.Trace("Creating new field {0}", displayName);
+                    var dataType = MapDynamicsTypeToCampmonType(attribute.AttributeType.Value);
+                    var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
+                }
                 // delete removed custom fields
+                foreach(var fieldName in removedFields)
+                {
+                    var attribute = attributes
+                        .Where(a => a.LogicalName == fieldName)
+                        .First();
+
+                    var displayName = attribute.DisplayName.UserLocalizedLabel.Label;
+                    trace.Trace("Deleting field {0}", displayName);
+                    cmService.DeleteCustomField(updatedConfig.ListId, displayName);
+                }
             }
             else
             {
@@ -77,6 +102,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                         .First();
 
                     var displayName = attribute.DisplayName.UserLocalizedLabel.Label;
+                    trace.Trace("Creating new field {0}", displayName);
                     var dataType = MapDynamicsTypeToCampmonType(attribute.AttributeType.Value);
                     var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
                 }

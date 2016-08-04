@@ -33,6 +33,13 @@ namespace Campmon.Dynamics
 
             return list.CreateCustomField(name, type, null);
         }
+
+        public void DeleteCustomField(string listId, string name)
+        {
+            var list = new List(auth, listId);
+
+            list.DeleteCustomField(name);
+        }
  
     }
 }
