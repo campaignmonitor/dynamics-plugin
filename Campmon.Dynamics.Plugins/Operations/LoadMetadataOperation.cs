@@ -98,6 +98,12 @@ namespace Campmon.Dynamics.Plugins.Operations
             output.SyncDuplicateEmails = config.SyncDuplicateEmails;
             output.SubscriberEmail = (int)config.SubscriberEmail;
 
+            output.ClientId = config.ClientId;
+            output.ClientName = config.ClientName;
+
+            output.ListId = config.ListId;
+            output.ListId = config.ListId;
+
             output.Views = GetContactViews(config);
             output.Fields = GetContactFields(config);
 
