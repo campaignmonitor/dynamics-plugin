@@ -22,8 +22,6 @@
             self.optInType = ko.observable();
             self.hasConnectionError = ko.observable(false);
 
-            self.savedListId = ko.observable();
-            self.savedListName = ko.observable();
             self.selectedPrimaryEmail = ko.observable();
 
             self.isDisconnecting = ko.observable(false);
@@ -73,6 +71,7 @@
                 self.email2Selected = ko.observable(true);
                 self.email3Selected = ko.observable(true);
             };
+
             self.saveAndSync = function () {
                 debugger;
                 var data = {
@@ -124,36 +123,6 @@
         function init() {
             var vm = new CampmonViewModel();
 
-            vm.selectedClient.subscribe(function (selectedClient) {
-                if (!selectedClient) return;
-                Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
-                    .then(function (result) {
-
-                        var lists = JSON.parse(result.body.OutputData);
-                        if (lists.length <= 0) {
-                            vm.listType("newList");
-                        } else {
-                            vm.clientLists(JSON.parse(result.body.OutputData));
-                            vm.listType("existingList");
-
-                            if (vm.savedListId() && vm.savedListName()) {
-                                selectList(vm, vm.savedListId(), vm.savedListName())
-
-                                // s.t. when client is changed again we don't bother to autoset the list
-                                vm.savedListId(false);
-                                vm.savedListName(false);
-                            }
-                        }
-                        vm.ResetConfig();
-                    }, function (error) {
-                        vm.errorMessage("Error retrieving lists for selected client.")
-                        vm.hasError(true);
-                    });
-            });
-
-            vm.selectedList.subscribe(function (selectedList) {
-                vm.ResetConfig();
-            });
             vm.changeDisconnectingStatus.subscribe(function () {
                 vm.isDisconnecting(!vm.isDisconnecting());
             });
@@ -188,27 +157,19 @@
                     if (config.Clients) {
                         vm.clients(config.Clients);
                     }
-
+                    debugger;
                     if (vm.clients().length == 1) {
                         vm.selectedClient(vm.clients()[0]);
                     } else {
-                        var client = ko.utils.arrayFilter(vm.clients(), function (cl) {
-                            return cl.ClientID === config.ClientId && cl.Name === config.ClientName;
-                        });
-
-                        if (client.length > 0) {
-                            vm.selectedClient(client[0]);
-                        }
+                        selectClient(vm, config.ClientId, config.ClientName);
+                    }
+                    
+                    if (config.Lists) {
+                        vm.clientLists(config.Lists);
                     }
 
-                    if (config.ListId && config.ListName) {
-                        // loading list is async, so if it's loaded select the right list, otherwise save vals
-                        if (vm.clientLists().length > 1) {
-                            selectList(vm, config.ListId, config.listName);
-                        } else {
-                            vm.savedListId(config.ListId);
-                            vm.savedListName(config.ListName);
-                        }
+                    if (config.ListId && config.ListName) {                        
+                        selectList(vm, config.ListId, config.ListName);                        
                     }
 
                     if (config.SubscriberEmail) {
@@ -219,6 +180,29 @@
                     addFields(vm, config.Fields);
 
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
+
+                    vm.selectedClient.subscribe(function (selectedClient) {
+                        Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
+                            .then(function (result) {
+
+                                var lists = JSON.parse(result.body.OutputData);
+                                if (lists.length <= 0) {
+                                    vm.listType("newList");
+                                } else {
+                                    vm.clientLists(JSON.parse(result.body.OutputData));
+                                    vm.listType("existingList");
+                                }
+                                vm.ResetConfig();
+                            }, function (error) {
+                                vm.errorMessage("Error retrieving lists for selected client.")
+                                vm.hasError(true);
+                            });
+                    });
+
+                    vm.selectedList.subscribe(function (selectedList) {
+                        vm.ResetConfig();
+                    });
+
                     vm.isLoading(false);
                 }, function (error) {
                     vm.hasConnectionError(true);
@@ -309,6 +293,16 @@
                 vm.email3Selected(field.IsChecked());
             }
             return true;
+        }
+
+        function selectClient(vm, clientId, clientName) {
+            var client = ko.utils.arrayFilter(vm.clients(), function (cl) {
+                return cl.ClientID === clientId && cl.Name === clientName;
+            });
+
+            if (client.length > 0) {
+                vm.selectedClient(client[0]);
+            }
         }
 
         function selectList(vm, listId, listName) {
