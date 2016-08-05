@@ -12,19 +12,18 @@
             self.clients = ko.observableArray();
             self.clientLists = ko.observableArray();
             self.views = ko.observableArray();
-            
+
+            self.selectedView = ko.observable();
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
-            self.selectedView = ko.observable();
-
             self.listType = ko.observable("existingList");
             self.newListName = ko.observable();
             self.confirmedOptIn = ko.observable();
-            self.optInType = ko.observable();            
+            self.optInType = ko.observable();
+            self.hasConnectionError = ko.observable(false);
 
             self.savedListId = ko.observable();
             self.savedListName = ko.observable();
-            
             self.selectedPrimaryEmail = ko.observable();
 
             self.isDisconnecting = ko.observable(false);
@@ -58,7 +57,7 @@
             self.criticalError = ko.observable(false);
             self.hasConnectionError = ko.observable(false);
 
-            self.ResetConfig = function () {                
+            self.ResetConfig = function () {
                 var fields = self.fields();
 
                 fields.forEach(function (field) {
@@ -74,8 +73,8 @@
                 self.email2Selected = ko.observable(true);
                 self.email3Selected = ko.observable(true);
             };
-
-            self.saveAndSync = function () {                
+            self.saveAndSync = function () {
+                debugger;
                 var data = {
                     Error: null,
                     BulkSyncInProgress: false,
@@ -100,7 +99,11 @@
                     }] : null,
                     SyncDuplicateEmails: self.syncDuplicateEmails(),
                     ConfirmedOptIn: self.confirmedOptIn() == 'true',
-                    SubscriberEmail: self.selectedPrimaryEmail()
+                    SubscriberEmail: self.selectedPrimaryEmail(),
+                    ClientId: null,
+                    ClientName: null,
+                    ListId: null,
+                    ListName: null
                 };
 
                 data.Lists = self.selectedList()
@@ -109,9 +112,9 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        // TODO: Maybe make a success modal? Or do something that's a little nicer than an alert
-                        alert("Save successful!");
-                    }, function (error) {                        
+                        debugger;
+                    }, function (error) {
+                        debugger;
                         self.errorMessage("Error saving configuration.");
                         self.hasError(true);
                     });
@@ -121,20 +124,20 @@
         function init() {
             var vm = new CampmonViewModel();
 
-            vm.selectedClient.subscribe(function (selectedClient) {                
+            vm.selectedClient.subscribe(function (selectedClient) {
                 if (!selectedClient) return;
                 Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
                     .then(function (result) {
 
                         var lists = JSON.parse(result.body.OutputData);
                         if (lists.length <= 0) {
-                            vm.listType("newList");                            
-                        } else {                            
+                            vm.listType("newList");
+                        } else {
                             vm.clientLists(JSON.parse(result.body.OutputData));
                             vm.listType("existingList");
 
-                            if (vm.savedListId() && vm.savedListName()) {                                
-                                selectList(vm, vm.savedListId(), vm.savedListName())                                
+                            if (vm.savedListId() && vm.savedListName()) {
+                                selectList(vm, vm.savedListId(), vm.savedListName())
 
                                 // s.t. when client is changed again we don't bother to autoset the list
                                 vm.savedListId(false);
@@ -151,7 +154,6 @@
             vm.selectedList.subscribe(function (selectedList) {
                 vm.ResetConfig();
             });
-
             vm.changeDisconnectingStatus.subscribe(function () {
                 vm.isDisconnecting(!vm.isDisconnecting());
             });
@@ -175,17 +177,18 @@
             Campmon.Plugin.executeAction('loadmetadata', "")
                 .then(function (result) {
                     var config = JSON.parse(result.body.OutputData);
+
                     if (config.Error) {
                         vm.errorMessage(config.Error);
                         vm.hasError(true);
                         vm.criticalError(true);
                         return;
-                    }                    
+                    }
 
                     if (config.Clients) {
                         vm.clients(config.Clients);
-                    }                                                                            
-                    
+                    }
+
                     if (vm.clients().length == 1) {
                         vm.selectedClient(vm.clients()[0]);
                     } else {
@@ -202,7 +205,7 @@
                         // loading list is async, so if it's loaded select the right list, otherwise save vals
                         if (vm.clientLists().length > 1) {
                             selectList(vm, config.ListId, config.listName);
-                        } else {                         
+                        } else {
                             vm.savedListId(config.ListId);
                             vm.savedListName(config.ListName);
                         }
@@ -211,12 +214,11 @@
                     if (config.SubscriberEmail) {
                         vm.selectedPrimaryEmail(config.SubscriberEmail.toString());
                     }
-                    
+
                     addAndSelectView(vm, config.Views);
                     addFields(vm, config.Fields);
 
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
-
                     vm.isLoading(false);
                 }, function (error) {
                     vm.hasConnectionError(true);
@@ -309,8 +311,7 @@
             return true;
         }
 
-        function selectList(vm, listId, listName)
-        {
+        function selectList(vm, listId, listName) {
             var list = ko.utils.arrayFilter(vm.clientLists(), function (l) {
                 return l.ListID === listId && l.Name === listName;
             });
