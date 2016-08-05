@@ -93,6 +93,11 @@ namespace Campmon.Dynamics.Plugins.Operations
                 var client = new Client(auth, clients.First().ClientID);
                 output.Lists = client.Lists();
             }
+            else if(!string.IsNullOrWhiteSpace(config.ClientId))
+            {
+                var client = new Client(auth, config.ClientId);
+                output.Lists = client.Lists();
+            }
 
             output.BulkSyncInProgress = config.BulkSyncInProgress;
             output.SyncDuplicateEmails = config.SyncDuplicateEmails;
