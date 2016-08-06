@@ -107,7 +107,7 @@
                             IsChecked: f.IsChecked(),
                             IsRecommended: false
                         }
-                        }),
+                    }),
                     Views: self.selectedView() ? [{
                         ViewId: self.selectedView() ? self.selectedView().ViewId : null,
                         ViewName: self.selectedView() ? self.selectedView().Name : null,
@@ -213,6 +213,7 @@
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
 
                     vm.selectedClient.subscribe(function (selectedClient) {
+                        vm.isLoading(true);
                         Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
                             .then(function (result) {
 
@@ -224,6 +225,7 @@
                                     vm.listType("existingList");
                                 }
                                 vm.ResetConfig();
+                                vm.isLoading(false);
                             }, function (error) {
                                 vm.errorMessage("Error retrieving lists for selected client.")
                                 vm.hasError(true);

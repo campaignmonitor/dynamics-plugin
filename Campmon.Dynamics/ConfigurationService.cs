@@ -74,11 +74,9 @@ namespace Campmon.Dynamics
                     : SubscriberEmailValues.EmailAddress1
             };
 
-            // check if ClientID, AccessToken, SusbcriberEmail fields are correct, and if not then return null
-            if (string.IsNullOrWhiteSpace(config.AccessToken) || string.IsNullOrWhiteSpace(config.ClientId) 
-                || !configEntity.Contains("campmon_subscriberemail"))
+            if (string.IsNullOrWhiteSpace(config.AccessToken))
             {
-                tracer.Trace("Configuration record does not contain ClientID, AccessToken, or SubscriberEmail");
+                tracer.Trace("Configuration record does not contain AccessToken");
                 return null;
             }
 
