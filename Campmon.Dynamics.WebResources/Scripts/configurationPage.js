@@ -7,7 +7,17 @@
     global.Campmon.ConfigurationPage = global.Campmon.ConfigurationPage || (function () {
         function CampmonViewModel() {
             var self = this;
+
+            self.syncComplete = ko.observable(false);
             self.isLoading = ko.observable(true);
+            self.isSyncing = ko.observable(false);
+
+            self.maxFields = ko.observable(200);
+            self.fieldsSelected = ko.observable(0);
+            self.fieldsOver = ko.pureComputed(function () {
+                return self.fieldsSelected() -self.maxFields()
+            });
+            self.tooManyFields = ko.observable(false);
 
             self.clients = ko.observableArray();
             self.clientLists = ko.observableArray();
@@ -74,6 +84,13 @@
 
             self.saveAndSync = function () {
                 debugger;
+
+                if (self.fieldsSelected() > self.maxFields()) {
+                    self.tooManyFields(true);
+                    return;
+                }
+
+                self.isSyncing(true);
                 var data = {
                     Error: null,
                     BulkSyncInProgress: false,
@@ -111,9 +128,12 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
+                        self.isSyncing(false);
+                        self.syncComplete(true);
                         debugger;
                     }, function (error) {
                         debugger;
+                        self.isSyncing(false);
                         self.errorMessage("Error saving configuration.");
                         self.hasError(true);
                     });
@@ -138,6 +158,17 @@
             });
 
             vm.fieldChanged.subscribe(function (field) {
+                debugger;
+                if (field.IsChecked()) {
+                    vm.fieldsSelected(vm.fieldsSelected() + 1);
+
+                    if (vm.fieldsSelected() > vm.maxFields()) {
+                        vm.tooManyFields(true);
+                    }
+                } else {
+                    vm.fieldsSelected(vm.fieldsSelected() - 1);
+                }
+
                 return verifyFieldChange(vm, field);                               
             });
 
@@ -157,7 +188,7 @@
                     if (config.Clients) {
                         vm.clients(config.Clients);
                     }
-                    debugger;
+
                     if (vm.clients().length == 1) {
                         vm.selectedClient(vm.clients()[0]);
                     } else {
@@ -227,8 +258,13 @@
 
         function addFields(vm, fields) {
             var fieldArr = [];
+            var countSelected = 0;
             fields.forEach(function (field) {
                 fieldArr.push(new vm.ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
+
+                if (field.IsChecked) {
+                    countSelected++;
+                }
 
                 if (field.LogicalName === "emailaddress1") {
                     vm.email1Selected(field.IsChecked);
@@ -238,6 +274,8 @@
                     vm.email3Selected(field.IsChecked);
                 }
             });
+
+            vm.fieldsSelected(countSelected);
             vm.fields(fieldArr);
         }
 

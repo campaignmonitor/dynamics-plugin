@@ -185,30 +185,35 @@
 
     </section>
     <!-- LOADING modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" data-bind="visible: isLoading">
+    <div class="modal" data-bind="visible: (isLoading() || isSyncing())">
         <div>
             <div class="icon iconLoading">
                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
             </div>
-            </span>
-            <h1>Syncing...</h1>
-            <p>Your settings have been saved. Syncing may take several minutes. You will receive an email notification upon completion.</p>
+            <div data-bind="visible: isSyncing">
+                <h1>Syncing...</h1>
+                <p>Your settings have been saved. Syncing may take several minutes. You will receive an email notification upon completion.</p>
+            </div>
+            <div data-bind="visible: isLoading">
+                <h1>Loading...</h1>
+                <p>Your settings are loading.</p>
+            </div>
         </div>
     </div>
     <!-- SYNC COMPLETE modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display: none;">
+    <div class="modal" style="display: none;" data-bind="visible: syncComplete">
         <div>
             <svg class="icon iconCheck">
                 <polyline points="1,17 13,29 41,1" />
             </svg>
             <h1>Sync Complete</h1>
             <div class="buttons">
-                <button type="submit" class="buttonPrimary">OK</button>
+                <button type="submit" class="buttonPrimary" data-bind="click: function () { syncComplete(false); return true; }">OK</button>
             </div>
         </div>
     </div>
     <!-- TOO MANY FIELDS modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display: none;">
+    <div class="modal" style="display: none;" data-bind="visible: tooManyFields">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052
@@ -218,9 +223,9 @@
                 <circle cx="22.5" cy="30.5" r="2.5" />
             </svg>
             <h1>Too Many Fields</h1>
-            <p>There is a limit to the number of fields that can be synced to Campaign Monitor. Please deselect <strong>3 fields</strong> and try again.</p>
+            <p>There is a limit to the number of fields that can be synced to Campaign Monitor. Please deselect <strong data-bind="text: fieldsOver"></strong> field(s) and try again.</p>
             <div class="buttons">
-                <button type="submit" class="buttonPrimary">OK</button>
+                <button type="submit" class="buttonPrimary" data-bind="click: function() { tooManyFields(false); return true; }">OK</button>
             </div>
         </div>
     </div>
@@ -242,8 +247,7 @@
             </div>
         </div>
     </div>
-    <!-- CONNECTION ERROR modal window below. Remove "display: none;" to reveal. -->
-
+    <!-- ERROR modal window below. Remove "display: none;" to reveal. -->
     <div class="modal" style="display:none;" data-bind="visible: (hasError() || hasConnectionError())">
         <div>
             <svg class="icon iconAlert">
@@ -258,7 +262,7 @@
             <p data-bind="text: errorMessage"></p>
             <p data-bind="visible: hasConnectionError">Unable to connect to Campaign Monitor. Please try again. If the problem persists, please contact <a href="mailto:support@campaignmonitor.com">support@campaignmonitor.com</a> for support.</p>
             <div class="buttons" data-bind="visible: !criticalError() && !hasConnectionError()">
-                <button type="submit" class="buttonPrimary" data-bind="click: hasError(false)">OK</button>
+                <button type="submit" class="buttonPrimary" data-bind="click: function() { hasError(false); return true; }">OK</button>
             </div>
         </div>
     </div>
