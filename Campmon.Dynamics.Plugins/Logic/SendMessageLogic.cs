@@ -38,6 +38,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                 var contactEmail = contactData.Where(x => x.Key == emailField).FirstOrDefault();
                 if (contactEmail == null)
                 {
+                    tracer.Trace("The email field to sync was not found within the data for this message.");
                     target["campmon_error"] = "The email field to sync was not found within the data for this message.";
                     orgService.Update(target);
                     return;                        
@@ -46,6 +47,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                 bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(orgService, emailField, contactEmail.Value.ToString());
                 if (emailIsDuplicate)
                 {
+                    tracer.Trace("Duplicate email");
                     target["campmon_error"] = "Duplicate email";
                     orgService.Update(target);
                     return;
@@ -54,7 +56,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             try
             {
-                SendSubscriberToList(campaignMonitorConfig.ListId, emailField, contactData);
+                SendSubscriberToList(campaignMonitorConfig.ListId, emailField, contactData, target["campmon_name"].ToString().ToLower() == "update");
             }
             catch (Exception ex)
             {
@@ -64,25 +66,31 @@ namespace Campmon.Dynamics.Plugins.Logic
             }
 
             // deactivate msg if successful create/update
-            target["statecode"] = 1;
+            target["statuscode"] = new OptionSetValue(2);
+            target["statecode"] = new OptionSetValue(1);
             orgService.Update(target);
-        }    
+        }
 
-        private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields)
+        private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields, bool isUpdate)
         {
             // send subscriber to campaign monitor list using CM API
-            var name = fields.Where(f => f.Key == "fullname").FirstOrDefault();
-            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();            
-            fields.Remove(name);            
-            fields.Remove(email);            
-            
+            var name = fields.Where(f => f.Key == "Full Name").FirstOrDefault();
+            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();
+                        
+            tracer.Trace(String.Format("Sending {0}:{1}", email?.Value, name?.Value));
+
             Subscriber subscriber = new Subscriber(authDetails, listId);
-            subscriber.Add(
-                    email != null ? email.Value : string.Empty,
-                    name != null ? name.Value : string.Empty,
-                    fields,
-                    false, // resubscribe
-                    false); // restartSubscriptionBasedAutoResponders
+
+            //if (isUpdate)
+            //{
+            //    // second field is new email if it changes
+            //    subscriber.Update(email?.Value, email?.Value, name?.Value, fields, false, false);
+            //}
+            //else
+            //{
+                subscriber.Add(email?.Value, name?.Value, fields, false, false);
+            //}
+            tracer.Trace("Sent.");
         }
     }
 }

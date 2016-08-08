@@ -40,7 +40,7 @@ namespace Campmon.Dynamics
                 optionSetLabels[dictKey] = label;
             }
 
-            return primaryAttributes[entityLogicalName];
+            return optionSetLabels[dictKey];            
         }
 
         public AttributeMetadata[] GetEntityAttributes(string entityLogicalName)
