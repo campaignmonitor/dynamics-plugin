@@ -47,14 +47,16 @@ namespace Campmon.Dynamics.Plugins.Logic
                 return;
             }
 
-            // get the display name for primary field
+            // get the display name for primary email/full name
             // we're saving display names in config to be sent to CM to look cleaner on there
             MetadataHelper mdh = new MetadataHelper(orgService, tracer);
             var attr = mdh.GetEntityAttributes("contact");
+
             var primaryEmail = attr.Where(f => f.LogicalName == emailField).FirstOrDefault();
-            var primaryEmailDisplayName = primaryEmail != null
-                            ? primaryEmail.DisplayName.UserLocalizedLabel.Label
-                            : string.Empty;
+            var primaryEmailDisplayName = primaryEmail?.DisplayName.UserLocalizedLabel.Label;
+
+            var fullName = attr.Where(fn => fn.LogicalName == "fullname").FirstOrDefault();
+            var fullNameDisplayName = fullName?.DisplayName.UserLocalizedLabel.Label;
 
             if (campaignMonitorConfig.SyncViewId != Guid.Empty)
             {
@@ -100,7 +102,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             if (isUpdate && !target.Attributes.Contains("fullname"))
             {
-                fields.Add(new SubscriberCustomField { Key = "Full Name", Value = postImage["fullname"].ToString() });
+                fields.Add(new SubscriberCustomField { Key = fullNameDisplayName, Value = postImage["fullname"].ToString() });
             }
 
             var syncData = JsonConvert.SerializeObject(fields);
