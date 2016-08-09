@@ -13,6 +13,8 @@ namespace Campmon.Dynamics.Plugins
             var orgService = serviceProvider.CreateOrganizationServiceAsCurrentUser();
             var tracer = serviceProvider.GetTracingService();
 
+            tracer.Trace("SendMessagePlugin");
+
             if (!context.InputParameters.Contains("Target"))
             {
                 return;
