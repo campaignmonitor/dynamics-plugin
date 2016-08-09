@@ -46,18 +46,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                 tracer.Trace("The email field to sync is missing or contains invalid data.");
                 return;
             }
-
-            // get the display name for primary email/full name
-            // we're saving display names in config to be sent to CM to look cleaner on there
-            MetadataHelper mdh = new MetadataHelper(orgService, tracer);
-            var attr = mdh.GetEntityAttributes("contact");
-
-            var primaryEmail = attr.Where(f => f.LogicalName == emailField).FirstOrDefault();
-            var primaryEmailDisplayName = primaryEmail?.DisplayName.UserLocalizedLabel.Label;
-
-            var fullName = attr.Where(fn => fn.LogicalName == "fullname").FirstOrDefault();
-            var fullNameDisplayName = fullName?.DisplayName.UserLocalizedLabel.Label;
-
+           
             if (campaignMonitorConfig.SyncViewId != Guid.Empty)
             {
                 tracer.Trace("Testing the contact against the filter.");
@@ -100,7 +89,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             if (isUpdate && !target.Attributes.Contains(emailField))
             {
-                fields.Add(new SubscriberCustomField { Key = primaryEmailDisplayName, Value = postImage[emailField].ToString() });
+                fields.Add(new SubscriberCustomField { Key = emailField, Value = postImage[emailField].ToString() });
             }
             else
             {
@@ -109,14 +98,14 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             if (isUpdate && !target.Attributes.Contains("fullname"))
             {
-                fields.Add(new SubscriberCustomField { Key = fullNameDisplayName, Value = postImage["fullname"].ToString() });
+                fields.Add(new SubscriberCustomField { Key = "fullname", Value = postImage["fullname"].ToString() });
             }
 
             var syncData = JsonConvert.SerializeObject(fields);
 
             syncMessage["campmon_name"] = isUpdate ? "update" : "create";
             syncMessage["campmon_data"] = syncData;
-            syncMessage["campmon_email"] = primaryEmailDisplayName;
+            syncMessage["campmon_email"] = emailField;
             orgService.Create(syncMessage);
         }
 

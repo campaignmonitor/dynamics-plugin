@@ -139,11 +139,13 @@ namespace Campmon.Dynamics.WorkflowActivities
                 if (contact.Contains("fullname"))
                 {
                     name = contact["fullname"].ToString();
-                    contact.Attributes.Remove("fullname");
                 }
 
+                MetadataHelper mdh = new MetadataHelper(orgService, trace);
 
                 var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, trace, contact, contact.Attributes.Keys);
+                fields = SharedLogic.PrettifySchemaNames(mdh, fields);
+
                 subscribers.Add(new SubscriberDetail {
                     EmailAddress = email,
                     Name = string.IsNullOrWhiteSpace(name) 

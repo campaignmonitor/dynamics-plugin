@@ -52,7 +52,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                     orgService.Update(target);
                     return;
                 }                
-            }
+            }            
 
             try
             {
@@ -75,9 +75,13 @@ namespace Campmon.Dynamics.Plugins.Logic
 
         private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields)
         {
+            
             // send subscriber to campaign monitor list using CM API
-            var name = fields.Where(f => f.Key == "Full Name").FirstOrDefault();
-            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();                                   
+            var name = fields.Where(f => f.Key == "fullname").FirstOrDefault();
+            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();
+
+            MetadataHelper mdh = new MetadataHelper(orgService, tracer);
+            fields = SharedLogic.PrettifySchemaNames(mdh, fields);
 
             Subscriber subscriber = new Subscriber(authDetails, listId);
             subscriber.Add(email?.Value, name?.Value, fields, false, false);            

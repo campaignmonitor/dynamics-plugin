@@ -81,9 +81,6 @@ namespace Campmon.Dynamics.Logic
                 }
             }
 
-            // convert schema names to display names to be cleaner for campaign monitor
-            fields = PrettifySchemaNames(metadataHelper, fields);
-
             return fields;
         }
 
@@ -125,7 +122,7 @@ namespace Campmon.Dynamics.Logic
             return isNum;
         }
 
-        private static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
+        public static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
         {
             // convert each field to Campaign Monitor custom 
             // field names by using the display name for the field            
