@@ -6,6 +6,7 @@ using SonomaPartners.Crm.Toolkit;
 using SonomaPartners.Crm.Toolkit.Plugins;
 using Campmon.Dynamics.Plugins.Operations;
 using Newtonsoft.Json;
+using Microsoft.Xrm.Sdk;
 
 namespace Campmon.Dynamics.Plugins
 {
@@ -56,8 +57,9 @@ namespace Campmon.Dynamics.Plugins
             }
             catch (Exception ex)
             {
-                trace.Trace($"Fatal error: {ex.Message}");
-                throw;
+                trace.Trace("Fatal error: {0}", ex.Message);
+                trace.Trace("Stack trace: {0}", ex.StackTrace);
+                throw new InvalidPluginExecutionException("Fatal error: " + ex.Message);
             }
 
             pluginContext.OutputParameters["OutputData"] = outputData;

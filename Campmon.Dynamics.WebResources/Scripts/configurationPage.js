@@ -37,9 +37,10 @@
             self.isDisconnecting = ko.observable(false);
             self.changeDisconnectingStatus = ko.observable();
             self.disconnect = function () {
+                self.isLoading(true);
                 Campmon.Plugin.executeAction('disconnect', JSON.stringify(data))
                     .then(function (result) {
-                        debugger;
+                        self.isLoading(false);
                     }, function (error) {
                         debugger;
                     });
@@ -140,6 +141,7 @@
                         debugger;
                     }, function (error) {
                         debugger;
+                        console.log(error.response.text);
                         self.isSyncing(false);
                         self.errorMessage("Error saving configuration.");
                         self.hasError(true);
