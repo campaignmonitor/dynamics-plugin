@@ -28,7 +28,7 @@
             self.selectedList = ko.observable();
             self.listType = ko.observable("existingList");
             self.newListName = ko.observable();
-            self.confirmedOptIn = ko.observable();
+            self.confirmedOptIn = ko.observable('false');
             self.optInType = ko.observable();
             self.hasConnectionError = ko.observable(false);
 
@@ -110,7 +110,7 @@
                     }),
                     Views: self.selectedView() ? [{
                         ViewId: self.selectedView() ? self.selectedView().ViewId : null,
-                        ViewName: self.selectedView() ? self.selectedView().Name : null,
+                        ViewName: self.selectedView() ? self.selectedView().ViewName : null,
                         IsSelected: true
                     }] : null,
                     SyncDuplicateEmails: self.syncDuplicateEmails(),
