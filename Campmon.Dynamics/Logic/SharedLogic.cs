@@ -13,7 +13,6 @@ namespace Campmon.Dynamics.Logic
     {
         public static string GetPrimaryEmailField(SubscriberEmailValues val)
         {
-
             // get corresponding email field from contact entity based on value of optionset from config
             if (Enum.IsDefined(typeof(SubscriberEmailValues), val))
             {

@@ -61,7 +61,6 @@ namespace Campmon.Dynamics.Plugins.Logic
             if (campaignMonitorConfig.SyncViewId != Guid.Empty)
             {
                 tracer.Trace("Testing the contact against the filter.");
-                tracer.Trace(String.Format("Filter: {0}", campaignMonitorConfig.SyncViewId.ToString()));
 
                 // Retrieve the view specified in the campmon_syncviewid field of the configuration record.
                 var filterQuery = SharedLogic.GetConfigFilterQuery(orgService, campaignMonitorConfig.SyncViewId);
@@ -70,6 +69,14 @@ namespace Campmon.Dynamics.Plugins.Logic
                 if (!TestContactFitsFilter(filterQuery, target.Id))
                 {
                     tracer.Trace("Contact does not fit the filter.");
+                    return;
+                }
+            }
+            else
+            {
+                if (target.Contains("statecode") && (target["statecode"] as OptionSetValue).Value == 1)
+                {
+                    tracer.Trace("Contact was not synced: no view is selected and this contact is deactivated.");
                     return;
                 }
             }

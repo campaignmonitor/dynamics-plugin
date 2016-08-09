@@ -56,7 +56,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             try
             {
-                SendSubscriberToList(campaignMonitorConfig.ListId, emailField, contactData, target["campmon_name"].ToString().ToLower() == "update");
+                SendSubscriberToList(campaignMonitorConfig.ListId, emailField, contactData);
             }
             catch (Exception ex)
             {
@@ -65,32 +65,22 @@ namespace Campmon.Dynamics.Plugins.Logic
                 return;
             }
 
+            tracer.Trace("User successfully sent to CM.");
+
             // deactivate msg if successful create/update
             target["statuscode"] = new OptionSetValue(2);
             target["statecode"] = new OptionSetValue(1);
             orgService.Update(target);
         }
 
-        private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields, bool isUpdate)
+        private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields)
         {
             // send subscriber to campaign monitor list using CM API
             var name = fields.Where(f => f.Key == "Full Name").FirstOrDefault();
-            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();
-                        
-            tracer.Trace(String.Format("Sending {0}:{1}", email?.Value, name?.Value));
+            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();                                   
 
             Subscriber subscriber = new Subscriber(authDetails, listId);
-
-            //if (isUpdate)
-            //{
-            //    // second field is new email if it changes
-            //    subscriber.Update(email?.Value, email?.Value, name?.Value, fields, false, false);
-            //}
-            //else
-            //{
-                subscriber.Add(email?.Value, name?.Value, fields, false, false);
-            //}
-            tracer.Trace("Sent.");
+            subscriber.Add(email?.Value, name?.Value, fields, false, false);            
         }
     }
 }
