@@ -107,7 +107,6 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             var syncData = JsonConvert.SerializeObject(fields);
 
-
             syncMessage["campmon_name"] = isUpdate ? "update" : "create";
             syncMessage["campmon_data"] = syncData;
             syncMessage["campmon_email"] = primaryEmailDisplayName;

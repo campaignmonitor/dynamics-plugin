@@ -63,7 +63,7 @@ namespace Campmon.Dynamics.Logic
                 {
                     // To transform date fields, send as date
                     var date = (DateTime)contact[field];
-                    fields.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/mm/dd") });
+                    fields.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/MM/dd") });
                 }
                 else if (contact[field] is Money)
                 {
