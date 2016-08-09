@@ -40,10 +40,6 @@
     <AssemblyOriginatorKeyFile>CampaignMonitorKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="createsend-dotnet, Version=4.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\campaignmonitor-api.4.2.2\lib\net40\createsend-dotnet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Crm.Sdk.Proxy, Version=8.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CrmSdk.CoreAssemblies.8.1.0.2\lib\net452\Microsoft.Crm.Sdk.Proxy.dll</HintPath>
       <Private>False</Private>
@@ -106,6 +102,10 @@
     <ProjectReference Include="..\Campmon.Dynamics\Campmon.Dynamics.csproj">
       <Project>{5ad4b4f2-5b15-419e-82be-1297d23480f6}</Project>
       <Name>Campmon.Dynamics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\createsend-dotnet\createsend-dotnet.csproj">
+      <Project>{a498eb72-a24f-4cf3-85de-3e4ee62df56f}</Project>
+      <Name>createsend-dotnet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
