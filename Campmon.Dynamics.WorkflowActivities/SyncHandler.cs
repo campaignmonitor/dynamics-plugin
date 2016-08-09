@@ -50,10 +50,15 @@ namespace Campmon.Dynamics.WorkflowActivities
                 viewFilter.ColumnSet.Columns.AddRange(config.SyncFields);
             }
 
-            // we need the correct email for the subscription
+            // add required fields for syncing if they are not a part of the filter
             if (!viewFilter.ColumnSet.Columns.Contains(primaryEmail))
             {
                 viewFilter.ColumnSet.Columns.Add(primaryEmail);
+            }
+
+            if (!viewFilter.ColumnSet.Columns.Contains("fullname"))
+            {
+                viewFilter.ColumnSet.Columns.Add("fullname");
             }
 
             viewFilter.AddOrder("modifiedon", OrderType.Ascending);
@@ -120,12 +125,13 @@ namespace Campmon.Dynamics.WorkflowActivities
         private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail)
         {
             var subscribers = new List<SubscriberDetail>();
+            MetadataHelper mdh = new MetadataHelper(orgService, trace);
 
             foreach (Entity contact in contacts.Entities.Where(x => !string.IsNullOrWhiteSpace(x[primaryEmail].ToString())))
             {
                 // remove the primary email field, it's sent as a separate param and we don't want duplicate fields
                 var email = contact.Attributes[primaryEmail].ToString();
-                contact.Attributes.Remove(primaryEmail);
+                var name = contact["fullname"].ToString();
 
                 // temporary; I could technically just look at contacts collection for duplicates correct?
                 // basically since those are the ones that match the filter to be sent.
@@ -133,22 +139,14 @@ namespace Campmon.Dynamics.WorkflowActivities
                 if (!config.SyncDuplicateEmails && SharedLogic.CheckEmailIsDuplicate(orgService, primaryEmail, email))
                 {
                     continue;
-                }
-
-                string name = null;
-                if (contact.Contains("fullname"))
-                {
-                    name = contact["fullname"].ToString();
-                    contact.Attributes.Remove("fullname");
-                }
-
+                }                
 
                 var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, trace, contact, contact.Attributes.Keys);
+                fields = SharedLogic.PrettifySchemaNames(mdh, fields);
+
                 subscribers.Add(new SubscriberDetail {
                     EmailAddress = email,
-                    Name = string.IsNullOrWhiteSpace(name) 
-                        ? string.Empty 
-                        : name,
+                    Name = name,
                     CustomFields = fields
                 });
             }

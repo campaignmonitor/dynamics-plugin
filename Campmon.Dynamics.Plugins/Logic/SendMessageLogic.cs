@@ -38,6 +38,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                 var contactEmail = contactData.Where(x => x.Key == emailField).FirstOrDefault();
                 if (contactEmail == null)
                 {
+                    tracer.Trace("The email field to sync was not found within the data for this message.");
                     target["campmon_error"] = "The email field to sync was not found within the data for this message.";
                     orgService.Update(target);
                     return;                        
@@ -46,11 +47,12 @@ namespace Campmon.Dynamics.Plugins.Logic
                 bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(orgService, emailField, contactEmail.Value.ToString());
                 if (emailIsDuplicate)
                 {
+                    tracer.Trace("Duplicate email");
                     target["campmon_error"] = "Duplicate email";
                     orgService.Update(target);
                     return;
                 }                
-            }
+            }            
 
             try
             {
@@ -63,26 +65,26 @@ namespace Campmon.Dynamics.Plugins.Logic
                 return;
             }
 
+            tracer.Trace("User successfully sent to CM.");
+
             // deactivate msg if successful create/update
-            target["statecode"] = 1;
+            target["statuscode"] = new OptionSetValue(2);
+            target["statecode"] = new OptionSetValue(1);
             orgService.Update(target);
-        }    
+        }
 
         private void SendSubscriberToList(string listId, string emailField, List<SubscriberCustomField> fields)
         {
+            
             // send subscriber to campaign monitor list using CM API
             var name = fields.Where(f => f.Key == "fullname").FirstOrDefault();
-            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();            
-            fields.Remove(name);            
-            fields.Remove(email);            
-            
+            var email = fields.Where(f => f.Key == emailField).FirstOrDefault();
+
+            MetadataHelper mdh = new MetadataHelper(orgService, tracer);
+            fields = SharedLogic.PrettifySchemaNames(mdh, fields);
+
             Subscriber subscriber = new Subscriber(authDetails, listId);
-            subscriber.Add(
-                    email != null ? email.Value : string.Empty,
-                    name != null ? name.Value : string.Empty,
-                    fields,
-                    false, // resubscribe
-                    false); // restartSubscriptionBasedAutoResponders
+            subscriber.Add(email?.Value, name?.Value, fields, false, false);            
         }
     }
 }

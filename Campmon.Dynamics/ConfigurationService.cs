@@ -123,6 +123,5 @@ namespace Campmon.Dynamics
                 orgService.Update(entity);
             }
         }
-
     }
 }

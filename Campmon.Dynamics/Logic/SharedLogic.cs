@@ -13,7 +13,6 @@ namespace Campmon.Dynamics.Logic
     {
         public static string GetPrimaryEmailField(SubscriberEmailValues val)
         {
-
             // get corresponding email field from contact entity based on value of optionset from config
             if (Enum.IsDefined(typeof(SubscriberEmailValues), val))
             {
@@ -31,12 +30,14 @@ namespace Campmon.Dynamics.Logic
             foreach (var field in attributes)
             {
                 if (!contact.Attributes.Contains(field))
-                {
+                {                  
                     continue;
                 }
-
+                
+                tracer.Trace(string.Format("Field: {0} exists on contact as Type: {1}", field, contact[field].GetType()));
+                
                 if (contact[field] is EntityReference)
-                {
+                {                                        
                     // To transform Lookup and Option Set fields, use the text label and send as text
                     var refr = (EntityReference)contact[field];
                     var displayName = refr.Name;
@@ -52,7 +53,7 @@ namespace Campmon.Dynamics.Logic
                     fields.Add(new SubscriberCustomField { Key = field, Value = displayName });
                 }
                 else if (contact[field] is OptionSetValue)
-                {
+                {                   
                     var optionValue = (OptionSetValue)contact[field];
                     var optionLabel = metadataHelper.GetOptionSetValueLabel("contact", field, optionValue.Value);
                     fields.Add(new SubscriberCustomField { Key = field, Value = optionLabel });
@@ -61,7 +62,7 @@ namespace Campmon.Dynamics.Logic
                 {
                     // To transform date fields, send as date
                     var date = (DateTime)contact[field];
-                    fields.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/mm/dd") });
+                    fields.Add(new SubscriberCustomField { Key = field, Value = date.ToString("yyyy/MM/dd") });
                 }
                 else if (contact[field] is Money)
                 {
@@ -74,14 +75,11 @@ namespace Campmon.Dynamics.Logic
                     fields.Add(new SubscriberCustomField { Key = field, Value = contact[field].ToString() });
                 }
                 else
-                {
+                {                    
                     // For any other fields, send as text
                     fields.Add(new SubscriberCustomField { Key = field, Value = contact[field].ToString() });
                 }
             }
-
-            // convert schema names to display names to be cleaner for campaign monitor
-            //fields = PrettifySchemaNames(metadataHelper, fields);
 
             return fields;
         }
@@ -99,7 +97,7 @@ namespace Campmon.Dynamics.Logic
         public static QueryExpression GetConfigFilterQuery(IOrganizationService orgService, Guid viewId)
         {
             ColumnSet cols = new ColumnSet("fetchxml");
-            Entity view = orgService.Retrieve("view", viewId, cols);
+            Entity view = orgService.Retrieve("savedquery", viewId, cols);
 
             if (view == null || !view.Contains("fetchxml"))
             {
@@ -124,7 +122,7 @@ namespace Campmon.Dynamics.Logic
             return isNum;
         }
 
-        private static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
+        public static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
         {
             // convert each field to Campaign Monitor custom 
             // field names by using the display name for the field            
