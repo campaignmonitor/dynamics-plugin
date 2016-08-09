@@ -29,7 +29,8 @@ namespace Campmon.Dynamics.Plugins
                 { "getclients", () => new GetClients(configService) },
                 { "getclientlist", ()=> new GetClientList(configService) },
                 { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) },
-                { "saveconfiguration", () => new SaveConfigurationOperation(orgService, configService, trace) }
+                { "saveconfiguration", () => new SaveConfigurationOperation(orgService, configService, trace) },
+                { "disconnect", () => new Disconnect(configService) }
             };
 
             var pluginContext = serviceProvider.GetPluginExecutionContext();

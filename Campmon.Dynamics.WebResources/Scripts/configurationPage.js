@@ -36,7 +36,14 @@
 
             self.isDisconnecting = ko.observable(false);
             self.changeDisconnectingStatus = ko.observable();
-            self.disconnect = ko.observable();
+            self.disconnect = function () {
+                Campmon.Plugin.executeAction('disconnect', JSON.stringify(data))
+                    .then(function (result) {
+                        debugger;
+                    }, function (error) {
+                        debugger;
+                    });
+            };
 
             self.fields = ko.observableArray();
             self.fieldChanged = ko.observable();
@@ -147,15 +154,15 @@
                 vm.isDisconnecting(!vm.isDisconnecting());
             });
 
-            vm.disconnect.subscribe(function () {
-                Campmon.Plugin.executeAction('disconnect', '')
-                    .then(function (result) {
-                        // todo: go back to OAuth page
-                    }, function (error) {
-                        vm.errorMessage("Error disconnecting from Campaign Monitor.");
-                        vm.hasError(true);
-                    });
-            });
+            //vm.disconnect.subscribe(function () {
+            //    Campmon.Plugin.executeAction('disconnect', '')
+            //        .then(function (result) {
+            //            // todo: go back to OAuth page
+            //        }, function (error) {
+            //            vm.errorMessage("Error disconnecting from Campaign Monitor.");
+            //            vm.hasError(true);
+            //        });
+            //});
 
             vm.fieldChanged.subscribe(function (field) {
                 debugger;
