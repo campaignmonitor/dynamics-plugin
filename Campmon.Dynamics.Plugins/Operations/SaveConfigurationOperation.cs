@@ -77,6 +77,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                     trace.Trace("Creating new field {0}", displayName);
                     var dataType = MapDynamicsTypeToCampmonType(attribute.AttributeType.Value);
                     var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
+
                 }
                 // delete removed custom fields
                 foreach(var fieldName in removedFields)

@@ -288,15 +288,15 @@ namespace createsend_dotnet
 
             foreach (string key in nvc.AllKeys)
             {
-                string encodedKey = HttpUtility.UrlEncode(key) + "=";
+                //string encodedKey = HttpUtility.UrlEncode(key) + "=";
+                string encodedKey = Uri.EscapeDataString(key) + "=";
                 var values = nvc.GetValues(key);
                 
                 if(values != null)
                 foreach (string value in values)
                 {
-                    
-                        keyValuePair.Add(encodedKey + HttpUtility.UrlEncode(value));
-                    
+                        //keyValuePair.Add(encodedKey + HttpUtility.UrlEncode(value));
+                        keyValuePair.Add(encodedKey + Uri.EscapeDataString(value));
                 }
             }
 

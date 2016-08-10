@@ -25,7 +25,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             campaignMonitorConfig = configService.VerifyAndLoadConfig();
         }
 
-        internal void SyncContact(Entity target, Entity postImage, bool isUpdate)
+        internal void SyncContact(Entity target, Entity postImage, Entity preImage, bool isUpdate)
         {
             if (target == null || postImage == null)
             {
@@ -91,9 +91,27 @@ namespace Campmon.Dynamics.Plugins.Logic
             {
                 fields.Add(new SubscriberCustomField { Key = emailField, Value = postImage[emailField].ToString() });
             }
-            else
+            else if(isUpdate && target.Attributes.Contains(emailField) && preImage[emailField].ToString() != postImage[emailField].ToString())
             {
-                // TODO: if it contains primary email and isUpdate, then the primary email was changed and we need to do something to handle that
+                // if it contains primary email and isUpdate, then the primary email was changed and we need to do something to handle that
+                var auth = Authenticator.GetAuthentication(campaignMonitorConfig);
+                var subscriber = new Subscriber(auth, campaignMonitorConfig.ListId);
+                try
+                {
+                    subscriber.Update(preImage[emailField].ToString(), postImage[emailField].ToString(), postImage["fullname"].ToString(), null, false);
+                }
+                catch(CreatesendException csEx)
+                {
+                    if (csEx.Error.Code == "203")
+                    {
+                        subscriber.Add(postImage[emailField].ToString(), postImage["fullname"].ToString(), null, false);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    tracer.Trace("Exception type: {0}", ex.GetType().Name);
+                    throw;
+                }
             }
 
             if (isUpdate && !target.Attributes.Contains("fullname"))

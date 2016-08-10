@@ -92,8 +92,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BulkSyncContacts.cs" />
-    <Compile Include="Model\BulkSyncData.cs" />
-    <Compile Include="Model\BulkSyncError.cs" />
     <Compile Include="SyncHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

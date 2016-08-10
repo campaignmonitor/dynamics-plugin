@@ -69,6 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authenticator.cs" />
+    <Compile Include="BulkSyncData.cs" />
+    <Compile Include="BulkSyncError.cs" />
     <Compile Include="CampaignMonitorConfiguration.cs" />
     <Compile Include="CampaignMonitorService.cs" />
     <Compile Include="ConfigurationService.cs" />

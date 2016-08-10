@@ -3,7 +3,6 @@ using Microsoft.Xrm.Sdk.Query;
 using System.Linq;
 using System.Diagnostics;
 using Campmon.Dynamics.Logic;
-using Campmon.Dynamics.WorkflowActivities.Model;
 using Newtonsoft.Json;
 using createsend_dotnet;
 using System.Collections.Generic;

@@ -21,9 +21,19 @@ namespace Campmon.Dynamics.Plugins
             
             Entity target = (Entity)context.InputParameters["Target"];
             Entity postEntityImage = context.GetPostEntityImage("contact");
+            Entity preEntityImage = context.GetPreEntityImage("contact");
             
             ContactSyncLogic syncLogic = new ContactSyncLogic(orgService, tracer);
-            syncLogic.SyncContact(target, postEntityImage, isUpdate);
+            try
+            {
+                syncLogic.SyncContact(target, postEntityImage, preEntityImage, isUpdate);
+            }
+            catch(Exception ex)
+            {
+                tracer.Trace("Fatal error: {0}", ex.Message);
+                tracer.Trace("Stack trace: {0}", ex.StackTrace);
+                throw new InvalidPluginExecutionException("Fatal error: " + ex.Message);
+            }
         }
     }
 }

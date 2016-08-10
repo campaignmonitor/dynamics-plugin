@@ -101,7 +101,8 @@ namespace createsend_dotnet
             bool visibleInPreferenceCenter)
         {
             return HttpPut<Dictionary<string, object>, string>(
-                string.Format("/lists/{0}/customfields/{1}.json", 
+                string.Format("/lists/{0}/customfields/{1}.json",
+                //ListID, System.Web.HttpUtility.UrlEncode(customFieldKey)), null,
                 ListID, Uri.EscapeDataString(customFieldKey)), null,
                 new Dictionary<string, object>() 
                 {
@@ -114,7 +115,7 @@ namespace createsend_dotnet
         {
             HttpDelete(
                 string.Format("/lists/{0}/customfields/{1}.json", 
-                ListID, Uri.EscapeDataString(customFieldKey)), null);
+                ListID, System.Web.HttpUtility.UrlEncode(customFieldKey)), null);
         }
 
         public IEnumerable<ListCustomField> CustomFields()
@@ -130,6 +131,7 @@ namespace createsend_dotnet
         {
             HttpPut<object, string>(
                 string.Format("/lists/{0}/customfields/{1}/options.json",
+                //ListID, System.Web.HttpUtility.UrlEncode(customFieldKey)), null,
                 ListID, Uri.EscapeDataString(customFieldKey)), null,
                 new { 
                     KeepExistingOptions = keepExistingOptions,
