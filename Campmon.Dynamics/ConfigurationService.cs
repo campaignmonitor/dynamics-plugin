@@ -41,7 +41,7 @@ namespace Campmon.Dynamics
             query.ColumnSet = new ColumnSet("campmon_accesstoken", "campmon_bulksyncdata", "campmon_bulksyncinprogress",
                 "campmon_clientid", "campmon_clientname", "campmon_listid", "campmon_listname", "campmon_setuperror",
                 "campmon_syncduplicateemails", "campmon_syncfields", "campmon_syncviewid", "campmon_syncviewname",
-                "campmon_subscriberemail");
+                "campmon_subscriberemail", "campmon_configurationid");
 
             var result = orgService.RetrieveMultiple(query);
 
@@ -58,6 +58,7 @@ namespace Campmon.Dynamics
                 BulkSyncData = configEntity.GetAttributeValue<string>("campmon_bulksyncdata"),
                 ClientId = configEntity.GetAttributeValue<string>("campmon_clientid"),
                 ClientName = configEntity.GetAttributeValue<string>("campmon_clientname"),
+                Id = configEntity.GetAttributeValue<Guid>("campmon_configurationid"),
                 ListId = configEntity.GetAttributeValue<string>("campmon_listid"),
                 ListName = configEntity.GetAttributeValue<string>("campmon_listname"),
                 SetUpError = configEntity.GetAttributeValue<string>("campmon_setuperror"),

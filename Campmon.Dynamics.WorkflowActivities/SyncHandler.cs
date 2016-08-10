@@ -106,9 +106,8 @@ namespace Campmon.Dynamics.WorkflowActivities
 
         private QueryExpression GetBulkSyncFilter(CampaignMonitorConfiguration config, BulkSyncData syncData, string primaryEmail)
         {
-            // retrieve contacts based on the filter, grabbing the columns specified either in the fields to sync (on config entity)
-            // or fields specified in the bulkdata sync fields
-
+            // retrieve contacts based on the filter, grabbing the columns specified either 
+            // in the fields to sync (on config entity) or fields specified in the bulkdata sync fields
             QueryExpression viewFilter;
 
             if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)

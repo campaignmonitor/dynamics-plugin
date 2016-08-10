@@ -7,11 +7,14 @@ using createsend_dotnet;
 using Newtonsoft.Json;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
+using Microsoft.Crm.Sdk.Messages;
+using Microsoft.Xrm.Sdk.Query;
 
 namespace Campmon.Dynamics.Plugins.Operations
 {
     public class SaveConfigurationOperation : IOperation
     {
+        private readonly Guid BULK_SYNC_WORKFLOW_ID = new Guid("C5C1ADE9-81C8-4EFD-9D32-98F1EBBF3B92");
         private ConfigurationService configService;
         private IOrganizationService orgService;
         private ITracingService trace;
@@ -109,7 +112,18 @@ namespace Campmon.Dynamics.Plugins.Operations
                 }
             }
 
-            // todo: kick off workflow
+            // TODO: this is a bit slow since i just need the ID.            
+            // maybe we can pass the ID around from the front end so it doesn't need to be reloaded.
+            var config = configService.VerifyAndLoadConfig();
+
+            ExecuteWorkflowRequest workFlowReq = new ExecuteWorkflowRequest
+            {
+                WorkflowId = BULK_SYNC_WORKFLOW_ID,
+                EntityId = config.Id
+            };
+
+            ExecuteWorkflowResponse workflowResp = (ExecuteWorkflowResponse)orgService.Execute(workFlowReq);            
+            
             return "saved";
         }
 
