@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Campmon.Dynamics.WorkflowActivities.Model
+namespace Campmon.Dynamics
 {
     public class BulkSyncData
     {
