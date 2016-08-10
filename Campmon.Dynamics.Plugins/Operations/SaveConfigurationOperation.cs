@@ -57,7 +57,9 @@ namespace Campmon.Dynamics.Plugins.Operations
 
             var metadata = new MetadataHelper(orgService, trace);
 
-            if (oldConfig != null && oldConfig.ClientId == updatedConfig.ClientId && oldConfig.ListId == updatedConfig.ListId)
+            if (oldConfig != null 
+                && oldConfig.ClientId == updatedConfig.ClientId 
+                && oldConfig.ListId == updatedConfig.ListId)
             {
                 var cmService = new CampaignMonitorService(updatedConfig);
                 var attributes = metadata.GetEntityAttributes("contact");
