@@ -11,6 +11,8 @@ namespace Campmon.Dynamics.Logic
 {
     public class SharedLogic
     {
+        static Dictionary<string, string> schemaToDisplayName;
+
         public static string GetPrimaryEmailField(SubscriberEmailValues val)
         {
             // get corresponding email field from contact entity based on value of optionset from config
@@ -140,13 +142,28 @@ namespace Campmon.Dynamics.Logic
             // field names by using the display name for the field            
             AttributeMetadata[] attributes = metadataHelper.GetEntityAttributes("contact");
 
+            if (schemaToDisplayName == null)
+            {
+                schemaToDisplayName = new Dictionary<string, string>();
+            }
+
             foreach (var field in fields)
             {
-                var displayName = (from x in attributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
-                if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
+                if (!schemaToDisplayName.ContainsKey("contact" + field.Key))
                 {
-                    field.Key = displayName.UserLocalizedLabel.Label.ToString();
+                    var displayName = (from x in attributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
+                    if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
+                    {
+                        schemaToDisplayName["contact" + field.Key] = displayName.UserLocalizedLabel.Label.ToString();
+
+                    }
                 }
+
+                // if label for whatever reason is null above it won't contain the key
+                if (schemaToDisplayName.ContainsKey("contact" + field.Key))
+                {
+                    field.Key = schemaToDisplayName["contact" + field.Key];
+                }                    
             }
 
             return fields;

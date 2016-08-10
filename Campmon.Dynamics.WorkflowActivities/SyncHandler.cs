@@ -157,15 +157,13 @@ namespace Campmon.Dynamics.WorkflowActivities
             MetadataHelper mdh = new MetadataHelper(orgService, trace);
             trace.Trace("Generating Subscriber List");
 
-            trace.Trace("First contact contains primary email? {0}", contacts.Entities[0].Attributes.Contains(primaryEmail));
+            var prettified = new Dictionary<string, string>();
+            mdh.GetEntityAttributes("contact");
 
             foreach (Entity contact in contacts.Entities.Where(c => 
                                             c.Attributes.Contains(primaryEmail) && 
                                             !string.IsNullOrWhiteSpace(c[primaryEmail].ToString())))
             {
-                trace.Trace("Contact {0} contains primary email? {1}", contacts.Entities.IndexOf(contact), contact.Attributes.Contains(primaryEmail));
-                trace.Trace("Contact contains fullname? {0}", contact.Attributes.Contains("fullname"));
-                trace.Trace("Contact = {0}", contact["fullname"].ToString());
 
                 // remove the primary email field, it's sent as a separate param and we don't want duplicate fields
                 var email = contact[primaryEmail].ToString();
@@ -176,8 +174,7 @@ namespace Campmon.Dynamics.WorkflowActivities
                 {
                     continue;
                 }
-
-                // TODO: optimize, can cache the prettified schema names after the first contact and then just use the mapping
+                
                 var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, trace, contact, contact.Attributes.Keys);
                 fields = SharedLogic.PrettifySchemaNames(mdh, fields);
 
@@ -186,8 +183,6 @@ namespace Campmon.Dynamics.WorkflowActivities
                     Name = name,
                     CustomFields = fields
                 });
-
-                trace.Trace("Contact added.");
             }
 
             return subscribers;
