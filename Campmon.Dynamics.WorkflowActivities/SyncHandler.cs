@@ -36,64 +36,20 @@ namespace Campmon.Dynamics.WorkflowActivities
         {
             trace.Trace("Deserializing bulk sync data.");
 
-            BulkSyncData syncData;
-            if (config.BulkSyncData != null)
-            {
-                syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData);
-            }
-            else
-            {
-                syncData = new BulkSyncData();
-            }
-            var primaryEmail = SharedLogic.GetPrimaryEmailField(config.SubscriberEmail);
+            BulkSyncData syncData = config.BulkSyncData != null
+                                        ? syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData)
+                                        : new BulkSyncData();
 
-            // retrieve contacts based on the filter, grabbing the columns specified either in the fields to sync (on config entity)
-            // or fields specified in the bulkdata sync fields
-            QueryExpression viewFilter;
+            string primaryEmail = SharedLogic.GetPrimaryEmailField(config.SubscriberEmail);
 
-            if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)
-            {
-                viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
-            }
-            else
-            {
-                // if no view filter, sync all active contacts
-                viewFilter = new QueryExpression("contact");
-                viewFilter.Criteria.AddCondition(
-                    new ConditionExpression("statecode", ConditionOperator.Equal, 0));
-            }
-
-            viewFilter.ColumnSet.Columns.Clear();
-
-            trace.Trace("Setting columns on filter");
-            if (syncData.UpdatedFields != null && syncData.UpdatedFields.Length > 0)
-            {
-                viewFilter.ColumnSet.Columns.AddRange(syncData.UpdatedFields);
-            }
-            else
-            {
-                viewFilter.ColumnSet.Columns.AddRange(config.SyncFields);
-            }
-
-            // add required fields for syncing if they are not a part of the filter
-            if (!viewFilter.ColumnSet.Columns.Contains(primaryEmail))
-            {
-                viewFilter.ColumnSet.Columns.Add(primaryEmail);
-            }
-
-            if (!viewFilter.ColumnSet.Columns.Contains("fullname"))
-            {
-                viewFilter.ColumnSet.Columns.Add("fullname");
-            }
-
-            viewFilter.AddOrder("modifiedon", OrderType.Ascending);
-            viewFilter.TopCount = BATCH_AMOUNT;
+            QueryExpression viewFilter = GetBulkSyncFilter(config, syncData, primaryEmail);            
 
             var auth = Authenticator.GetAuthentication(config);
             var sub = new Subscriber(auth, config.ListId);
+            var mdh = new MetadataHelper(orgService, trace);
 
             trace.Trace("Beginning the sync process.");
-
+                                
             do
             {
                 viewFilter.PageInfo.PageNumber = syncData.PageNumber > 0
@@ -111,7 +67,7 @@ namespace Campmon.Dynamics.WorkflowActivities
                 syncData.PagingCookie = contacts.PagingCookie;
                 syncData.PageNumber++;
 
-                var subscribers = GenerateSubscribersList(contacts, primaryEmail);                
+                var subscribers = GenerateSubscribersList(contacts, primaryEmail, mdh);                
 
                 BulkImportResults importResults = sub.Import(subscribers, 
                     false, // resubscribe
@@ -120,8 +76,6 @@ namespace Campmon.Dynamics.WorkflowActivities
                 
                 if (importResults.FailureDetails.Count > 0)
                 {
-                    trace.Trace("{0} errors occured on page {1}.", importResults.FailureDetails.Count, viewFilter.PageInfo.PageNumber);
-
                     if (syncData.BulkSyncErrors == null)
                     {
                         syncData.BulkSyncErrors = new List<BulkSyncError>();
@@ -151,14 +105,58 @@ namespace Campmon.Dynamics.WorkflowActivities
             return syncData.PageNumber <= 0; // if we're done return true
         }
 
-        private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail)
+        private QueryExpression GetBulkSyncFilter(CampaignMonitorConfiguration config, BulkSyncData syncData, string primaryEmail)
         {
-            var subscribers = new List<SubscriberDetail>();
-            MetadataHelper mdh = new MetadataHelper(orgService, trace);
-            trace.Trace("Generating Subscriber List");
+            // retrieve contacts based on the filter, grabbing the columns specified either in the fields to sync (on config entity)
+            // or fields specified in the bulkdata sync fields
 
-            var prettified = new Dictionary<string, string>();
-            mdh.GetEntityAttributes("contact");
+            QueryExpression viewFilter;
+
+            if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)
+            {
+                viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
+            }
+            else
+            {
+                // if no view filter, sync all active contacts
+                viewFilter = new QueryExpression("contact");
+                viewFilter.Criteria.AddCondition(
+                    new ConditionExpression("statecode", ConditionOperator.Equal, 0));
+            }
+
+            viewFilter.ColumnSet.Columns.Clear();
+
+            if (syncData.UpdatedFields != null && syncData.UpdatedFields.Length > 0)
+            {
+                viewFilter.ColumnSet.Columns.AddRange(syncData.UpdatedFields);
+            }
+            else
+            {
+                viewFilter.ColumnSet.Columns.AddRange(config.SyncFields);
+            }
+
+            // add required fields for syncing if they are not a part of the filter
+            if (!viewFilter.ColumnSet.Columns.Contains(primaryEmail))
+            {
+                viewFilter.ColumnSet.Columns.Add(primaryEmail);
+            }
+
+            if (!viewFilter.ColumnSet.Columns.Contains("fullname"))
+            {
+                viewFilter.ColumnSet.Columns.Add("fullname");
+            }
+
+            viewFilter.AddOrder("modifiedon", OrderType.Ascending);
+            viewFilter.TopCount = BATCH_AMOUNT;
+
+            return viewFilter;
+        }
+
+        private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail, MetadataHelper mdh)
+        {
+
+            trace.Trace("Generating Subscriber List");
+            var subscribers = new List<SubscriberDetail>();            
 
             foreach (Entity contact in contacts.Entities.Where(c => 
                                             c.Attributes.Contains(primaryEmail) && 
