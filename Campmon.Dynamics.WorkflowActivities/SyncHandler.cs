@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using System;
 using System.Linq;
 using System.Diagnostics;
 using Campmon.Dynamics.Logic;
@@ -34,14 +35,38 @@ namespace Campmon.Dynamics.WorkflowActivities
         public bool Run()
         {
             trace.Trace("Deserializing bulk sync data.");
-            var syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData);
+
+            BulkSyncData syncData;
+            if (config.BulkSyncData != null)
+            {
+                syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData);
+            }
+            else
+            {
+                syncData = new BulkSyncData();
+            }
             var primaryEmail = SharedLogic.GetPrimaryEmailField(config.SubscriberEmail);
 
             // retrieve contacts based on the filter, grabbing the columns specified either in the fields to sync (on config entity)
             // or fields specified in the bulkdata sync fields
-            QueryExpression viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
+            QueryExpression viewFilter;
+
+            if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)
+            {
+                viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
+            }
+            else
+            {
+                // if no view filter, sync all active contacts
+                viewFilter = new QueryExpression("contact");
+                viewFilter.Criteria.AddCondition(
+                    new ConditionExpression("statecode", ConditionOperator.Equal, 0));
+            }
+
             viewFilter.ColumnSet.Columns.Clear();
-            if (syncData.UpdatedFields.Length > 0)
+
+            trace.Trace("Setting columns on filter");
+            if (syncData.UpdatedFields != null && syncData.UpdatedFields.Length > 0)
             {
                 viewFilter.ColumnSet.Columns.AddRange(syncData.UpdatedFields);
             }
@@ -66,6 +91,8 @@ namespace Campmon.Dynamics.WorkflowActivities
 
             var auth = Authenticator.GetAuthentication(config);
             var sub = new Subscriber(auth, config.ListId);
+
+            trace.Trace("Beginning the sync process.");
 
             do
             {
@@ -93,6 +120,8 @@ namespace Campmon.Dynamics.WorkflowActivities
                 
                 if (importResults.FailureDetails.Count > 0)
                 {
+                    trace.Trace("{0} errors occured on page {1}.", importResults.FailureDetails.Count, viewFilter.PageInfo.PageNumber);
+
                     if (syncData.BulkSyncErrors == null)
                     {
                         syncData.BulkSyncErrors = new List<BulkSyncError>();
@@ -126,21 +155,29 @@ namespace Campmon.Dynamics.WorkflowActivities
         {
             var subscribers = new List<SubscriberDetail>();
             MetadataHelper mdh = new MetadataHelper(orgService, trace);
+            trace.Trace("Generating Subscriber List");
 
-            foreach (Entity contact in contacts.Entities.Where(x => !string.IsNullOrWhiteSpace(x[primaryEmail].ToString())))
+            trace.Trace("First contact contains primary email? {0}", contacts.Entities[0].Attributes.Contains(primaryEmail));
+
+            foreach (Entity contact in contacts.Entities.Where(c => 
+                                            c.Attributes.Contains(primaryEmail) && 
+                                            !string.IsNullOrWhiteSpace(c[primaryEmail].ToString())))
             {
+                trace.Trace("Contact {0} contains primary email? {1}", contacts.Entities.IndexOf(contact), contact.Attributes.Contains(primaryEmail));
+                trace.Trace("Contact contains fullname? {0}", contact.Attributes.Contains("fullname"));
+                trace.Trace("Contact = {0}", contact["fullname"].ToString());
+
                 // remove the primary email field, it's sent as a separate param and we don't want duplicate fields
-                var email = contact.Attributes[primaryEmail].ToString();
+                var email = contact[primaryEmail].ToString();
                 var name = contact["fullname"].ToString();
 
-                // temporary; I could technically just look at contacts collection for duplicates correct?
-                // basically since those are the ones that match the filter to be sent.
-                // this will be way slower since it needs to do retrieve multiples for EVERY contact coming in.
-                if (!config.SyncDuplicateEmails && SharedLogic.CheckEmailIsDuplicate(orgService, primaryEmail, email))
+                // check to make sure this contact isn't duplicated within the filter for the config
+                if (!config.SyncDuplicateEmails && SharedLogic.CheckEmailIsDuplicate(orgService, config, primaryEmail, email))
                 {
                     continue;
-                }                
+                }
 
+                // TODO: optimize, can cache the prettified schema names after the first contact and then just use the mapping
                 var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, trace, contact, contact.Attributes.Keys);
                 fields = SharedLogic.PrettifySchemaNames(mdh, fields);
 
@@ -149,6 +186,8 @@ namespace Campmon.Dynamics.WorkflowActivities
                     Name = name,
                     CustomFields = fields
                 });
+
+                trace.Trace("Contact added.");
             }
 
             return subscribers;

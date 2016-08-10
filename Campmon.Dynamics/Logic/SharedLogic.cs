@@ -34,7 +34,7 @@ namespace Campmon.Dynamics.Logic
                     continue;
                 }
                 
-                tracer.Trace(string.Format("Field: {0} exists on contact as Type: {1}", field, contact[field].GetType()));
+                ///tracer.Trace(string.Format("Field: {0} exists on contact as Type: {1}", field, contact[field].GetType()));
                 
                 if (contact[field] is EntityReference)
                 {                                        
@@ -84,13 +84,25 @@ namespace Campmon.Dynamics.Logic
             return fields;
         }
 
-        public static bool CheckEmailIsDuplicate(IOrganizationService orgService, string primaryEmailField, string email)
+        public static bool CheckEmailIsDuplicate(IOrganizationService orgService, CampaignMonitorConfiguration config, string primaryEmailField, string email)
         {
             QueryExpression query = new QueryExpression("contact");
+            QueryExpression configFilter = null;
+            if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)
+            {
+                configFilter = GetConfigFilterQuery(orgService, config.SyncViewId);
+                query.Criteria = configFilter.Criteria;
+            }
+            else
+            {
+                // if no filter on query then only select active contacts
+                query.Criteria.AddCondition(new ConditionExpression("statecode", ConditionOperator.Equal, 0));
+            }
+                      
             query.Criteria.AddCondition(new ConditionExpression(primaryEmailField, ConditionOperator.Equal, email));
             query.ColumnSet.AddColumn("contactid");
             query.TopCount = 2;
-
+            
             return orgService.RetrieveMultiple(query).TotalRecordCount > 1;
         }
 
