@@ -41,12 +41,14 @@ namespace Campmon.Dynamics.Plugins.Operations
                 ClientId = userInput.Clients.First().ClientID,
                 ClientName = userInput.Clients.First().Name,
                 ListId = userInput.Lists.First().ListID,
-                ListName = userInput.Lists.First().Name,
+                ListName = userInput.Lists.First().Name,                
                 SyncDuplicateEmails = userInput.SyncDuplicateEmails,
                 SubscriberEmail = (SubscriberEmailValues)userInput.SubscriberEmail,
                 SyncFields = userInput.Fields.Select(f => f.LogicalName),
                 SyncViewId = userInput.Views != null ? userInput.Views.First().ViewId : Guid.Empty,
-                SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null
+                SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null,
+
+                Id = string.IsNullOrWhiteSpace(userInput.Id) ? Guid.Empty : new Guid(userInput.Id)
             };
 
             if (string.IsNullOrEmpty(updatedConfig.ListId))
@@ -112,14 +114,17 @@ namespace Campmon.Dynamics.Plugins.Operations
                 }
             }
 
-            // TODO: this is a bit slow since i just need the ID.            
-            // maybe we can pass the ID around from the front end so it doesn't need to be reloaded.
-            var config = configService.VerifyAndLoadConfig();
+            
+            // if updatedConfig doesn't have an Id, it was a new config.
+            // it was already saved above, so reload to get the Id
+            if (updatedConfig.Id == Guid.Empty) {
+                updatedConfig = configService.VerifyAndLoadConfig();
+            }
 
             ExecuteWorkflowRequest workFlowReq = new ExecuteWorkflowRequest
             {
                 WorkflowId = BULK_SYNC_WORKFLOW_ID,
-                EntityId = config.Id
+                EntityId = updatedConfig.Id
             };
 
             ExecuteWorkflowResponse workflowResp = (ExecuteWorkflowResponse)orgService.Execute(workFlowReq);            
