@@ -29,5 +29,11 @@ namespace Campmon.Dynamics
         public Guid SyncViewId { get; set; }
         public string SyncViewName { get; set; }
         public SubscriberEmailValues SubscriberEmail { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("ClientId: {0}; ClientName: {1}; ListId: {2}; ListName: {3}",
+                ClientId, ClientName, ListId, ListName);
+        }
     }
 }
