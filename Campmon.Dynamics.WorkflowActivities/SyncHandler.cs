@@ -51,9 +51,9 @@ namespace Campmon.Dynamics.WorkflowActivities
                                 
             do
             {
-                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 0
+                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 1
                                                     ? syncData.PageNumber
-                                                    : 0;
+                                                    : 1;
 
                 if (!string.IsNullOrWhiteSpace(syncData.PagingCookie))
                 {
@@ -87,21 +87,24 @@ namespace Campmon.Dynamics.WorkflowActivities
                     }
                 }
 
+                trace.Trace("Page: {0}", syncData.PageNumber);
+                trace.Trace("More Records? {0}", contacts.MoreRecords);
+
                 if (!contacts.MoreRecords)
                 {
-                    syncData.PageNumber = 0;
+                    syncData.PageNumber = 1;
                     syncData.PagingCookie = string.Empty;
                     break;
                 }
             }
-            while (timer.ElapsedMilliseconds >= 90000);
+            while (timer.ElapsedMilliseconds <= 90000);
 
             trace.Trace("Saving bulk data.");
             string bulkData = JsonConvert.SerializeObject(syncData);
             config.BulkSyncData = bulkData;            
             configService.SaveConfig(config);
 
-            return syncData.PageNumber <= 0; // if we're done return true
+            return syncData.PageNumber <= 1; // if we're done return true
         }
 
         private QueryExpression GetBulkSyncFilter(CampaignMonitorConfiguration config, BulkSyncData syncData, string primaryEmail)
@@ -145,7 +148,8 @@ namespace Campmon.Dynamics.WorkflowActivities
             }
 
             viewFilter.AddOrder("modifiedon", OrderType.Ascending);
-            viewFilter.TopCount = BATCH_AMOUNT;
+            viewFilter.PageInfo.Count = BATCH_AMOUNT;
+            viewFilter.PageInfo.ReturnTotalRecordCount = true;
 
             return viewFilter;
         }
