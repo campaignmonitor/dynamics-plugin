@@ -11,7 +11,8 @@ namespace Campmon.Dynamics.Logic
 {
     public class SharedLogic
     {
-        static Dictionary<string, string> schemaToDisplayName;
+        static Dictionary<string, string> schemaToDisplayName = null;
+        static AttributeMetadata[] contactAttributes = null;
 
         public static string GetPrimaryEmailField(SubscriberEmailValues val)
         {
@@ -139,8 +140,7 @@ namespace Campmon.Dynamics.Logic
         public static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
         {
             // convert each field to Campaign Monitor custom 
-            // field names by using the display name for the field            
-            AttributeMetadata[] attributes = metadataHelper.GetEntityAttributes("contact");
+            // field names by using the display name for the field
 
             if (schemaToDisplayName == null)
             {
@@ -151,7 +151,12 @@ namespace Campmon.Dynamics.Logic
             {
                 if (!schemaToDisplayName.ContainsKey("contact" + field.Key))
                 {
-                    var displayName = (from x in attributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
+                    if (contactAttributes == null)
+                    {
+                        contactAttributes = metadataHelper.GetEntityAttributes("contact");
+                    }
+
+                    var displayName = (from x in contactAttributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
                     if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
                     {
                         schemaToDisplayName["contact" + field.Key] = displayName.UserLocalizedLabel.Label.ToString();
