@@ -8,9 +8,11 @@
         function CampmonViewModel() {
             var self = this;
 
+            self.configId = '',
+
             self.syncComplete = ko.observable(false);
             self.isLoading = ko.observable(true);
-            self.isSyncing = ko.observable(false);
+            self.isSyncing = ko.observable(false);            
 
             self.maxFields = ko.observable(200);
             self.fieldsSelected = ko.observable(0);
@@ -100,6 +102,7 @@
 
                 self.isSyncing(true);
                 var data = {
+                    Id: self.configId,
                     Error: null,
                     BulkSyncInProgress: false,
                     ConfigurationExists: false,
@@ -193,6 +196,8 @@
                         vm.criticalError(true);
                         return;
                     }
+                    debugger;
+                    vm.configId = config.Id
 
                     if (config.Clients) {
                         vm.clients(config.Clients);

@@ -21,6 +21,7 @@ namespace Campmon.Dynamics
         public bool BulkSyncInProgress { get; set; }
         public string ClientId { get; set; }
         public string ClientName { get; set; }
+        public Guid Id { get; set; }
         public string ListId { get; set; }
         public string ListName { get; set; }
         public string SetUpError { get; set; }

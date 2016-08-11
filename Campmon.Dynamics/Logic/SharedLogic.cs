@@ -11,6 +11,9 @@ namespace Campmon.Dynamics.Logic
 {
     public class SharedLogic
     {
+        static Dictionary<string, string> schemaToDisplayName = null;
+        static AttributeMetadata[] contactAttributes = null;
+
         public static string GetPrimaryEmailField(SubscriberEmailValues val)
         {
             // get corresponding email field from contact entity based on value of optionset from config
@@ -34,7 +37,7 @@ namespace Campmon.Dynamics.Logic
                     continue;
                 }
                 
-                tracer.Trace(string.Format("Field: {0} exists on contact as Type: {1}", field, contact[field].GetType()));
+                ///tracer.Trace(string.Format("Field: {0} exists on contact as Type: {1}", field, contact[field].GetType()));
                 
                 if (contact[field] is EntityReference)
                 {                                        
@@ -84,13 +87,25 @@ namespace Campmon.Dynamics.Logic
             return fields;
         }
 
-        public static bool CheckEmailIsDuplicate(IOrganizationService orgService, string primaryEmailField, string email)
+        public static bool CheckEmailIsDuplicate(IOrganizationService orgService, CampaignMonitorConfiguration config, string primaryEmailField, string email)
         {
             QueryExpression query = new QueryExpression("contact");
+            QueryExpression configFilter = null;
+            if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)
+            {
+                configFilter = GetConfigFilterQuery(orgService, config.SyncViewId);
+                query.Criteria = configFilter.Criteria;
+            }
+            else
+            {
+                // if no filter on query then only select active contacts
+                query.Criteria.AddCondition(new ConditionExpression("statecode", ConditionOperator.Equal, 0));
+            }
+                      
             query.Criteria.AddCondition(new ConditionExpression(primaryEmailField, ConditionOperator.Equal, email));
             query.ColumnSet.AddColumn("contactid");
             query.TopCount = 2;
-
+            
             return orgService.RetrieveMultiple(query).TotalRecordCount > 1;
         }
 
@@ -125,16 +140,35 @@ namespace Campmon.Dynamics.Logic
         public static List<SubscriberCustomField> PrettifySchemaNames(MetadataHelper metadataHelper, List<SubscriberCustomField> fields)
         {
             // convert each field to Campaign Monitor custom 
-            // field names by using the display name for the field            
-            AttributeMetadata[] attributes = metadataHelper.GetEntityAttributes("contact");
+            // field names by using the display name for the field
+
+            if (schemaToDisplayName == null)
+            {
+                schemaToDisplayName = new Dictionary<string, string>();
+            }
 
             foreach (var field in fields)
             {
-                var displayName = (from x in attributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
-                if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
+                if (!schemaToDisplayName.ContainsKey("contact" + field.Key))
                 {
-                    field.Key = displayName.UserLocalizedLabel.Label.ToString();
+                    if (contactAttributes == null)
+                    {
+                        contactAttributes = metadataHelper.GetEntityAttributes("contact");
+                    }
+
+                    var displayName = (from x in contactAttributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
+                    if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
+                    {
+                        schemaToDisplayName["contact" + field.Key] = displayName.UserLocalizedLabel.Label.ToString();
+
+                    }
                 }
+
+                // if label for whatever reason is null above it won't contain the key
+                if (schemaToDisplayName.ContainsKey("contact" + field.Key))
+                {
+                    field.Key = schemaToDisplayName["contact" + field.Key];
+                }                    
             }
 
             return fields;
