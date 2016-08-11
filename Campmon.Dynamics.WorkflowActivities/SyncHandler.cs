@@ -92,6 +92,7 @@ namespace Campmon.Dynamics.WorkflowActivities
 
                 if (!contacts.MoreRecords)
                 {
+                    trace.Trace("No more records, clearing the sync data.");
                     syncData.PageNumber = 1;
                     syncData.PagingCookie = string.Empty;
                     break;
