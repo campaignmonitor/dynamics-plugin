@@ -98,6 +98,8 @@ namespace Campmon.Dynamics
             entity["campmon_syncviewid"] = config.SyncViewId.ToString();
             entity["campmon_syncviewname"] = config.SyncViewName;
             entity["campmon_subscriberemail"] = new OptionSetValue((int)config.SubscriberEmail);
+
+            entity["campmon_bulksyncinprogress"] = config.BulkSyncInProgress;
             entity["campmon_bulksyncdata"] = config.BulkSyncData;
 
             if (config.Id == Guid.Empty)

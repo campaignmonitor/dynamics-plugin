@@ -66,8 +66,11 @@ namespace Campmon.Dynamics.WorkflowActivities
                 syncData.PagingCookie = contacts.PagingCookie;
                 syncData.PageNumber++;
 
-                var subscribers = GenerateSubscribersList(contacts, primaryEmail, mdh);                
+                IEnumerable<Entity> invalidEmail = contacts.Entities.Where(e => !e.Attributes.Contains(primaryEmail) || string.IsNullOrWhiteSpace(e[primaryEmail].ToString()));
+                syncData.NumberInvalidEmails += invalidEmail.Count();
 
+                var subscribers = GenerateSubscribersList(contacts.Entities.Except(invalidEmail), primaryEmail, mdh);                
+                
                 BulkImportResults importResults = sub.Import(subscribers, 
                     false, // resubscribe
                     false, // queueSubscriptionBasedAutoResponders
@@ -95,6 +98,10 @@ namespace Campmon.Dynamics.WorkflowActivities
                     trace.Trace("No more records, clearing the sync data.");
                     syncData.PageNumber = 1;
                     syncData.PagingCookie = string.Empty;
+                    syncData.UpdatedFields = null;                    
+
+                    syncData.BulkSyncErrors.Clear();
+                    syncData.NumberInvalidEmails = 0;                   
                     break;
                 }
             }
@@ -102,7 +109,8 @@ namespace Campmon.Dynamics.WorkflowActivities
 
             trace.Trace("Saving bulk data.");
             string bulkData = JsonConvert.SerializeObject(syncData);
-            config.BulkSyncData = bulkData;            
+            config.BulkSyncData = bulkData;
+            config.BulkSyncInProgress = syncData.PageNumber > 1;
             configService.SaveConfig(config);
 
             return syncData.PageNumber <= 1; // if we're done return true
@@ -155,15 +163,13 @@ namespace Campmon.Dynamics.WorkflowActivities
             return viewFilter;
         }
 
-        private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail, MetadataHelper mdh)
+        private List<SubscriberDetail> GenerateSubscribersList(IEnumerable<Entity> contacts, string primaryEmail, MetadataHelper mdh)
         {
 
             trace.Trace("Generating Subscriber List");
             var subscribers = new List<SubscriberDetail>();            
 
-            foreach (Entity contact in contacts.Entities.Where(c => 
-                                            c.Attributes.Contains(primaryEmail) && 
-                                            !string.IsNullOrWhiteSpace(c[primaryEmail].ToString())))
+            foreach (Entity contact in contacts)
             {
 
                 // remove the primary email field, it's sent as a separate param and we don't want duplicate fields
