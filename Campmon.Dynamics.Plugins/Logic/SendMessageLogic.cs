@@ -44,7 +44,7 @@ namespace Campmon.Dynamics.Plugins.Logic
                     return;                        
                 }
 
-                bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(orgService, emailField, contactEmail.Value.ToString());
+                bool emailIsDuplicate = SharedLogic.CheckEmailIsDuplicate(orgService, campaignMonitorConfig, emailField, contactEmail.Value.ToString());
                 if (emailIsDuplicate)
                 {
                     tracer.Trace("Duplicate email");

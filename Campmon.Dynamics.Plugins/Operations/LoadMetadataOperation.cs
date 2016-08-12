@@ -99,6 +99,8 @@ namespace Campmon.Dynamics.Plugins.Operations
                 output.Lists = client.Lists();
             }
 
+            output.Id = config.Id.ToString();
+
             output.BulkSyncInProgress = config.BulkSyncInProgress;
             output.SyncDuplicateEmails = config.SyncDuplicateEmails;
             output.SubscriberEmail = (int)config.SubscriberEmail;
@@ -110,7 +112,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             output.ListName = config.ListName;
 
             output.Views = GetContactViews(config);
-            output.Fields = GetContactFields(config);
+            output.Fields = GetContactFields(config);            
 
             return output;
         }

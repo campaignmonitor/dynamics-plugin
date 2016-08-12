@@ -8,9 +8,11 @@
         function CampmonViewModel() {
             var self = this;
 
+            self.configId = '',
+
             self.syncComplete = ko.observable(false);
             self.isLoading = ko.observable(true);
-            self.isSyncing = ko.observable(false);
+            self.isSyncing = ko.observable(false);            
 
             self.maxFields = ko.observable(200);
             self.fieldsSelected = ko.observable(0);
@@ -101,8 +103,9 @@
 
                 self.isSyncing(true);
                 var data = {
+                    Id: self.configId,
                     Error: null,
-                    BulkSyncInProgress: false,
+                    BulkSyncInProgress: true,
                     ConfigurationExists: false,
                     Clients: [{
                         ClientId: self.selectedClient().ClientID,
@@ -137,8 +140,8 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        self.isSyncing(false);
-                        self.syncComplete(true);
+                        //self.isSyncing(false);
+                        //self.syncComplete(true);
                         debugger;
                     }, function (error) {
                         debugger;
@@ -194,6 +197,8 @@
                         vm.criticalError(true);
                         return;
                     }
+                    debugger;
+                    vm.configId = config.Id
 
                     if (config.Clients) {
                         vm.clients(config.Clients);
@@ -247,6 +252,10 @@
                     });
 
                     vm.isLoading(false);
+
+                    if (config.BulkSyncInProgress) {
+                        vm.isSyncing(true);
+                    }
                 }, function (error) {
                     vm.hasConnectionError(true);
                     console.log(JSON.parse(error.response.text));

@@ -17,8 +17,7 @@ namespace Campmon.Dynamics
         private IDictionary<string, string> optionSetLabels;
 
         public MetadataHelper(IOrganizationService organizationService, ITracingService trace)
-        {
-            trace.Trace("Constructing MetadataHelper.");
+        {                        
             orgService = organizationService;
             tracer = trace;
             metadata = new MetadataService(orgService);
@@ -29,13 +28,27 @@ namespace Campmon.Dynamics
 
         public string GetOptionSetValueLabel(string entityLogicalName, string attribute, int optionSetValue)
         {
-            var dictKey = string.Format("{0}{1}", entityLogicalName, attribute);
+            var dictKey = string.Format("{0}{1}{2}", entityLogicalName, attribute, optionSetValue.ToString());
             if (!optionSetLabels.ContainsKey(dictKey))
             {
-                var label = metadata.GetStringValueFromPicklistInt(entityLogicalName, attribute, optionSetValue);
+                string label = string.Empty;
+
+                if (attribute == "statuscode")
+                {
+                    label = metadata.GetStringValueFromStatusInt(entityLogicalName, attribute, optionSetValue);
+                }
+                else if (attribute == "statecode")
+                {
+                    label = optionSetValue == 0 ? "active" : "inactive";
+                }
+                else
+                {
+                    label = metadata.GetStringValueFromPicklistInt(entityLogicalName, attribute, optionSetValue);
+                }
+
                 if (string.IsNullOrEmpty(label))
                 {
-                    tracer.Trace("Invalid OptionSet value");
+                    tracer.Trace("Invalid OptionSet value {0}:{1}", attribute, optionSetValue);
                 }
                 optionSetLabels[dictKey] = label;
             }

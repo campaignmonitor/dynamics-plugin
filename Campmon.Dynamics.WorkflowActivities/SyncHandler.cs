@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
+using System;
 using System.Linq;
 using System.Diagnostics;
 using Campmon.Dynamics.Logic;
@@ -33,14 +34,122 @@ namespace Campmon.Dynamics.WorkflowActivities
         public bool Run()
         {
             trace.Trace("Deserializing bulk sync data.");
-            var syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData);
-            var primaryEmail = SharedLogic.GetPrimaryEmailField(config.SubscriberEmail);
 
-            // retrieve contacts based on the filter, grabbing the columns specified either in the fields to sync (on config entity)
-            // or fields specified in the bulkdata sync fields
-            QueryExpression viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
+            BulkSyncData syncData = config.BulkSyncData != null
+                                        ? syncData = JsonConvert.DeserializeObject<BulkSyncData>(config.BulkSyncData)
+                                        : new BulkSyncData();
+
+            string primaryEmail = SharedLogic.GetPrimaryEmailField(config.SubscriberEmail);
+
+            QueryExpression viewFilter = GetBulkSyncFilter(config, syncData, primaryEmail);            
+
+            var auth = Authenticator.GetAuthentication(config);
+            var sub = new Subscriber(auth, config.ListId);
+            var mdh = new MetadataHelper(orgService, trace);
+
+            trace.Trace("Beginning the sync process.");
+                                
+            do
+            {
+                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 1
+                                                    ? syncData.PageNumber
+                                                    : 1;
+
+                if (!string.IsNullOrWhiteSpace(syncData.PagingCookie))
+                {
+                    viewFilter.PageInfo.PagingCookie = syncData.PagingCookie;
+                }
+
+                trace.Trace("Processing page number {0}.", viewFilter.PageInfo.PagingCookie);
+
+                // sync batch of 1000 contacts to CM list as subscribers
+                EntityCollection contacts = orgService.RetrieveMultiple(viewFilter);                               
+
+                syncData.PagingCookie = contacts.PagingCookie;
+                syncData.PageNumber++;
+
+                IEnumerable<Entity> invalidEmail = contacts.Entities.Where(e => !e.Attributes.Contains(primaryEmail) || string.IsNullOrWhiteSpace(e[primaryEmail].ToString()));
+                syncData.NumberInvalidEmails += invalidEmail.Count();
+
+                BulkImportResults importResults = null;
+
+                trace.Trace("Starting subscriber import.");
+                try
+                {
+                    importResults = sub.Import(subscribers,
+                    false, // resubscribe
+                    false, // queueSubscriptionBasedAutoResponders
+                    false); // restartSubscriptionBasedAutoResponders
+                }
+                catch(Exception ex)
+                {
+                    trace.Trace("Error on subscriber import: " + ex.Message);
+                    syncData.BulkSyncErrors.Add(new BulkSyncError("import", ex.Message, ""));
+                }
+
+                trace.Trace("Subscriber import ended.");
+                
+                if (importResults.FailureDetails.Count > 0)
+                {
+                    if (syncData.BulkSyncErrors == null)
+                    {
+                        syncData.BulkSyncErrors = new List<BulkSyncError>();
+                    }
+
+                    // log the errors back into bulk sync data
+                    foreach (var failure in importResults.FailureDetails)
+                    {
+                        syncData.BulkSyncErrors.Add(new BulkSyncError(failure.Code, failure.Message, failure.EmailAddress));
+                    }
+                }
+
+                trace.Trace("Page: {0}", syncData.PageNumber);
+                trace.Trace("More Records? {0}", contacts.MoreRecords);
+
+                if (!contacts.MoreRecords)
+                {
+                    trace.Trace("No more records, clearing the sync data.");
+                    syncData.PageNumber = 1;
+                    syncData.PagingCookie = string.Empty;
+                    syncData.UpdatedFields = null;                    
+
+                    syncData.BulkSyncErrors.Clear();
+                    syncData.NumberInvalidEmails = 0;                   
+                    break;
+                }
+            }
+            while (timer.ElapsedMilliseconds <= 90000);
+
+            trace.Trace("Saving bulk data.");
+            string bulkData = JsonConvert.SerializeObject(syncData);
+            config.BulkSyncData = bulkData;            
+            config.BulkSyncInProgress = syncData.PageNumber > 1;
+            configService.SaveConfig(config);
+
+            return syncData.PageNumber <= 1; // if we're done return true
+        }
+
+        private QueryExpression GetBulkSyncFilter(CampaignMonitorConfiguration config, BulkSyncData syncData, string primaryEmail)
+        {
+            // retrieve contacts based on the filter, grabbing the columns specified either 
+            // in the fields to sync (on config entity) or fields specified in the bulkdata sync fields
+            QueryExpression viewFilter;
+
+            if (config.SyncViewId != null && config.SyncViewId != Guid.Empty)
+            {
+                viewFilter = SharedLogic.GetConfigFilterQuery(orgService, config.SyncViewId);
+            }
+            else
+            {
+                // if no view filter, sync all active contacts
+                viewFilter = new QueryExpression("contact");
+                viewFilter.Criteria.AddCondition(
+                    new ConditionExpression("statecode", ConditionOperator.Equal, 0));
+            }
+
             viewFilter.ColumnSet.Columns.Clear();
-            if (syncData.UpdatedFields.Length > 0)
+
+            if (syncData.UpdatedFields != null && syncData.UpdatedFields.Length > 0)
             {
                 viewFilter.ColumnSet.Columns.AddRange(syncData.UpdatedFields);
             }
@@ -61,85 +170,31 @@ namespace Campmon.Dynamics.WorkflowActivities
             }
 
             viewFilter.AddOrder("modifiedon", OrderType.Ascending);
-            viewFilter.TopCount = BATCH_AMOUNT;
+            viewFilter.PageInfo.Count = BATCH_AMOUNT;
+            viewFilter.PageInfo.ReturnTotalRecordCount = true;
 
-            var auth = Authenticator.GetAuthentication(config);
-            var sub = new Subscriber(auth, config.ListId);
-
-            do
-            {
-                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 0
-                                                    ? syncData.PageNumber
-                                                    : 0;
-
-                if (!string.IsNullOrWhiteSpace(syncData.PagingCookie))
-                {
-                    viewFilter.PageInfo.PagingCookie = syncData.PagingCookie;
-                }
-
-                // sync batch of 1000 contacts to CM list as subscribers
-                EntityCollection contacts = orgService.RetrieveMultiple(viewFilter);                               
-
-                syncData.PagingCookie = contacts.PagingCookie;
-                syncData.PageNumber++;
-
-                var subscribers = GenerateSubscribersList(contacts, primaryEmail);                
-
-                BulkImportResults importResults = sub.Import(subscribers, 
-                    false, // resubscribe
-                    false, // queueSubscriptionBasedAutoResponders
-                    false); // restartSubscriptionBasedAutoResponders
-                
-                if (importResults.FailureDetails.Count > 0)
-                {
-                    if (syncData.BulkSyncErrors == null)
-                    {
-                        syncData.BulkSyncErrors = new List<BulkSyncError>();
-                    }
-
-                    // log the errors back into bulk sync data
-                    foreach (var failure in importResults.FailureDetails)
-                    {
-                        syncData.BulkSyncErrors.Add(new BulkSyncError(failure.Code, failure.Message, failure.EmailAddress));
-                    }
-                }
-
-                if (!contacts.MoreRecords)
-                {
-                    syncData.PageNumber = 0;
-                    syncData.PagingCookie = string.Empty;
-                    break;
-                }
-            }
-            while (timer.ElapsedMilliseconds >= 90000);
-
-            trace.Trace("Saving bulk data.");
-            string bulkData = JsonConvert.SerializeObject(syncData);
-            config.BulkSyncData = bulkData;            
-            configService.SaveConfig(config);
-
-            return syncData.PageNumber <= 0; // if we're done return true
+            return viewFilter;
         }
 
-        private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail)
+        private List<SubscriberDetail> GenerateSubscribersList(IEnumerable<Entity> contacts, string primaryEmail, MetadataHelper mdh)
         {
-            var subscribers = new List<SubscriberDetail>();
-            MetadataHelper mdh = new MetadataHelper(orgService, trace);
 
-            foreach (Entity contact in contacts.Entities.Where(x => !string.IsNullOrWhiteSpace(x[primaryEmail].ToString())))
+            trace.Trace("Generating Subscriber List");
+            var subscribers = new List<SubscriberDetail>();            
+
+            foreach (Entity contact in contacts)
             {
+
                 // remove the primary email field, it's sent as a separate param and we don't want duplicate fields
-                var email = contact.Attributes[primaryEmail].ToString();
+                var email = contact[primaryEmail].ToString();
                 var name = contact["fullname"].ToString();
 
-                // temporary; I could technically just look at contacts collection for duplicates correct?
-                // basically since those are the ones that match the filter to be sent.
-                // this will be way slower since it needs to do retrieve multiples for EVERY contact coming in.
-                if (!config.SyncDuplicateEmails && SharedLogic.CheckEmailIsDuplicate(orgService, primaryEmail, email))
+                // check to make sure this contact isn't duplicated within the filter for the config
+                if (!config.SyncDuplicateEmails && SharedLogic.CheckEmailIsDuplicate(orgService, config, primaryEmail, email))
                 {
                     continue;
-                }                
-
+                }
+                
                 var fields = SharedLogic.ContactAttributesToSubscriberFields(orgService, trace, contact, contact.Attributes.Keys);
                 fields = SharedLogic.PrettifySchemaNames(mdh, fields);
 
