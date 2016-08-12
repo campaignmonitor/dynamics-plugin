@@ -60,18 +60,33 @@ namespace Campmon.Dynamics.WorkflowActivities
                     viewFilter.PageInfo.PagingCookie = syncData.PagingCookie;
                 }
 
+                trace.Trace("Processing page number {0}.", viewFilter.PageInfo.PagingCookie);
+
                 // sync batch of 1000 contacts to CM list as subscribers
                 EntityCollection contacts = orgService.RetrieveMultiple(viewFilter);                               
 
                 syncData.PagingCookie = contacts.PagingCookie;
                 syncData.PageNumber++;
 
-                var subscribers = GenerateSubscribersList(contacts, primaryEmail, mdh);                
+                var subscribers = GenerateSubscribersList(contacts, primaryEmail, mdh);
 
-                BulkImportResults importResults = sub.Import(subscribers, 
-                    false, // resubscribe
-                    false, // queueSubscriptionBasedAutoResponders
-                    false); // restartSubscriptionBasedAutoResponders
+                BulkImportResults importResults = null;
+
+                trace.Trace("Starting subscriber import.");
+                try
+                {
+                    importResults = sub.Import(subscribers,
+                        false, // resubscribe
+                        false, // queueSubscriptionBasedAutoResponders
+                        false); // restartSubscriptionBasedAutoResponders
+                }
+                catch(Exception ex)
+                {
+                    trace.Trace("Error on subscriber import: " + ex.Message);
+                    syncData.BulkSyncErrors.Add(new BulkSyncError("import", ex.Message, ""));
+                }
+
+                trace.Trace("Subscriber import ended.");
                 
                 if (importResults.FailureDetails.Count > 0)
                 {
@@ -89,6 +104,7 @@ namespace Campmon.Dynamics.WorkflowActivities
 
                 if (!contacts.MoreRecords)
                 {
+                    trace.Trace("No records left to process.");
                     syncData.PageNumber = 0;
                     syncData.PagingCookie = string.Empty;
                     break;
