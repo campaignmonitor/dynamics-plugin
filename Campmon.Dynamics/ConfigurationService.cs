@@ -34,6 +34,30 @@ namespace Campmon.Dynamics
 
             return result.Entities.First().GetAttributeValue<string>("campmon_accesstoken");
         }
+
+        public Guid? GetConfigId()
+        {
+            var query = new QueryExpression("campmon_configuration");
+            query.TopCount = 1;
+            query.ColumnSet = new ColumnSet("campmon_configurationid");
+
+            return orgService.RetrieveMultiple(query).Entities.Select(x=> (Guid?)x.Id).FirstOrDefault();
+        }
+
+        public void SaveOAuthToken(Guid configId, string accessToken, string refreshToken, DateTime expiresOn)
+        {
+            orgService.Update(new Entity("campmon_configuration")
+            {
+                Id = configId,
+                Attributes =
+                {
+                    {"campmon_accesstoken", accessToken },
+                    {"campmon_refreshtoken", refreshToken },
+                    {"campmon_expireson",  expiresOn},
+                }
+            });
+        }
+
         public CampaignMonitorConfiguration VerifyAndLoadConfig()
         {
             var query = new QueryExpression("campmon_configuration");

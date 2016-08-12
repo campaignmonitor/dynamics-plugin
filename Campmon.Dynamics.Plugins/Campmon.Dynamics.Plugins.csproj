@@ -88,7 +88,9 @@
     <Compile Include="Operations\GetClientList.cs" />
     <Compile Include="Operations\GetClients.cs" />
     <Compile Include="Operations\IOperation.cs" />
+    <Compile Include="Operations\IsConnectedToCampaignMonitorOperation.cs" />
     <Compile Include="Operations\LoadMetadataOperation.cs" />
+    <Compile Include="Operations\RequestAccessTokenOperation.cs" />
     <Compile Include="Operations\SaveConfigurationOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SendMessagePlugin.cs" />

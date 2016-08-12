@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>Campaign Monitor Sync Settings - Solution View</title>
     <link href="styles/styles.css" rel="stylesheet" type="text/css">
+
+    <script src="../../ClientGlobalContext.js.aspx" type="text/javascript"></script>
+    <script src="../Scripts/Libraries/webApiRest.js"></script>
 </head>
 <body class="solution">
     <div>
@@ -45,11 +48,25 @@
         <p>Sync your contacts from Dynamics CRM to Campaign Monitor.</p>
 
         <div class="buttons">
-            <!-- If there is an existing connection with CM, this button says "Manage Settings" instead. -->
-            <button type="submit" class="buttonPrimary" onClick="window.parent.Xrm.Utility.openWebResource('campmon_/Pages/configuration.html', null, 1200, 1100)">Connect</button>
+            <button type="submit" class="buttonPrimary" onclick="window.open('oauth.html', null, 400, 400)">Connect</button>
         </div>
 
     </div>
+    <script>
+        webAPI.REST.executeUnboundAction('campmon_ExecuteOperationAction',
+                {
+                    'OperationName': 'isconnectedtocampaignmonitor',
+                    'InputData': JSON.stringify({})
+                }, null)
+                .then(function (response) {
+                    var result = JSON.parse(response.body.OutputData);
+                    if (result === "Connected") {
+                        window.location = 'configuration.html';
+                    }
+                }, function (error) {
+                    Xrm.Utility.alertDialog("An error occured " + error);
+                });
+    </script>
 </body>
 </html>
 

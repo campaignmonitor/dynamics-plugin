@@ -31,7 +31,9 @@ namespace Campmon.Dynamics.Plugins
                 { "getclientlist", ()=> new GetClientList(configService) },
                 { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) },
                 { "saveconfiguration", () => new SaveConfigurationOperation(orgService, configService, trace) },
-                { "disconnect", () => new Disconnect(configService) }
+                { "disconnect", () => new Disconnect(configService) },
+                { "requestaccesstoken", () => new RequestAccessTokenOperation(configService, trace) },
+                { "isconnectedtocampaignmonitor", () => new IsConnectedToCampaignMonitorOperation(configService, trace) },
             };
 
             var pluginContext = serviceProvider.GetPluginExecutionContext();
