@@ -51,9 +51,9 @@ namespace Campmon.Dynamics.WorkflowActivities
                                 
             do
             {
-                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 0
+                viewFilter.PageInfo.PageNumber = syncData.PageNumber > 1
                                                     ? syncData.PageNumber
-                                                    : 0;
+                                                    : 1;
 
                 if (!string.IsNullOrWhiteSpace(syncData.PagingCookie))
                 {
@@ -68,7 +68,8 @@ namespace Campmon.Dynamics.WorkflowActivities
                 syncData.PagingCookie = contacts.PagingCookie;
                 syncData.PageNumber++;
 
-                var subscribers = GenerateSubscribersList(contacts, primaryEmail, mdh);
+                IEnumerable<Entity> invalidEmail = contacts.Entities.Where(e => !e.Attributes.Contains(primaryEmail) || string.IsNullOrWhiteSpace(e[primaryEmail].ToString()));
+                syncData.NumberInvalidEmails += invalidEmail.Count();
 
                 BulkImportResults importResults = null;
 
@@ -76,9 +77,9 @@ namespace Campmon.Dynamics.WorkflowActivities
                 try
                 {
                     importResults = sub.Import(subscribers,
-                        false, // resubscribe
-                        false, // queueSubscriptionBasedAutoResponders
-                        false); // restartSubscriptionBasedAutoResponders
+                    false, // resubscribe
+                    false, // queueSubscriptionBasedAutoResponders
+                    false); // restartSubscriptionBasedAutoResponders
                 }
                 catch(Exception ex)
                 {
@@ -102,22 +103,30 @@ namespace Campmon.Dynamics.WorkflowActivities
                     }
                 }
 
+                trace.Trace("Page: {0}", syncData.PageNumber);
+                trace.Trace("More Records? {0}", contacts.MoreRecords);
+
                 if (!contacts.MoreRecords)
                 {
-                    trace.Trace("No records left to process.");
-                    syncData.PageNumber = 0;
+                    trace.Trace("No more records, clearing the sync data.");
+                    syncData.PageNumber = 1;
                     syncData.PagingCookie = string.Empty;
+                    syncData.UpdatedFields = null;                    
+
+                    syncData.BulkSyncErrors.Clear();
+                    syncData.NumberInvalidEmails = 0;                   
                     break;
                 }
             }
-            while (timer.ElapsedMilliseconds >= 90000);
+            while (timer.ElapsedMilliseconds <= 90000);
 
             trace.Trace("Saving bulk data.");
             string bulkData = JsonConvert.SerializeObject(syncData);
             config.BulkSyncData = bulkData;            
+            config.BulkSyncInProgress = syncData.PageNumber > 1;
             configService.SaveConfig(config);
 
-            return syncData.PageNumber <= 0; // if we're done return true
+            return syncData.PageNumber <= 1; // if we're done return true
         }
 
         private QueryExpression GetBulkSyncFilter(CampaignMonitorConfiguration config, BulkSyncData syncData, string primaryEmail)
@@ -161,20 +170,19 @@ namespace Campmon.Dynamics.WorkflowActivities
             }
 
             viewFilter.AddOrder("modifiedon", OrderType.Ascending);
-            viewFilter.TopCount = BATCH_AMOUNT;
+            viewFilter.PageInfo.Count = BATCH_AMOUNT;
+            viewFilter.PageInfo.ReturnTotalRecordCount = true;
 
             return viewFilter;
         }
 
-        private List<SubscriberDetail> GenerateSubscribersList(EntityCollection contacts, string primaryEmail, MetadataHelper mdh)
+        private List<SubscriberDetail> GenerateSubscribersList(IEnumerable<Entity> contacts, string primaryEmail, MetadataHelper mdh)
         {
 
             trace.Trace("Generating Subscriber List");
             var subscribers = new List<SubscriberDetail>();            
 
-            foreach (Entity contact in contacts.Entities.Where(c => 
-                                            c.Attributes.Contains(primaryEmail) && 
-                                            !string.IsNullOrWhiteSpace(c[primaryEmail].ToString())))
+            foreach (Entity contact in contacts)
             {
 
                 // remove the primary email field, it's sent as a separate param and we don't want duplicate fields

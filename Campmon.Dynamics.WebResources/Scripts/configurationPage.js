@@ -104,7 +104,7 @@
                 var data = {
                     Id: self.configId,
                     Error: null,
-                    BulkSyncInProgress: false,
+                    BulkSyncInProgress: true,
                     ConfigurationExists: false,
                     Clients: [{
                         ClientId: self.selectedClient().ClientID,
@@ -139,8 +139,8 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        self.isSyncing(false);
-                        self.syncComplete(true);
+                        //self.isSyncing(false);
+                        //self.syncComplete(true);
                         debugger;
                     }, function (error) {
                         debugger;
@@ -251,6 +251,10 @@
                     });
 
                     vm.isLoading(false);
+
+                    if (config.BulkSyncInProgress) {
+                        vm.isSyncing(true);
+                    }
                 }, function (error) {
                     vm.hasConnectionError(true);
                     console.log(JSON.parse(error.response.text));

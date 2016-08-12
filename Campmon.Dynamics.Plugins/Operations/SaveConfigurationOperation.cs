@@ -38,17 +38,17 @@ namespace Campmon.Dynamics.Plugins.Operations
             var updatedConfig = new CampaignMonitorConfiguration
             {
                 AccessToken = accessToken,
+                BulkSyncInProgress = userInput.BulkSyncInProgress,
                 ClientId = userInput.Clients.First().ClientID,
                 ClientName = userInput.Clients.First().Name,
+                Id = string.IsNullOrWhiteSpace(userInput.Id) ? Guid.Empty : new Guid(userInput.Id),
                 ListId = userInput.Lists.First().ListID,
                 ListName = userInput.Lists.First().Name,                
                 SyncDuplicateEmails = userInput.SyncDuplicateEmails,
                 SubscriberEmail = (SubscriberEmailValues)userInput.SubscriberEmail,
                 SyncFields = userInput.Fields.Select(f => f.LogicalName),
                 SyncViewId = userInput.Views != null ? userInput.Views.First().ViewId : Guid.Empty,
-                SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null,
-
-                Id = string.IsNullOrWhiteSpace(userInput.Id) ? Guid.Empty : new Guid(userInput.Id)
+                SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null                               
             };
 
             if (string.IsNullOrEmpty(updatedConfig.ListId))
@@ -117,7 +117,8 @@ namespace Campmon.Dynamics.Plugins.Operations
             
             // if updatedConfig doesn't have an Id, it was a new config.
             // it was already saved above, so reload to get the Id
-            if (updatedConfig.Id == Guid.Empty) {
+            if (updatedConfig.Id == Guid.Empty)
+            {
                 updatedConfig = configService.VerifyAndLoadConfig();
             }
 

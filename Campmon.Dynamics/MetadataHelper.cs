@@ -17,8 +17,7 @@ namespace Campmon.Dynamics
         private IDictionary<string, string> optionSetLabels;
 
         public MetadataHelper(IOrganizationService organizationService, ITracingService trace)
-        {
-            trace.Trace("Constructing MetadataHelper.");
+        {                        
             orgService = organizationService;
             tracer = trace;
             metadata = new MetadataService(orgService);

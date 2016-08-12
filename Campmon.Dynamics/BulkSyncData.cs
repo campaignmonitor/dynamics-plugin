@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Campmon.Dynamics
 {
@@ -16,6 +12,8 @@ namespace Campmon.Dynamics
         public string PagingCookie { get; set; }
         public int PageNumber { get; set; }
         public string[] UpdatedFields { get; set; }
+
         public List<BulkSyncError> BulkSyncErrors { get; set; }
+        public int NumberInvalidEmails { get; set; }
     }
 }
