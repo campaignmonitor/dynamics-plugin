@@ -48,7 +48,7 @@
         <p>Sync your contacts from Dynamics CRM to Campaign Monitor.</p>
 
         <div class="buttons">
-            <button type="submit" class="buttonPrimary" onclick="window.open('oauth.html', null, 400, 400)">Connect</button>
+            <button id="connectButton" style="display:none;" type="submit" class="buttonPrimary" onclick="window.open('oauth.html', null, 300, 300)">Connect</button>
         </div>
 
     </div>
@@ -59,9 +59,11 @@
                     'InputData': JSON.stringify({})
                 }, null)
                 .then(function (response) {
-                    var result = JSON.parse(response.body.OutputData);
-                    if (result === "Connected") {
+                    if (response.body.OutputData === "Connected") {
                         window.location = 'configuration.html';
+                    }
+                    else {
+                        document.getElementById("connectButton").style.display = "";
                     }
                 }, function (error) {
                     Xrm.Utility.alertDialog("An error occured " + error);

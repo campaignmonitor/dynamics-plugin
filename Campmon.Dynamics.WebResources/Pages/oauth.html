@@ -55,8 +55,7 @@
                     'InputData': JSON.stringify({ code: code, clientId: clientId, clientSecret: clientSecret, redirectUri: redirectUri })
                 }, null)
                 .then(function (response) {
-                    var result = JSON.parse(response.body.OutputData);
-                    if (result === "Success") {
+                    if (response.body.OutputData === "Success") {
                         connectedToCampMon = true;
                         document.getElementById("authenticatingModal").style.display = "none";
                         document.getElementById("loginComplete").style.display = "";

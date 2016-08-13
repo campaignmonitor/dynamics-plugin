@@ -25,7 +25,7 @@ namespace Campmon.Dynamics.Plugins.Operations
         public string Execute(string serializedData)
         {
             trace.Trace("Deserializing input.");
-            var userInput = JsonConvert.DeserializeObject<OAuthCode>(serializedData);
+            var userInput = JsonConvert.DeserializeObject<RequestAccessTokenInput>(serializedData);
 
             trace.Trace("Getting token.");
             var auth = General.ExchangeToken(userInput.ClientId, userInput.ClientSecret, userInput.RedirectUri, userInput.Code);
@@ -45,14 +45,14 @@ namespace Campmon.Dynamics.Plugins.Operations
 
             return "Success";
             
-        }
+        }        
+    }
 
-        private class OAuthCode
-        {
-            public string Code { get; set; }
-            public int ClientId { get; set; }
-            public string ClientSecret { get; set; }
-            public string RedirectUri { get; set; }
-        }
+    public class RequestAccessTokenInput
+    {
+        public string Code { get; set; }
+        public int ClientId { get; set; }
+        public string ClientSecret { get; set; }
+        public string RedirectUri { get; set; }
     }
 }
