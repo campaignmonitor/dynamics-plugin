@@ -19,7 +19,7 @@ namespace Campmon.Dynamics
                 throw new ArgumentNullException("config");
 
             _config = config;
-            auth = new ApiKeyAuthenticationDetails(_config.AccessToken);
+            auth = Authenticator.GetAuthentication(config);
         }
 
         public General GetAuthGeneral()
