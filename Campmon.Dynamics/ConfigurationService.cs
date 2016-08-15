@@ -20,21 +20,6 @@ namespace Campmon.Dynamics
             tracer = trace;
         }
 
-        public string GetAccessToken()
-        {
-            var query = new QueryExpression("campmon_configuration");
-            query.TopCount = 1;
-            query.ColumnSet = new ColumnSet("campmon_accesstoken");
-            var result = orgService.RetrieveMultiple(query);
-
-            if (!result.Entities.Any())
-            {
-                return string.Empty;
-            }
-
-            return result.Entities.First().GetAttributeValue<string>("campmon_accesstoken");
-        }
-
         public Guid? GetConfigId()
         {
             var query = new QueryExpression("campmon_configuration");
@@ -44,7 +29,7 @@ namespace Campmon.Dynamics
             return orgService.RetrieveMultiple(query).Entities.Select(x=> (Guid?)x.Id).FirstOrDefault();
         }
 
-        public void SaveOAuthToken(Guid configId, string accessToken, string refreshToken, DateTime expiresOn)
+        public void SaveOAuthToken(Guid configId, string accessToken, string refreshToken, DateTime? expiresOn)
         {
             orgService.Update(new Entity("campmon_configuration")
             {
@@ -58,11 +43,16 @@ namespace Campmon.Dynamics
             });
         }
 
+        public void ClearOAuthToken(Guid configId)
+        {
+            SaveOAuthToken(configId, null, null, null);
+        }
+
         public CampaignMonitorConfiguration VerifyAndLoadConfig()
         {
             var query = new QueryExpression("campmon_configuration");
             query.TopCount = 1;
-            query.ColumnSet = new ColumnSet("campmon_accesstoken", "campmon_bulksyncdata", "campmon_bulksyncinprogress",
+            query.ColumnSet = new ColumnSet("campmon_accesstoken", "campmon_refreshtoken", "campmon_bulksyncdata", "campmon_bulksyncinprogress",
                 "campmon_clientid", "campmon_clientname", "campmon_listid", "campmon_listname", "campmon_setuperror",
                 "campmon_syncduplicateemails", "campmon_syncfields", "campmon_syncviewid", "campmon_syncviewname",
                 "campmon_subscriberemail", "campmon_configurationid");
@@ -79,6 +69,7 @@ namespace Campmon.Dynamics
             var config = new CampaignMonitorConfiguration
             {
                 AccessToken = configEntity.GetAttributeValue<string>("campmon_accesstoken"),
+                RefreshToken = configEntity.GetAttributeValue<string>("campmon_refreshtoken"),
                 BulkSyncData = configEntity.GetAttributeValue<string>("campmon_bulksyncdata"),
                 ClientId = configEntity.GetAttributeValue<string>("campmon_clientid"),
                 ClientName = configEntity.GetAttributeValue<string>("campmon_clientname"),
