@@ -72,7 +72,7 @@
                 }, null)
                 .then(function (response) {
                     document.getElementById("loadingModal").style.display = "none";
-                    if (response.body.OutputData === "Connected!") {
+                    if (response.body.OutputData === "Connected") {
                         window.location = 'configuration.html';
                     }
                     else {
