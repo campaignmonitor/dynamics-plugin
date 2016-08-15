@@ -81,14 +81,12 @@
                 return null;
             }
 
-            dataParam = decodeURIComponent(dataParam);
-
             var params = {};
             var qsParam = null;
             var queries = dataParam.split("&");
             for (var i = 0; i < queries.length; i++){
                 qsParam = queries[i].split("=");
-                params[qsParam[0]] = qsParam[1];
+                params[qsParam[0]] = decodeURIComponent(qsParam[1]);
             }
 
             return params;
