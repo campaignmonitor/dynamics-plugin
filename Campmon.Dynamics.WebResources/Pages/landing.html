@@ -11,6 +11,18 @@
 <body class="solution">
     <div>
 
+        <div class="modal" id="loadingModal">
+            <div>
+                <div class="icon iconLoading">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div>
+                    <h1>Loading</h1>
+                    <p>Your settings are loading.</p>
+                </div>
+            </div>
+        </div>
+
         <h1>Campaign Monitor Sync Settings</h1>
 
         <div class="iconIllustration">
@@ -48,7 +60,7 @@
         <p>Sync your contacts from Dynamics CRM to Campaign Monitor.</p>
 
         <div class="buttons">
-            <button id="connectButton" style="display:none;" type="submit" class="buttonPrimary" onclick="window.open('oauth.html', null, 300, 300)">Connect</button>
+            <button id="connectButton" style="display:none;" type="submit" class="buttonPrimary" onclick="window.open('oauth.html', 'oauthwindow', 'width=750,height=750')">Connect</button>
         </div>
 
     </div>
@@ -59,13 +71,15 @@
                     'InputData': JSON.stringify({})
                 }, null)
                 .then(function (response) {
-                    if (response.body.OutputData === "Connected") {
+                    document.getElementById("loadingModal").style.display = "none";
+                    if (response.body.OutputData === "Connected!") {
                         window.location = 'configuration.html';
                     }
                     else {
                         document.getElementById("connectButton").style.display = "";
                     }
                 }, function (error) {
+                    document.getElementById("loadingModal").style.display = "none";
                     Xrm.Utility.alertDialog("An error occured " + error);
                 });
     </script>
