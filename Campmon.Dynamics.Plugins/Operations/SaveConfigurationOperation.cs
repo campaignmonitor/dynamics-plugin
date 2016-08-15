@@ -36,6 +36,8 @@ namespace Campmon.Dynamics.Plugins.Operations
 
             var updatedConfig = new CampaignMonitorConfiguration
             {
+                AccessToken = oldConfig.AccessToken,
+                RefreshToken = oldConfig.RefreshToken,
                 BulkSyncInProgress = userInput.BulkSyncInProgress,
                 ClientId = userInput.Clients.First().ClientID,
                 ClientName = userInput.Clients.First().Name,
