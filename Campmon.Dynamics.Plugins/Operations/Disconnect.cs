@@ -15,8 +15,7 @@ namespace Campmon.Dynamics.Plugins.Operations
         {
             var config = _cmService.VerifyAndLoadConfig();
 
-            config.AccessToken = 
-                config.BulkSyncData = 
+            config.BulkSyncData = 
                 config.ClientId = 
                 config.ClientName = 
                 config.ListId = 
@@ -31,6 +30,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 config.BulkSyncInProgress = false;
 
             _cmService.SaveConfig(config);
+            _cmService.ClearOAuthToken(config.Id);
             return "Success";                    
         }
     }

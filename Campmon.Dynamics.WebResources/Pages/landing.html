@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <title>Campaign Monitor Sync Settings - Solution View</title>
     <link href="styles/styles.css" rel="stylesheet" type="text/css">
+
+    <script src="../../ClientGlobalContext.js.aspx" type="text/javascript"></script>
+    <script src="../Scripts/Libraries/webApiRest.js"></script>
 </head>
 <body class="solution">
     <div>
+
+        <div class="modal" id="loadingModal">
+            <div>
+                <div class="icon iconLoading">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div>
+                    <h1>Loading</h1>
+                    <p>Your settings are loading.</p>
+                </div>
+            </div>
+        </div>
 
         <h1>Campaign Monitor Sync Settings</h1>
 
@@ -45,11 +60,29 @@
         <p>Sync your contacts from Dynamics CRM to Campaign Monitor.</p>
 
         <div class="buttons">
-            <!-- If there is an existing connection with CM, this button says "Manage Settings" instead. -->
-            <button type="submit" class="buttonPrimary" onClick="window.parent.Xrm.Utility.openWebResource('campmon_/Pages/configuration.html', null, 1200, 1100)">Connect</button>
+            <button id="connectButton" style="display:none;" type="submit" class="buttonPrimary" onclick="window.open('oauth.html', 'oauthwindow', 'width=750,height=750')">Connect</button>
         </div>
 
     </div>
+    <script>
+        webAPI.REST.executeUnboundAction('campmon_ExecuteOperationAction',
+                {
+                    'OperationName': 'isconnectedtocampaignmonitor',
+                    'InputData': JSON.stringify({})
+                }, null)
+                .then(function (response) {
+                    document.getElementById("loadingModal").style.display = "none";
+                    if (response.body.OutputData === "Connected") {
+                        window.location = 'configuration.html';
+                    }
+                    else {
+                        document.getElementById("connectButton").style.display = "";
+                    }
+                }, function (error) {
+                    document.getElementById("loadingModal").style.display = "none";
+                    Xrm.Utility.alertDialog("An error occured " + error);
+                });
+    </script>
 </body>
 </html>
 

@@ -11,12 +11,7 @@ namespace Campmon.Dynamics
     {
         public static AuthenticationDetails GetAuthentication(CampaignMonitorConfiguration config)
         {
-            return new ApiKeyAuthenticationDetails(config.AccessToken);
-        }
-
-        public static AuthenticationDetails GetAuthentication(string accessToken)
-        {
-            return new ApiKeyAuthenticationDetails(accessToken);
+            return new OAuthAuthenticationDetails(config.AccessToken, config.RefreshToken);
         }
     }
 }

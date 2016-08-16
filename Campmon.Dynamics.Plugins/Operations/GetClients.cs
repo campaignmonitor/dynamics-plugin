@@ -17,7 +17,8 @@ namespace Campmon.Dynamics.Plugins.Operations
 
         public string Execute(string serializedData)
         {
-            var auth = new ApiKeyAuthenticationDetails(_cmService.GetAccessToken());
+            var config = _cmService.VerifyAndLoadConfig();
+            var auth = Authenticator.GetAuthentication(config);
             var clients = new General(auth).Clients();
             return JsonConvert.SerializeObject(clients);
         }

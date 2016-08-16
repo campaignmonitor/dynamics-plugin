@@ -32,12 +32,12 @@ namespace Campmon.Dynamics.Plugins.Operations
             var userInput = JsonConvert.DeserializeObject<ConfigurationData>(serializedData);
             trace.Trace("Loading current configuration.");
             var oldConfig = configService.VerifyAndLoadConfig();
-            var accessToken = oldConfig != null ? oldConfig.AccessToken : configService.GetAccessToken();
-            var auth = Authenticator.GetAuthentication(accessToken);
+            var auth = Authenticator.GetAuthentication(oldConfig);
 
             var updatedConfig = new CampaignMonitorConfiguration
             {
-                AccessToken = accessToken,
+                AccessToken = oldConfig.AccessToken,
+                RefreshToken = oldConfig.RefreshToken,
                 BulkSyncInProgress = userInput.BulkSyncInProgress,
                 ClientId = userInput.Clients.First().ClientID,
                 ClientName = userInput.Clients.First().Name,

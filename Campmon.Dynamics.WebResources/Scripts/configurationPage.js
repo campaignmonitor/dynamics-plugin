@@ -42,9 +42,10 @@
                 self.isLoading(true);
                 Campmon.Plugin.executeAction('disconnect', JSON.stringify(data))
                     .then(function (result) {
-                        self.isLoading(false);
+                        window.location = 'landing.html';
                     }, function (error) {
-                        debugger;
+                        self.isLoading(false);
+                        Xrm.Utility.alertDialog("An error occured " + error);
                     });
             };
 

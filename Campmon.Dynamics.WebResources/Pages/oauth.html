@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Campaign Monitor Auth Flow</title>
+    <link href="styles/styles.css" rel="stylesheet" type="text/css">
+
+    <script src="../../ClientGlobalContext.js.aspx" type="text/javascript"></script>
+    <script src="../Scripts/Libraries/webApiRest.js"></script>
+</head>
+<body class="solution">
+    <div>
+        <h1>Campaign Monitor</h1>
+
+        <p id="error" style="color:red;"></p>
+        <p id="loginComplete" style="display:none;">Login complete. This window should close momentarily.</p>
+        <div class="modal" id="authenticatingModal">
+            <div>
+                <div class="icon iconLoading">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div>
+                    <h1>Authenticating...</h1>
+                    <p>Login in progress. This window will close when complete.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var connectedToCampMon = false;
+        window.onunload= function () {
+            if (connectedToCampMon) {
+                window.opener.location = "configuration.html";
+            }
+        }
+
+        var dataParams = getDataParams();        
+
+        if (!dataParams) {
+            var crmDomain = document.domain;
+            //todo: do we have this endpoint configurable somewhere?
+            //todo: should scope be configurable?
+            window.location = 'https://api.createsend.com/oauth?integration_key=campaign-monitor-for-dynamics&domain_uri=https%3A%2F%2F' +
+                crmDomain +
+                '&scope=ViewReports%2cCreateCampaigns%2cSendCampaigns%2cImportSubscribers%2cSendTransactional%2cManageLists';
+        }
+        else {
+            var clientId = dataParams["client_id"];
+            var code = dataParams["code"];
+            var clientSecret = dataParams["client_secret"];
+            var redirectUri = window.location.href.split('?')[0];
+
+            webAPI.REST.executeUnboundAction('campmon_ExecuteOperationAction',
+                {
+                    'OperationName': 'requestaccesstoken',
+                    'InputData': JSON.stringify({ code: code, clientId: clientId, clientSecret: clientSecret, redirectUri: redirectUri })
+                }, null)
+                .then(function (response) {
+                    if (response.body.OutputData === "Success") {
+                        connectedToCampMon = true;
+                        document.getElementById("authenticatingModal").style.display = "none";
+                        document.getElementById("loginComplete").style.display = "";
+                        window.close();
+                    }
+                    else {
+                        document.getElementById("authenticatingModal").style.display = "none";
+                        document.getElementById("error").innerText = "Could not authenticate because of the following: " + result + ". Please close the window and try again.";
+                    }
+                }, function (error) {
+                    document.getElementById("authenticatingModal").style.display = "none";
+                    var innerMessage = null;
+                    try{
+                        innerMessage = JSON.parse(error.response.text)["error"]["message"];
+                    }catch(err){}
+                    document.getElementById("error").innerText = "Could not authenticate because of the following: " + error + ". " + innerMessage + ". Please close the window and try again.";
+                });
+        }
+
+        function getDataParams(name) {
+            var queryStringParams = Xrm.Page.context.getQueryStringParameters();
+            var dataParam = queryStringParams["data"];
+            if(!dataParam){
+                return null;
+            }
+
+            var params = {};
+            var qsParam = null;
+            var queries = dataParam.split("&");
+            for (var i = 0; i < queries.length; i++){
+                qsParam = queries[i].split("=");
+                params[qsParam[0]] = decodeURIComponent(qsParam[1]);
+            }
+
+            return params;
+        }
+    </script>
+</body>
+</html>

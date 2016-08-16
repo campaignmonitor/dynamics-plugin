@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Web;
+
 
 namespace createsend_dotnet
 {
@@ -31,10 +31,10 @@ namespace createsend_dotnet
             string result = CreateSendOptions.BaseOAuthUri;
             result += string.Format(
                 "?client_id={0}&redirect_uri={1}&scope={2}",
-                clientID.ToString(), HttpUtility.UrlEncode(redirectUri),
-                HttpUtility.UrlEncode(scope));
+                clientID.ToString(), Uri.EscapeDataString(redirectUri),
+                Uri.EscapeDataString(scope));
             if (!string.IsNullOrEmpty(state))
-                result += "&state=" + HttpUtility.UrlEncode(state);
+                result += "&state=" + Uri.EscapeDataString(state);
             return result;
         }
 
@@ -46,9 +46,9 @@ namespace createsend_dotnet
         {
             string body = "grant_type=authorization_code";
             body += string.Format("&client_id={0}", clientID.ToString());
-            body += string.Format("&client_secret={0}", HttpUtility.UrlEncode(clientSecret));
-            body += string.Format("&redirect_uri={0}", HttpUtility.UrlEncode(redirectUri));
-            body += string.Format("&code={0}", HttpUtility.UrlEncode(code));
+            body += string.Format("&client_secret={0}", Uri.EscapeDataString(clientSecret));
+            body += string.Format("&redirect_uri={0}", Uri.EscapeDataString(redirectUri));
+            body += string.Format("&code={0}", Uri.EscapeDataString(code));
 
             return HttpHelper.Post<string, OAuthTokenDetails, OAuthErrorResult>(
                 null, "/token", new NameValueCollection(), body,

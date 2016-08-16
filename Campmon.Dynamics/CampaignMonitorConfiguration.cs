@@ -17,6 +17,7 @@ namespace Campmon.Dynamics
     public class CampaignMonitorConfiguration
     {
         public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
         public string BulkSyncData { get; set; }
         public bool BulkSyncInProgress { get; set; }
         public string ClientId { get; set; }
