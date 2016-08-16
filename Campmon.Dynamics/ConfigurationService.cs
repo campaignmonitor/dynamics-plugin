@@ -48,6 +48,7 @@ namespace Campmon.Dynamics
             }
             else
             {
+                config["campmon_name"] = "Configuration";
                 orgService.Create(config);
             }
         }
