@@ -4,7 +4,7 @@ properties {
     $webResourceProject = 'Campmon.Dynamics.WebResources'
     $pluginProject = 'Campmon.Dynamics.Plugins'
     $workflowProject = 'Campmon.Dynamics.WorkflowActivities'
-    $connectionString = "Url=https://msp674563.crm.dynamics.com/;UserId=admin@MSP674563.onmicrosoft.com;Password=pass@word1;AuthType=Office365"
+    $connectionString = "Url=https://campmondev0.crm.dynamics.com/;UserId=admin@campmondev0.onmicrosoft.com;Password=pass@word1;AuthType=Office365"
     $solutionName = 'CampaignMonitor'
     $solutionVersionNumber = $versionNumber
     $outputDir = $outputPath
