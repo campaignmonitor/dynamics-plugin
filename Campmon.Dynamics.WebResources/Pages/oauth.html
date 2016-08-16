@@ -64,7 +64,7 @@
                     }
                     else {
                         document.getElementById("authenticatingModal").style.display = "none";
-                        document.getElementById("error").innerText = "Could not authenticate because of the following: " + result + ". Please close the window and try again.";
+                        document.getElementById("error").innerText = "Could not authenticate because of the following: " + response.body.OutputData + " - Please close the window and try again.";
                     }
                 }, function (error) {
                     document.getElementById("authenticatingModal").style.display = "none";

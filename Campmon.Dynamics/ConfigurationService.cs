@@ -31,16 +31,25 @@ namespace Campmon.Dynamics
 
         public void SaveOAuthToken(Guid configId, string accessToken, string refreshToken, DateTime? expiresOn)
         {
-            orgService.Update(new Entity("campmon_configuration")
+            var config = new Entity("campmon_configuration")
             {
-                Id = configId,
                 Attributes =
                 {
                     {"campmon_accesstoken", accessToken },
                     {"campmon_refreshtoken", refreshToken },
                     {"campmon_expireson",  expiresOn},
                 }
-            });
+            };
+
+            if (configId != Guid.Empty)
+            {
+                config.Id = configId;
+                orgService.Update(config);
+            }
+            else
+            {
+                orgService.Create(config);
+            }
         }
 
         public void ClearOAuthToken(Guid configId)

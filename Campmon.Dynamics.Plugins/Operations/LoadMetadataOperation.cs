@@ -60,7 +60,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             catch (Exception ex)
             {
                 trace.Trace("Error in build configuration.");
-                config.Error = $"Unable to retrieve configuration data. {ex.Message}";
+                config.Error = String.Format("Unable to retrieve configuration data. {0}", ex.Message);
             }
 
             return JsonConvert.SerializeObject(config);

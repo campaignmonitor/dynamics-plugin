@@ -28,8 +28,15 @@ namespace Campmon.Dynamics.Plugins.Operations
             var userInput = JsonConvert.DeserializeObject<RequestAccessTokenInput>(serializedData);
 
             trace.Trace("Getting token.");
-            var auth = General.ExchangeToken(userInput.ClientId, userInput.ClientSecret, userInput.RedirectUri, userInput.Code);
-
+            OAuthTokenDetails auth = null;
+            try
+            {
+                auth = General.ExchangeToken(userInput.ClientId, userInput.ClientSecret, userInput.RedirectUri, userInput.Code);
+            }
+            catch(Exception ex)
+            {
+                throw new InvalidPluginExecutionException("Unable to get exchange token. " + ex.Message);
+            }
             //to be safe subtract a minute before calculating when the token expires to account for the time it took to get to now from when the server generated the token.
             var expiresOn = DateTime.UtcNow.AddMinutes(-1).AddSeconds(auth.expires_in);
             trace.Trace("Token will expire on: {0}", expiresOn);
@@ -37,8 +44,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             var configId = configService.GetConfigId();
             if (!configId.HasValue)
             {
-                trace.Trace("Missing or invalid campaign monitor configuration.");
-                return "Missing or invalid campaign monitor configuration.";
+                configId = Guid.Empty;
             }
 
             configService.SaveOAuthToken(configId.Value, auth.access_token, auth.refresh_token, expiresOn);
