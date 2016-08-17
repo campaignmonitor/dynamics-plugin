@@ -264,17 +264,17 @@
 
         function addAndSelectView(vm, views) {
             var viewsArr = [];
-            var selectedViewId = "";
+            var selectedView;
 
             views.forEach(function (view) {
                 viewsArr.push(view);
                 if (view.IsSelected) {
-                    selectedViewId = view.ViewId;
+                    selectedView = view;
                 }
             });
 
             vm.views(viewsArr);
-            vm.selectedView(selectedViewId);
+            vm.selectedView(selectedView);
         }
 
         function addFields(vm, fields) {
