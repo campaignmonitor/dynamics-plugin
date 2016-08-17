@@ -153,7 +153,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 ViewId = e.Id,
                 ViewName = e.GetAttributeValue<string>("name"),
                 IsSelected = (e.Id == config.SyncViewId)
-            });
+            }).OrderBy(v => v.ViewName);
         }
     }
 }
