@@ -6,7 +6,7 @@ namespace Campmon.Dynamics
     {
         public BulkSyncData()
         {
-
+            BulkSyncErrors = new List<BulkSyncError>();
         }
 
         public string PagingCookie { get; set; }
@@ -15,5 +15,6 @@ namespace Campmon.Dynamics
 
         public List<BulkSyncError> BulkSyncErrors { get; set; }
         public int NumberInvalidEmails { get; set; }
+        public int NumberSuccesses { get; set; }
     }
 }

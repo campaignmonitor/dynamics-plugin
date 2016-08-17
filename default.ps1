@@ -4,13 +4,14 @@ properties {
     $webResourceProject = 'Campmon.Dynamics.WebResources'
     $pluginProject = 'Campmon.Dynamics.Plugins'
     $workflowProject = 'Campmon.Dynamics.WorkflowActivities'
-    $connectionString = "Url=https://campmondev0.crm.dynamics.com/;UserId=admin@campmondev0.onmicrosoft.com;Password=pass@word1;AuthType=Office365"
+    $connectionStrings = @{
+        "dev" = "Url=https://campmondev0.crm.dynamics.com/;UserId=admin@campmondev0.onmicrosoft.com;Password=pass@word1;AuthType=Office365";
+        "test" = "Url=https://campmontest1.crm.dynamics.com/;UserId=admin@campmontest1.onmicrosoft.com;Password=pass@word1;AuthType=Office365"
+    }
     $solutionName = 'CampaignMonitor'
     $solutionVersionNumber = $versionNumber
     $outputDir = $outputPath
 }
-
-task Default -depends Compile
 
 task RestoreNuGet {
     &"$projectDir\.nuget\nuget.exe" restore "$slnFile"
@@ -21,11 +22,10 @@ task Compile -depends RestoreNuGet {
     $buildResult = Invoke-MsBuild $slnFile -MsBuildParameters $params -ShowBuildOutputInCurrentWindow > $null
     
     "Compile succeeded: ${buildResult.buildSucceeded}"
-
 }
 
 task UpdateVersion -precondition { $solutionVersionNumber } {
-    $org = Get-Crmconnection -ConnectionString $connectionString
+    $org = Get-Crmconnection -ConnectionString $connectionStrings.dev
     if ($org.IsReady) { "Connected successfully" } else { throw "Unable to connect" }
 
     $results = Get-CrmRecords -conn $org -EntityLogicalName solution -FilterAttribute uniquename -FilterOperator like -FilterValue $solutionName -Fields version
@@ -41,7 +41,7 @@ task UpdateVersion -precondition { $solutionVersionNumber } {
 }
 
 task ExportSolutions -depends Compile,UpdateVersion {
-    $org = Get-Crmconnection -ConnectionString $connectionString
+    $org = Get-Crmconnection -ConnectionString $connectionStrings.dev
     if ($org.IsReady) { "Connected successfully" } else { throw "Unable to connect" }
 
     if (-not (Test-Path $outputDir)) {
@@ -58,4 +58,13 @@ task ExportSolutions -depends Compile,UpdateVersion {
 
 }
 
-task Create -depends ExportSolutions
+task DeployToTest {
+    $org = Get-CrmConnection -ConnectionString $connectionStrings.test
+
+    $managedFileName = "$solutionName-Managed-$solutionVersionNumber.zip"
+
+    Import-CrmSolution -conn $org -SolutionFilePath 
+}
+
+task Default -depends Compile
+task Create -depends ExportSolutions, DeployToTest

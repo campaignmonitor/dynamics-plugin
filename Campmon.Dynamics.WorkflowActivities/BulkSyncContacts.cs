@@ -25,9 +25,16 @@ namespace Campmon.Dynamics.WorkflowActivities
             var orgService = serviceFactory.CreateOrganizationService(null);
 
             var sync = new SyncHandler(orgService, trace, stopwatch);
-            var result = sync.Run();
+            try
+            {
+                var result = sync.Run();
 
-            SyncCompleted.Set(activityContext, result);
+                SyncCompleted.Set(activityContext, result);
+            }
+            catch(Exception ex)
+            {
+                throw new InvalidPluginExecutionException(ex.Message, ex);
+            }
 
             trace.Trace("BulkSyncContacts activity finished.");
         }

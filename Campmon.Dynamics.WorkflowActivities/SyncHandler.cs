@@ -104,16 +104,33 @@ namespace Campmon.Dynamics.WorkflowActivities
                         syncData.BulkSyncErrors.Add(new BulkSyncError(failure.Code, failure.Message, failure.EmailAddress));
                     }
                 }
+                
+                syncData.NumberSuccesses += importResults.TotalNewSubscribers;
 
                 trace.Trace("Page: {0}", syncData.PageNumber);
                 trace.Trace("More Records? {0}", contacts.MoreRecords);
 
                 if (!contacts.MoreRecords)
                 {
-                    trace.Trace("No more records, clearing the sync data.");
+                    trace.Trace("No more records.");
+                    trace.Trace("Sending email.");
+                    try
+                    {
+                        var account = new Account(auth);
+                        var emailPayload = String.Format("{{ \"ToEmail\": \"{0}\", \"SubscriberCount\": \"{1}\", \"ListName\": \"{2}\" }}",
+                            account.GetPrimaryContact(), syncData.NumberSuccesses, config.ListName);
+                        SuccessEmailSender.SendEmail(config.AccessToken, emailPayload);
+                    }
+                    catch(Exception ex)
+                    {
+                        trace.Trace(ex.Message);
+                        trace.Trace(ex.StackTrace);
+                    }
+
+                    trace.Trace("Clearing the sync data.");
                     syncData.PageNumber = 1;
                     syncData.PagingCookie = string.Empty;
-                    syncData.UpdatedFields = null;                    
+                    syncData.UpdatedFields = null;
 
                     syncData.BulkSyncErrors.Clear();
                     syncData.NumberInvalidEmails = 0;                   
