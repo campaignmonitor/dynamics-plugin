@@ -139,9 +139,8 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        //self.isSyncing(false);
-                        //self.syncComplete(true);
-                        debugger;
+                        self.isSyncing(false);
+                        self.syncComplete(true);
                     }, function (error) {
                         debugger;
                         console.log(error.response.text);
