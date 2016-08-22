@@ -72,6 +72,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 var removedFields = oldConfig.SyncFields.Except(updatedConfig.SyncFields);
 
                 // create new custom fields
+                var createdKeys = new List<string>();
                 foreach (var fieldName in newFields)
                 {
                     var attribute = attributes
@@ -81,7 +82,15 @@ namespace Campmon.Dynamics.Plugins.Operations
                     var displayName = attribute.DisplayName.UserLocalizedLabel.Label;
                     trace.Trace("Creating new field {0}", displayName);
                     var dataType = MapDynamicsTypeToCampmonType(attribute.AttributeType.Value);
-                    var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
+                    try
+                    {
+                        var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
+                        createdKeys.Add(newKey);
+                    }
+                    catch (CreatesendException ex)
+                    {
+                        throw;
+                    }
 
                 }
                 // delete removed custom fields
@@ -101,6 +110,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 var cmService = new CampaignMonitorService(updatedConfig);
                 // create all custom fields
                 var attributes = metadata.GetEntityAttributes("contact");
+                var createdKeys = new List<string>();
                 foreach(var syncField in userInput.Fields)
                 {
                     var attribute = attributes
@@ -110,7 +120,15 @@ namespace Campmon.Dynamics.Plugins.Operations
                     var displayName = attribute.DisplayName.UserLocalizedLabel.Label;
                     trace.Trace("Creating new field {0}", displayName);
                     var dataType = MapDynamicsTypeToCampmonType(attribute.AttributeType.Value);
-                    var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
+                    try
+                    {
+                        var newKey = cmService.CreateCustomField(updatedConfig.ListId, displayName, dataType);
+                        createdKeys.Add(newKey);
+                    }
+                    catch(CreatesendException ex)
+                    {
+                        throw;
+                    }
                 }
             }
 

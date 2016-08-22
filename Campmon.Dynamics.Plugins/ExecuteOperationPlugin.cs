@@ -27,11 +27,11 @@ namespace Campmon.Dynamics.Plugins
 
             var operationFactory = new Dictionary<string, Func<IOperation>>
             {
-                { "getclients", () => new GetClients(configService) },
-                { "getclientlist", ()=> new GetClientList(configService) },
+                { "getclients", () => new GetClientsOperation(configService) },
+                { "getclientlist", ()=> new GetClientListOperation(configService) },
                 { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) },
                 { "saveconfiguration", () => new SaveConfigurationOperation(orgService, configService, trace) },
-                { "disconnect", () => new Disconnect(configService) },
+                { "disconnect", () => new DisconnectOperation(configService) },
                 { "requestaccesstoken", () => new RequestAccessTokenOperation(configService, trace) },
                 { "isconnectedtocampaignmonitor", () => new IsConnectedToCampaignMonitorOperation(configService, trace) },
             };

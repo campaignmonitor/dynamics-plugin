@@ -1,10 +1,19 @@
-﻿/// <reference path="Libraries/webApiRest.js" />
-/// <reference path="Libraries/knockout340.js" />
+﻿/// <reference path='Libraries/webApiRest.js' />
+/// <reference path='Libraries/knockout340.js' />
 (function (global, webAPI, ko) {
     'use strict';
 
     global.Campmon = global.Campmon || {};
     global.Campmon.ConfigurationPage = global.Campmon.ConfigurationPage || (function () {
+
+        function ObservableField(logicalName, displayName, isChecked, isRecommended) {
+            var self = this;
+            self.LogicalName = ko.observable(logicalName);
+            self.DisplayName = ko.observable(displayName);
+            self.IsChecked = ko.observable(isChecked);
+            self.IsRecommended = ko.observable(isRecommended);
+        };
+
         function CampmonViewModel() {
             var self = this;
 
@@ -12,7 +21,8 @@
 
             self.syncComplete = ko.observable(false);
             self.isLoading = ko.observable(true);
-            self.isSyncing = ko.observable(false);            
+            self.isSyncing = ko.observable(false);
+            self.bulkSyncInProgress = ko.observable(false);
 
             self.maxFields = ko.observable(200);
             self.fieldsSelected = ko.observable(0);
@@ -28,7 +38,7 @@
             self.selectedView = ko.observable();
             self.selectedClient = ko.observable();
             self.selectedList = ko.observable();
-            self.listType = ko.observable("existingList");
+            self.listType = ko.observable('existingList');
             self.newListName = ko.observable();
             self.confirmedOptIn = ko.observable('false');
             self.optInType = ko.observable();
@@ -45,7 +55,7 @@
                         window.location = 'landing.html';
                     }, function (error) {
                         self.isLoading(false);
-                        Xrm.Utility.alertDialog("An error occured " + error);
+                        Xrm.Utility.alertDialog('An error occured ' + error);
                     });
             };
 
@@ -53,14 +63,6 @@
             self.fieldChanged = ko.observable();
 
             self.syncDuplicateEmails = ko.observable();
-
-            self.ObservableField = function (logicalName, displayName, isChecked, isRecommended) {
-                var self = this;
-                self.LogicalName = ko.observable(logicalName);
-                self.DisplayName = ko.observable(displayName);
-                self.IsChecked = ko.observable(isChecked);
-                self.IsRecommended = ko.observable(isRecommended);
-            };
 
             self.email1Selected = ko.observable(true);
             self.email2Selected = ko.observable(true);
@@ -72,7 +74,7 @@
             });
 
             self.hasError = ko.observable(false);
-            self.errorMessage = ko.observable("");
+            self.errorMessage = ko.observable('');
             self.criticalError = ko.observable(false);
             self.hasConnectionError = ko.observable(false);
 
@@ -85,8 +87,8 @@
 
                 self.fields(fields);
 
-                self.syncDuplicateEmails("true");
-                self.selectedPrimaryEmail("778230000");
+                self.syncDuplicateEmails('true');
+                self.selectedPrimaryEmail('778230000');
                 self.selectedView(null);
                 self.email1Selected = ko.observable(true);
                 self.email2Selected = ko.observable(true);
@@ -140,13 +142,19 @@
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
                         self.isSyncing(false);
-                        self.syncComplete(true);
+                        self.syncComplete(false);
+                        self.bulkSyncInProgress(true);
                     }, function (error) {
-                        debugger;
                         console.log(error.response.text);
-                        self.isSyncing(false);
-                        self.errorMessage("Error saving configuration.");
-                        self.hasError(true);
+                        if (error.response.text.indexOf('260') > -1) {
+                            self.isSyncing(false);
+                            self.errorMessage('You have reached the limit for custom fields.');
+                            self.hasError(true);
+                        } else {
+                            self.isSyncing(false);
+                            self.errorMessage('Error saving configuration.');
+                            self.hasError(true);
+                        }
                     });
             };
         }
@@ -158,18 +166,7 @@
                 vm.isDisconnecting(!vm.isDisconnecting());
             });
 
-            //vm.disconnect.subscribe(function () {
-            //    Campmon.Plugin.executeAction('disconnect', '')
-            //        .then(function (result) {
-            //            // todo: go back to OAuth page
-            //        }, function (error) {
-            //            vm.errorMessage("Error disconnecting from Campaign Monitor.");
-            //            vm.hasError(true);
-            //        });
-            //});
-
             vm.fieldChanged.subscribe(function (field) {
-                debugger;
                 if (field.IsChecked()) {
                     vm.fieldsSelected(vm.fieldsSelected() + 1);
 
@@ -185,7 +182,7 @@
 
             ko.applyBindings(vm);
 
-            Campmon.Plugin.executeAction('loadmetadata', "")
+            Campmon.Plugin.executeAction('loadmetadata', '')
                 .then(function (result) {
                     var config = JSON.parse(result.body.OutputData);
 
@@ -196,6 +193,11 @@
                         return;
                     }
                     vm.configId = config.Id
+
+                    if (config.BulkSyncInProgress) {
+                        vm.bulkSyncInProgress(true);
+                        return;
+                    }
 
                     if (config.Clients) {
                         vm.clients(config.Clients);
@@ -211,7 +213,7 @@
                             vm.clientLists(config.Lists);
                         }
                         else {
-                            vm.listType("newList");
+                            vm.listType('newList');
                         }
                     }
 
@@ -235,15 +237,15 @@
 
                                 var lists = JSON.parse(result.body.OutputData);
                                 if (lists.length <= 0) {
-                                    vm.listType("newList");
+                                    vm.listType('newList');
                                 } else {
                                     vm.clientLists(lists);
-                                    vm.listType("existingList");
+                                    vm.listType('existingList');
                                 }
                                 vm.ResetConfig();
                                 vm.isLoading(false);
                             }, function (error) {
-                                vm.errorMessage("Error retrieving lists for selected client.")
+                                vm.errorMessage('Error retrieving lists for selected client.')
                                 vm.hasError(true);
                             });
                     });
@@ -282,17 +284,17 @@
             var fieldArr = [];
             var countSelected = 0;
             fields.forEach(function (field) {
-                fieldArr.push(new vm.ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
+                fieldArr.push(new ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
 
                 if (field.IsChecked) {
                     countSelected++;
                 }
 
-                if (field.LogicalName === "emailaddress1") {
+                if (field.LogicalName === 'emailaddress1') {
                     vm.email1Selected(field.IsChecked);
-                } else if (field.LogicalName === "emailaddress2") {
+                } else if (field.LogicalName === 'emailaddress2') {
                     vm.email2Selected(field.IsChecked);
-                } else if (field.LogicalName === "emailaddress3") {
+                } else if (field.LogicalName === 'emailaddress3') {
                     vm.email3Selected(field.IsChecked);
                 }
             });
@@ -302,12 +304,12 @@
         }
 
         function verifyFieldChange(vm, field) {
-            var EMAIL1VAL = "778230000";
-            var EMAIL2VAL = "778230001";
-            var EMAIL3VAL = "778230002";
-            var ERROR_NONESELECTED = "At least one of the email fields must be selected in order to sync with Campaign Monitor.";
+            var EMAIL1VAL = '778230000';
+            var EMAIL2VAL = '778230001';
+            var EMAIL3VAL = '778230002';
+            var ERROR_NONESELECTED = 'At least one of the email fields must be selected in order to sync with Campaign Monitor.';
 
-            if (field.LogicalName() === "emailaddress1") {
+            if (field.LogicalName() === 'emailaddress1') {
                 if (!vm.email2Selected() && !vm.email3Selected() && !field.IsChecked()) {
                     vm.hasError(true);
                     vm.errorMessage(ERROR_NONESELECTED);
@@ -321,7 +323,7 @@
                                             : EMAIL3VAL)
                 }
                 vm.email1Selected(field.IsChecked());
-            } else if (field.LogicalName() === "emailaddress2") {
+            } else if (field.LogicalName() === 'emailaddress2') {
                 if (!vm.email1Selected() && !vm.email3Selected() && !field.IsChecked()) {
                     vm.hasError(true);
                     vm.errorMessage(ERROR_NONESELECTED);
@@ -336,7 +338,7 @@
                 }
 
                 vm.email2Selected(field.IsChecked());
-            } else if (field.LogicalName() === "emailaddress3") {
+            } else if (field.LogicalName() === 'emailaddress3') {
                 if (!vm.email1Selected() && !vm.email2Selected() && !field.IsChecked()) {
                     vm.hasError(true);
                     vm.errorMessage(ERROR_NONESELECTED);

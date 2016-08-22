@@ -115,7 +115,7 @@ namespace createsend_dotnet
         {
             HttpDelete(
                 string.Format("/lists/{0}/customfields/{1}.json", 
-                ListID, System.Web.HttpUtility.UrlEncode(customFieldKey)), null);
+                ListID, Uri.EscapeDataString(customFieldKey)), null);
         }
 
         public IEnumerable<ListCustomField> CustomFields()

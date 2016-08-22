@@ -37,8 +37,18 @@ namespace Campmon.Dynamics
         public void DeleteCustomField(string listId, string name)
         {
             var list = new List(auth, listId);
-            var fieldKey = string.Format("[{0}]", name.Replace(" ", ""));
-            list.DeleteCustomField(fieldKey);
+            var fieldKey = name.StartsWith("[") && name.EndsWith("]")
+                ? name
+                : string.Format("[{0}]", name.Replace(" ", ""));
+
+            try
+            {
+                list.DeleteCustomField(fieldKey);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(String.Format("Error deleting field {0}. {1}", name, ex.Message));
+            }
         }
  
     }

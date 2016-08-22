@@ -38,8 +38,6 @@
 
         if (!dataParams) {
             var crmDomain = document.domain;
-            //todo: do we have this endpoint configurable somewhere?
-            //todo: should scope be configurable?
             window.location = 'https://api.createsend.com/oauth?integration_key=campaign-monitor-for-dynamics&domain_uri=https%3A%2F%2F' +
                 crmDomain +
                 '&scope=ViewReports%2cCreateCampaigns%2cSendCampaigns%2cImportSubscribers%2cSendTransactional%2cManageLists%2cAdministerAccount';

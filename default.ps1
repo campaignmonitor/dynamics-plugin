@@ -19,9 +19,10 @@ task RestoreNuGet {
 
 task Compile -depends RestoreNuGet {
     $params = '/target:Rebuild /property:Configuration=Release /verbosity:minimal'
-    $buildResult = Invoke-MsBuild $slnFile -MsBuildParameters $params -ShowBuildOutputInCurrentWindow > $null
     
-    "Compile succeeded: ${buildResult.buildSucceeded}"
+    $buildResult = Invoke-MsBuild $slnFile -MsBuildParameters $params -ShowBuildOutputInCurrentWindow
+    
+    "Compile succeeded: $($buildResult.buildSucceeded)"
 }
 
 task UpdateVersion -precondition { $solutionVersionNumber } {
@@ -62,8 +63,8 @@ task DeployToTest {
     $org = Get-CrmConnection -ConnectionString $connectionStrings.test
 
     $managedFileName = "$solutionName-Managed-$solutionVersionNumber.zip"
-
-    Import-CrmSolution -conn $org -SolutionFilePath 
+    $filePath = Join-Path $outputDir $managedFileName
+    Import-CrmSolution -conn $org -SolutionFilePath $filePath
 }
 
 task Default -depends Compile
