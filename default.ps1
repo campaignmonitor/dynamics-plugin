@@ -64,7 +64,7 @@ task DeployToTest {
 
     $managedFileName = "$solutionName-Managed-$solutionVersionNumber.zip"
     $filePath = Join-Path $outputDir $managedFileName
-    Import-CrmSolution -conn $org -SolutionFilePath $filePath
+    Import-CrmSolution -conn $org -SolutionFilePath $filePath -ActivatePlugins
 }
 
 task Default -depends Compile
