@@ -91,9 +91,10 @@
                 self.syncDuplicateEmails('true');
                 self.selectedPrimaryEmail('778230000');
                 self.selectedView(null);
-                self.email1Selected = ko.observable(true);
-                self.email2Selected = ko.observable(true);
-                self.email3Selected = ko.observable(true);
+
+                self.email1Selected(true);
+                self.email2Selected(true);
+                self.email3Selected(true);
             };
 
             self.interval = null;
