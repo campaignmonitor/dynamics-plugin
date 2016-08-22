@@ -96,6 +96,21 @@
                 self.email3Selected = ko.observable(true);
             };
 
+            self.interval = null;
+            self.checkForSyncCompleted = function () {
+                webAPI.REST.retrieveEntity('campmon_configuration', self.configId, '?$select=campmon_bulksyncinprogress')
+                    .then(function (response) {
+                        var result = JSON.parse(response.text);
+                        if (result.campmon_bulksyncinprogress !== true) {
+                            self.syncComplete(true);
+                            self.bulkSyncInProgress(false);
+                            window.clearInterval(self.interval);
+                        }
+                    }, function (error) {
+                        console.log(error);
+                    });
+            };
+
             self.saveAndSync = function () {
                 
                 if (self.fieldsSelected() > self.maxFields()) {
@@ -145,6 +160,7 @@
                         self.isSyncing(false);
                         self.syncComplete(false);
                         self.bulkSyncInProgress(true);
+                        self.interval = window.setInterval(self.checkForSyncCompleted, 5000);
                     }, function (error) {
                         console.log(error.response.text);
                         if (error.response.text.indexOf('260') > -1) {
