@@ -94,8 +94,7 @@
             };
 
             self.saveAndSync = function () {
-                debugger;
-
+                
                 if (self.fieldsSelected() > self.maxFields()) {
                     self.tooManyFields(true);
                     return;
@@ -140,9 +139,8 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
-                        //self.isSyncing(false);
-                        //self.syncComplete(true);
-                        debugger;
+                        self.isSyncing(false);
+                        self.syncComplete(true);
                     }, function (error) {
                         debugger;
                         console.log(error.response.text);
@@ -197,7 +195,6 @@
                         vm.criticalError(true);
                         return;
                     }
-                    debugger;
                     vm.configId = config.Id
 
                     if (config.Clients) {
@@ -209,9 +206,13 @@
                     } else {
                         selectClient(vm, config.ClientId, config.ClientName);
                     }
-                    
                     if (config.Lists) {
-                        vm.clientLists(config.Lists);
+                        if (config.Lists.length > 0) {
+                            vm.clientLists(config.Lists);
+                        }
+                        else {
+                            vm.listType("newList");
+                        }
                     }
 
                     if (config.ListId && config.ListName) {                        
@@ -236,7 +237,7 @@
                                 if (lists.length <= 0) {
                                     vm.listType("newList");
                                 } else {
-                                    vm.clientLists(JSON.parse(result.body.OutputData));
+                                    vm.clientLists(lists);
                                     vm.listType("existingList");
                                 }
                                 vm.ResetConfig();
