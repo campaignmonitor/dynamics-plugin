@@ -23,7 +23,7 @@
             <!-- This radio button input is outside of its respective container to allow for easy CSS-selection of hiding/showing advanced fields -->
             <input type="checkbox" id="advancedSettings">
             <div class="settings">
-                <ul class="settingClient">
+                <ul class="settingClient" data-bind="visible: isAgency">
                     <li>
                         <h2>Client</h2>
                     </li>

@@ -23,6 +23,7 @@
             self.isLoading = ko.observable(true);
             self.isSyncing = ko.observable(false);
             self.bulkSyncInProgress = ko.observable(false);
+            self.isAgency = ko.observable(false);
 
             self.maxFields = ko.observable(200);
             self.fieldsSelected = ko.observable(0);
@@ -204,9 +205,11 @@
                     }
 
                     if (vm.clients().length == 1) {
+                        vm.isAgency(false);
                         vm.selectedClient(vm.clients()[0]);
                     } else {
                         selectClient(vm, config.ClientId, config.ClientName);
+                        vm.isAgency(true);
                     }
                     if (config.Lists) {
                         if (config.Lists.length > 0) {
