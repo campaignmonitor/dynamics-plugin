@@ -231,6 +231,9 @@
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
 
                     vm.selectedClient.subscribe(function (selectedClient) {
+                        if (!selectedClient)
+                            return;
+
                         vm.isLoading(true);
                         Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
                             .then(function (result) {
