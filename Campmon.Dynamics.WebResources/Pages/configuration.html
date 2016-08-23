@@ -106,14 +106,14 @@
                         <h3>Recommended</h3>
                         <ul class="columns columnsShort" data-bind="foreach: fields">
                             <li data-bind="if: IsRecommended">
-                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked, event: { change: $parent.fieldChanged }" />
+                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked" /> 
                                 <label data-bind="text: DisplayName, attr: { for: LogicalName }" />
                             </li>
                         </ul>
                         <h3>Other Fields</h3>
                         <ul class="columns columnsTall" data-bind="foreach: fields">
                             <li data-bind="ifnot: IsRecommended">
-                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked, event: { change: $parent.fieldChanged }" />
+                                <input type="checkbox" data-bind="attr: { id: LogicalName }, checked: IsChecked" />
                                 <label data-bind="text: DisplayName, attr: { for: LogicalName }" />
                             </li>
                         </ul>

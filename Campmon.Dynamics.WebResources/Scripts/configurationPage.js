@@ -6,12 +6,31 @@
     global.Campmon = global.Campmon || {};
     global.Campmon.ConfigurationPage = global.Campmon.ConfigurationPage || (function () {
 
-        function ObservableField(logicalName, displayName, isChecked, isRecommended) {
+        function ObservableField(logicalName, displayName, isChecked, isRecommended, vm) {
             var self = this;
             self.LogicalName = ko.observable(logicalName);
             self.DisplayName = ko.observable(displayName);
             self.IsChecked = ko.observable(isChecked);
             self.IsRecommended = ko.observable(isRecommended);
+            self.IsChecked.subscribe(function (checked) {
+                if (checked) {
+                    vm.fieldsSelected(vm.fieldsSelected() + 1);
+
+                    if (vm.fieldsSelected() > vm.maxFields()) {
+                        vm.tooManyFields(true);
+                    }
+                } else {
+                    vm.fieldsSelected(vm.fieldsSelected() - 1);
+                }
+
+                if (this.LogicalName() === 'emailaddress1' || this.LogicalName() === "emailaddress2" || this.LogicalName() === "emailaddress3") {
+                    return verifyFieldChange(vm, this);
+                }
+                else {
+                    return true;
+                }
+
+            }, this);
         };
 
         function CampmonViewModel() {
@@ -61,7 +80,6 @@
             };
 
             self.fields = ko.observableArray();
-            self.fieldChanged = ko.observable();
 
             self.syncDuplicateEmails = ko.observable();
 
@@ -91,7 +109,6 @@
                 self.syncDuplicateEmails('true');
                 self.selectedPrimaryEmail('778230000');
                 self.selectedView(null);
-
                 self.email1Selected(true);
                 self.email2Selected(true);
                 self.email3Selected(true);
@@ -182,20 +199,6 @@
 
             vm.changeDisconnectingStatus.subscribe(function () {
                 vm.isDisconnecting(!vm.isDisconnecting());
-            });
-
-            vm.fieldChanged.subscribe(function (field) {
-                if (field.IsChecked()) {
-                    vm.fieldsSelected(vm.fieldsSelected() + 1);
-
-                    if (vm.fieldsSelected() > vm.maxFields()) {
-                        vm.tooManyFields(true);
-                    }
-                } else {
-                    vm.fieldsSelected(vm.fieldsSelected() - 1);
-                }
-
-                return verifyFieldChange(vm, field);                               
             });
 
             ko.applyBindings(vm);
@@ -307,7 +310,7 @@
             var fieldArr = [];
             var countSelected = 0;
             fields.forEach(function (field) {
-                fieldArr.push(new ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended));
+                fieldArr.push(new ObservableField(field.LogicalName, field.DisplayName, field.IsChecked, field.IsRecommended, vm));
 
                 if (field.IsChecked) {
                     countSelected++;
