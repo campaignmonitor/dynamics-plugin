@@ -31,7 +31,14 @@ namespace Campmon.Dynamics
         {
             var list = new List(auth, listId);
 
-            return list.CreateCustomField(name, type, null);
+            try
+            {
+                return list.CreateCustomField(name, type, null);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(String.Format("Error creating custom field '{0}'. {1}", name, ex.Message));
+            }
         }
 
         public void DeleteCustomField(string listId, string name)

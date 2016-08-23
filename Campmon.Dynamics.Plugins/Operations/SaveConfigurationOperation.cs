@@ -89,6 +89,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                     }
                     catch (CreatesendException ex)
                     {
+                        createdKeys.ForEach(k => cmService.DeleteCustomField(updatedConfig.ListId, k));
                         throw;
                     }
 
@@ -127,6 +128,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                     }
                     catch(CreatesendException ex)
                     {
+                        createdKeys.ForEach(k => cmService.DeleteCustomField(updatedConfig.ListId, k));
                         throw;
                     }
                 }

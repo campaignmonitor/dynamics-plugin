@@ -181,13 +181,14 @@
                         self.interval = window.setInterval(self.checkForSyncCompleted, 5000);
                     }, function (error) {
                         console.log(error.response.text);
+                        var errorResult = JSON.parse(error.response.text).error;
                         if (error.response.text.indexOf('260') > -1) {
                             self.isSyncing(false);
                             self.errorMessage('You have reached the limit for custom fields.');
                             self.hasError(true);
                         } else {
                             self.isSyncing(false);
-                            self.errorMessage('Error saving configuration.');
+                            self.errorMessage(errorResult.message);
                             self.hasError(true);
                         }
                     });
