@@ -32,7 +32,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             var userInput = JsonConvert.DeserializeObject<ConfigurationData>(serializedData);
             trace.Trace("Loading current configuration.");
             var oldConfig = configService.VerifyAndLoadConfig();
-            var auth = Authenticator.GetAuthentication(oldConfig);
+            var auth = Authenticator.GetAuthentication(oldConfig, orgService);
 
             var updatedConfig = new CampaignMonitorConfiguration
             {
@@ -48,7 +48,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 SubscriberEmail = (SubscriberEmailValues)userInput.SubscriberEmail,
                 SyncFields = userInput.Fields.Select(f => f.LogicalName),
                 SyncViewId = userInput.Views != null ? userInput.Views.First().ViewId : Guid.Empty,
-                SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null                               
+                SyncViewName = userInput.Views != null ? userInput.Views.First().ViewName : null
             };
 
             if (string.IsNullOrEmpty(updatedConfig.ListId))
@@ -66,7 +66,7 @@ namespace Campmon.Dynamics.Plugins.Operations
                 && oldConfig.ClientId == updatedConfig.ClientId 
                 && oldConfig.ListId == updatedConfig.ListId)
             {
-                var cmService = new CampaignMonitorService(updatedConfig);
+                var cmService = new CampaignMonitorService(updatedConfig, orgService);
                 var attributes = metadata.GetEntityAttributes("contact");
                 var newFields = updatedConfig.SyncFields.Except(oldConfig.SyncFields);
                 var removedFields = oldConfig.SyncFields.Except(updatedConfig.SyncFields);
@@ -108,7 +108,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             }
             else
             {
-                var cmService = new CampaignMonitorService(updatedConfig);
+                var cmService = new CampaignMonitorService(updatedConfig, orgService);
                 // create all custom fields
                 var attributes = metadata.GetEntityAttributes("contact");
                 var createdKeys = new List<string>();

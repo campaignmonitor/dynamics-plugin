@@ -43,7 +43,7 @@ namespace Campmon.Dynamics.WorkflowActivities
 
             QueryExpression viewFilter = GetBulkSyncFilter(config, syncData, primaryEmail);            
 
-            var auth = Authenticator.GetAuthentication(config);
+            var auth = Authenticator.GetAuthentication(config, orgService);
             var sub = new Subscriber(auth, config.ListId);
             var mdh = new MetadataHelper(orgService, trace);
 

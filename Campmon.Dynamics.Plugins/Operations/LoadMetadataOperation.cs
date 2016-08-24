@@ -81,7 +81,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             trace.Trace("Configuration loaded.");
             output.ConfigurationExists = true;
 
-            var auth = Authenticator.GetAuthentication(config);
+            var auth = Authenticator.GetAuthentication(config, orgService);
             var general = new General(auth);
 
             var clients = new General(auth).Clients();

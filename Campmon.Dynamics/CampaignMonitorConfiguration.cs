@@ -18,6 +18,7 @@ namespace Campmon.Dynamics
     {
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
+        public DateTime? TokenValidTo { get; set; }
         public string BulkSyncData { get; set; }
         public bool BulkSyncInProgress { get; set; }
         public string ClientId { get; set; }

@@ -94,7 +94,7 @@ namespace Campmon.Dynamics.Plugins.Logic
             else if(isUpdate && target.Attributes.Contains(emailField) && preImage[emailField].ToString() != postImage[emailField].ToString())
             {
                 // if it contains primary email and isUpdate, then the primary email was changed and we need to do something to handle that
-                var auth = Authenticator.GetAuthentication(campaignMonitorConfig);
+                var auth = Authenticator.GetAuthentication(campaignMonitorConfig, orgService);
                 var subscriber = new Subscriber(auth, campaignMonitorConfig.ListId);
                 try
                 {

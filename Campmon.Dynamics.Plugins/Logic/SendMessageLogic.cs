@@ -22,7 +22,7 @@ namespace Campmon.Dynamics.Plugins.Logic
 
             ConfigurationService configService = new ConfigurationService(orgService, tracer);
             campaignMonitorConfig = configService.VerifyAndLoadConfig();
-            authDetails = Authenticator.GetAuthentication(campaignMonitorConfig);
+            authDetails = Authenticator.GetAuthentication(campaignMonitorConfig, orgService);
         }
 
         public void SendMessage(Entity target)

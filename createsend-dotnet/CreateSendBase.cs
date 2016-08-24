@@ -37,7 +37,7 @@ namespace createsend_dotnet
                 .RefreshToken;
             string body = string.Format(
                 "grant_type=refresh_token&refresh_token={0}",
-                HttpUtility.UrlEncode(refreshToken));
+                Uri.EscapeDataString(refreshToken));
 
             OAuthTokenDetails newTokenDetails =
                 HttpHelper.Post<string, OAuthTokenDetails, OAuthErrorResult>(

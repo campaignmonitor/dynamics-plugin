@@ -27,8 +27,8 @@ namespace Campmon.Dynamics.Plugins
 
             var operationFactory = new Dictionary<string, Func<IOperation>>
             {
-                { "getclients", () => new GetClientsOperation(configService) },
-                { "getclientlist", ()=> new GetClientListOperation(configService) },
+                { "getclients", () => new GetClientsOperation(configService, orgService) },
+                { "getclientlist", ()=> new GetClientListOperation(configService, orgService) },
                 { "loadmetadata", () => new LoadMetadataOperation(configService, orgService, trace) },
                 { "saveconfiguration", () => new SaveConfigurationOperation(orgService, configService, trace) },
                 { "disconnect", () => new DisconnectOperation(configService) },

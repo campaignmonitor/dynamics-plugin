@@ -20,8 +20,10 @@ namespace Campmon.Dynamics.Plugins
             }
             
             Entity target = (Entity)context.InputParameters["Target"];
+            Entity preEntityImage = context.MessageName.ToLower() == "update"
+                ? context.GetPreEntityImage("contact")
+                : null;
             Entity postEntityImage = context.GetPostEntityImage("contact");
-            Entity preEntityImage = context.GetPreEntityImage("contact");
             
             ContactSyncLogic syncLogic = new ContactSyncLogic(orgService, tracer);
             try

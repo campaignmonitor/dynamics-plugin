@@ -13,13 +13,13 @@ namespace Campmon.Dynamics
         private CampaignMonitorConfiguration _config { get; set; }
         private AuthenticationDetails auth { get; set; }
 
-        public CampaignMonitorService(CampaignMonitorConfiguration config)
+        public CampaignMonitorService(CampaignMonitorConfiguration config, IOrganizationService orgService)
         {
             if (config == null)
                 throw new ArgumentNullException("config");
 
             _config = config;
-            auth = Authenticator.GetAuthentication(config);
+            auth = Authenticator.GetAuthentication(config, orgService);
         }
 
         public General GetAuthGeneral()
