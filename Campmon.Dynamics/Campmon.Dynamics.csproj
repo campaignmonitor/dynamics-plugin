@@ -47,9 +47,6 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SonomaPartners.Crm.Toolkit">
-      <HintPath>..\lib\SonomaPartners.Crm.Toolkit\SonomaPartners.Crm.Toolkit.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -79,6 +76,12 @@
     <Compile Include="MetadataHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SuccessEmailSender.cs" />
+    <Compile Include="Utilities\IEnumerableExtensions.cs" />
+    <Compile Include="Utilities\MetadataService.cs" />
+    <Compile Include="Utilities\OrgServiceExtensions.cs" />
+    <Compile Include="Utilities\PluginBase.cs" />
+    <Compile Include="Utilities\PluginExecutionContextExtensions.cs" />
+    <Compile Include="Utilities\ServiceProviderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

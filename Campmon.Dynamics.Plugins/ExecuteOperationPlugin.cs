@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SonomaPartners.Crm.Toolkit;
-using SonomaPartners.Crm.Toolkit.Plugins;
+using Campmon.Dynamics.Utilities;
 using Campmon.Dynamics.Plugins.Operations;
 using Newtonsoft.Json;
 using Microsoft.Xrm.Sdk;

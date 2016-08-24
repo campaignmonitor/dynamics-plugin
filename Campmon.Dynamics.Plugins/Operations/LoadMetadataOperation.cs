@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using createsend_dotnet;
 using Newtonsoft.Json;
 using Microsoft.Xrm.Sdk.Query;
-using SonomaPartners.Crm.Toolkit;
+using Campmon.Dynamics.Utilities;
 
 namespace Campmon.Dynamics.Plugins.Operations
 {

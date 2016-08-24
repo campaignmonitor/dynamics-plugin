@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xrm.Sdk;
 using Campmon.Dynamics.Plugins.Logic;
-using SonomaPartners.Crm.Toolkit.Plugins;
+using Campmon.Dynamics.Utilities;
 
 namespace Campmon.Dynamics.Plugins
 {
