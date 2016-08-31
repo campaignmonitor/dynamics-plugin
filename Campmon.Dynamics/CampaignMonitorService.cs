@@ -30,10 +30,10 @@ namespace Campmon.Dynamics
         public string CreateCustomField(string listId, string name, CustomFieldDataType type)
         {
             var list = new List(auth, listId);
-
+            var sanitizedName = SanitizeKeyName(name);
             try
             {
-                return list.CreateCustomField(name, type, null);
+                return list.CreateCustomField(sanitizedName, type, null);
             }
             catch(Exception ex)
             {
@@ -50,12 +50,17 @@ namespace Campmon.Dynamics
 
             try
             {
-                list.DeleteCustomField(fieldKey);
+                list.DeleteCustomField(SanitizeKeyName(fieldKey));
             }
             catch(Exception ex)
             {
                 throw new Exception(String.Format("Error deleting field {0}. {1}", name, ex.Message));
             }
+        }
+
+        private string SanitizeKeyName(string name)
+        {
+            return name.Replace("/", "").Replace("\\", "");
         }
  
     }

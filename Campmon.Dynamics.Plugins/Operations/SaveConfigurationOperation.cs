@@ -33,6 +33,7 @@ namespace Campmon.Dynamics.Plugins.Operations
             trace.Trace("Loading current configuration.");
             var oldConfig = configService.VerifyAndLoadConfig();
             var auth = Authenticator.GetAuthentication(oldConfig, orgService);
+            var startBulkSync = false;
 
             var updatedConfig = new CampaignMonitorConfiguration
             {
@@ -71,6 +72,8 @@ namespace Campmon.Dynamics.Plugins.Operations
                 var newFields = updatedConfig.SyncFields.Except(oldConfig.SyncFields);
                 var removedFields = oldConfig.SyncFields.Except(updatedConfig.SyncFields);
 
+                startBulkSync = newFields.Any(); // don't need to do the bulk sync if fields have only been removed.
+
                 // create new custom fields
                 var createdKeys = new List<string>();
                 foreach (var fieldName in newFields)
@@ -108,6 +111,8 @@ namespace Campmon.Dynamics.Plugins.Operations
             }
             else
             {
+                startBulkSync = true;
+
                 var cmService = new CampaignMonitorService(updatedConfig, orgService);
                 // create all custom fields
                 var attributes = metadata.GetEntityAttributes("contact");
@@ -142,13 +147,17 @@ namespace Campmon.Dynamics.Plugins.Operations
                 updatedConfig = configService.VerifyAndLoadConfig();
             }
 
-            ExecuteWorkflowRequest workFlowReq = new ExecuteWorkflowRequest
+            if (startBulkSync)
             {
-                WorkflowId = BULK_SYNC_WORKFLOW_ID,
-                EntityId = updatedConfig.Id
-            };
+                ExecuteWorkflowRequest workFlowReq = new ExecuteWorkflowRequest
+                {
+                    WorkflowId = BULK_SYNC_WORKFLOW_ID,
+                    EntityId = updatedConfig.Id
+                };
 
-            ExecuteWorkflowResponse workflowResp = (ExecuteWorkflowResponse)orgService.Execute(workFlowReq);            
+                ExecuteWorkflowResponse workflowResp = (ExecuteWorkflowResponse)orgService.Execute(workFlowReq);
+                return "bulksync";
+            }          
             
             return "saved";
         }

@@ -175,10 +175,15 @@
 
                 Campmon.Plugin.executeAction('saveconfiguration', JSON.stringify(data))
                     .then(function (result) {
+                        var state = result.body.OutputData;
                         self.isSyncing(false);
-                        self.syncComplete(false);
-                        self.bulkSyncInProgress(true);
-                        self.interval = window.setInterval(self.checkForSyncCompleted, 5000);
+                        if (state == 'bulksync') {
+                            self.syncComplete(false);
+                            self.bulkSyncInProgress(true);
+                            self.interval = window.setInterval(self.checkForSyncCompleted, 5000);
+                        } else {
+                            self.syncComplete(true);
+                        }
                     }, function (error) {
                         console.log(error.response.text);
                         var errorResult = JSON.parse(error.response.text).error;
