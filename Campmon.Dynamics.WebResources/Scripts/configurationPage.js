@@ -55,10 +55,42 @@
             self.clientLists = ko.observableArray();
             self.views = ko.observableArray();
 
+            self.isClientSwitch = ko.observable(false);
+            self.confirmClientSwitch = function () {
+                self.getClientList();
+                self.oldSelectedClient(self.selectedClient());
+                self.isClientSwitch(false);
+            };
+            self.cancelClientSwitch = function () {
+                self.selectedClient(self.oldSelectedClient());
+                self.isClientSwitch(false);
+            };
+
+            self.isListSwitch = ko.observable(false);
+            self.confirmListSwitch = function () {
+                if (self.listType() == 'existingList') {
+                    self.newListName(null);
+                }
+                self.ResetConfig();
+                self.oldSelectedList(self.selectedList());
+                self.oldListType(self.listType());
+                self.isListSwitch(false);
+            };
+            self.cancelListSwitch = function () {
+                if (self.listType() != 'existingList') {
+                    self.listType(self.oldListType());
+                }
+                self.selectedList(self.oldSelectedList());
+                self.isListSwitch(false);
+            };
+
             self.selectedView = ko.observable();
             self.selectedClient = ko.observable();
+            self.oldSelectedClient = ko.observable();
             self.selectedList = ko.observable();
+            self.oldSelectedList = ko.observable();
             self.listType = ko.observable('existingList');
+            self.oldListType = ko.observable();
             self.newListName = ko.observable();
             self.confirmedOptIn = ko.observable('false');
             self.optInType = ko.observable();
@@ -228,6 +260,7 @@
                     if (vm.clients().length == 1) {
                         vm.isAgency(false);
                         vm.selectedClient(vm.clients()[0]);
+                        vm.oldSelectedClient(vm.clients()[0]);
                     } else {
                         selectClient(vm, config.ClientId, config.ClientName);
                         vm.isAgency(true);
@@ -254,14 +287,10 @@
 
                     vm.syncDuplicateEmails(config.SyncDuplicateEmails.toString());
 
-                    vm.selectedClient.subscribe(function (selectedClient) {
-                        if (!selectedClient)
-                            return;
-
+                    vm.getClientList = function () {
                         vm.isLoading(true);
-                        Campmon.Plugin.executeAction('getclientlist', selectedClient.ClientID)
+                        Campmon.Plugin.executeAction('getclientlist', vm.selectedClient().ClientID)
                             .then(function (result) {
-
                                 var lists = JSON.parse(result.body.OutputData);
                                 if (lists.length <= 0) {
                                     vm.listType('newList');
@@ -275,10 +304,33 @@
                                 vm.errorMessage('Error retrieving lists for selected client.')
                                 vm.hasError(true);
                             });
+                    };
+                    vm.selectedClient.subscribe(function (selectedClient) {
+                        if (!selectedClient)
+                            return;
+
+                        if (vm.selectedClient() == vm.oldSelectedClient())
+                            return;
+
+                        if (!vm.oldSelectedClient())
+                        {
+                            vm.confirmClientSwitch();
+                            return;
+                        }
+
+                        vm.isClientSwitch(true);
                     });
 
                     vm.selectedList.subscribe(function (selectedList) {
-                        vm.ResetConfig();
+                        if ((vm.selectedList() == vm.oldSelectedList()) && vm.oldListType())
+                            return;
+
+                        if (!vm.oldSelectedList() && !vm.oldListType()) {
+                            vm.confirmListSwitch();
+                            return;
+                        }
+
+                        vm.isListSwitch(true);
                     });
 
                     vm.isLoading(false);
@@ -391,6 +443,7 @@
 
             if (client.length > 0) {
                 vm.selectedClient(client[0]);
+                vm.oldSelectedClient(client[0]);
             }
         }
 
@@ -401,6 +454,7 @@
 
             if (list.length > 0) {
                 vm.selectedList(list[0]);
+                vm.oldSelectedList(list[0]);
             }
         }
 
