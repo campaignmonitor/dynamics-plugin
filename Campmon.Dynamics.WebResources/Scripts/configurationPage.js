@@ -77,7 +77,9 @@
                 self.isListSwitch(false);
             };
             self.cancelListSwitch = function () {
-                self.listType(self.oldListType());
+                if (self.listType() != 'existingList') {
+                    self.listType(self.oldListType());
+                }
                 self.selectedList(self.oldSelectedList());
                 self.isListSwitch(false);
             };
