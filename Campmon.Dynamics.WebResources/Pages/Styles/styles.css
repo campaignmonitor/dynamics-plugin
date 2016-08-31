@@ -679,14 +679,14 @@ button:disabled:active {
 	margin-top: 2px;
 }
 
-.modal p {
+.modal p, .modal span {
 	margin-top: 14px;
 	font-size: 14px;
 	line-height: 18px;
 	color: #888;
 }
 
-.modal p strong {
+.modal p strong, .modal span strong {
 	font-size: 14px;
 	color: #444;
 	white-space: nowrap;

@@ -39,7 +39,7 @@
                         <h2>Campaign Monitor List</h2>
                     </li>
                     <li>
-                        <input type="radio" id="syncToExistingList" name="contactList" value="existingList" data-bind="checked: listType, click: function() { newListName(null); return true; }">
+                        <input type="radio" id="syncToExistingList" name="contactList" value="existingList" data-bind="checked: listType">
                         <input type="radio" id="syncToNewList" name="contactList" value="newList" data-bind="checked: listType, click: function() { selectedList(null); return true; }">
                         <div class="radioButtons">
                             <ul>
@@ -277,7 +277,7 @@
         </div>
     </div>
     <!-- CONFIRM CLIENT SWITCH modal window below. Remove "display: none;" to reveal. -->
-    <div class="modal" style="display:none;" data-bind="visible: isClientSwitch">
+    <div class="modal" style="display:none;" data-bind="visible: (isClientSwitch() && oldSelectedClient())">
         <div>
             <svg class="icon iconAlert">
                 <path d="M41.027,30.089L41.027,30.089l-15-26.052

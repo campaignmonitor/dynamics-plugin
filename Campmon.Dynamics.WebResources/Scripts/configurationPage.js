@@ -68,11 +68,16 @@
 
             self.isListSwitch = ko.observable(false);
             self.confirmListSwitch = function () {
+                if (self.listType() == 'existingList') {
+                    self.newListName(null);
+                }
                 self.ResetConfig();
                 self.oldSelectedList(self.selectedList());
+                self.oldListType(self.listType());
                 self.isListSwitch(false);
             };
             self.cancelListSwitch = function () {
+                self.listType(self.oldListType());
                 self.selectedList(self.oldSelectedList());
                 self.isListSwitch(false);
             };
@@ -83,6 +88,7 @@
             self.selectedList = ko.observable();
             self.oldSelectedList = ko.observable();
             self.listType = ko.observable('existingList');
+            self.oldListType = ko.observable();
             self.newListName = ko.observable();
             self.confirmedOptIn = ko.observable('false');
             self.optInType = ko.observable();
@@ -304,12 +310,23 @@
                         if (vm.selectedClient() == vm.oldSelectedClient())
                             return;
 
+                        if (!vm.oldSelectedClient())
+                        {
+                            vm.confirmClientSwitch();
+                            return;
+                        }
+
                         vm.isClientSwitch(true);
                     });
 
                     vm.selectedList.subscribe(function (selectedList) {
-                        if (vm.selectedList() == vm.oldSelectedList())
+                        if ((vm.selectedList() == vm.oldSelectedList()) && vm.oldListType())
                             return;
+
+                        if (!vm.oldSelectedList() && !vm.oldListType()) {
+                            vm.confirmListSwitch();
+                            return;
+                        }
 
                         vm.isListSwitch(true);
                     });
