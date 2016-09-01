@@ -74,7 +74,7 @@ namespace Campmon.Dynamics.WorkflowActivities
                 BulkImportResults importResults = null;
 
                 var subscribers = GenerateSubscribersList(contacts.Entities.Except(invalidEmail), primaryEmail, mdh);
-                if (subscribers.Any())
+                if (!subscribers.Any())
                 {
                     trace.Trace("No subscribers to import from contact page.");
                     continue;
