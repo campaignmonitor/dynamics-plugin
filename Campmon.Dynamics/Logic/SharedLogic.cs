@@ -159,7 +159,7 @@ namespace Campmon.Dynamics.Logic
                     var displayName = (from x in contactAttributes where x.LogicalName == field.Key select x.DisplayName).FirstOrDefault();
                     if (displayName.UserLocalizedLabel != null && displayName.UserLocalizedLabel.Label != null)
                     {
-                        schemaToDisplayName["contact" + field.Key] = displayName.UserLocalizedLabel.Label.ToString();
+                        schemaToDisplayName["contact" + field.Key] = displayName.UserLocalizedLabel.Label.ToString().Replace("/", "").Replace("\\", "");
 
                     }
                 }

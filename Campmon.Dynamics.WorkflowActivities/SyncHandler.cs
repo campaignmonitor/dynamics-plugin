@@ -172,6 +172,10 @@ namespace Campmon.Dynamics.WorkflowActivities
             }
 
             viewFilter.ColumnSet.Columns.Clear();
+            foreach (var link in viewFilter.LinkEntities)
+            {
+                link.Columns.Columns.Clear();
+            }
 
             if (syncData.UpdatedFields != null && syncData.UpdatedFields.Length > 0)
             {
