@@ -88,10 +88,15 @@ namespace Campmon.Dynamics.WorkflowActivities
                     false, // queueSubscriptionBasedAutoResponders
                     false); // restartSubscriptionBasedAutoResponders
                 }
-                catch(Exception ex)
+                catch (CreatesendException ex)
                 {
-                    trace.Trace("Error on subscriber import: " + ex.Message);
+                    trace.Trace("CreatesendException Error on subscriber import: " + ex.Error.Message);
+                    trace.Trace("Exception Error on subscriber import: " + ex.Message);
+
+                    syncData.BulkSyncErrors.Add(new BulkSyncError("import", ex.Error.Message, ""));
                     syncData.BulkSyncErrors.Add(new BulkSyncError("import", ex.Message, ""));
+
+                    trace.Trace("CreatesendException error occurred: Subscriber import ended.");
                 }
 
                 trace.Trace("Subscriber import ended.");
